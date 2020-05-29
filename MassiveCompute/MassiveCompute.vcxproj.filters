@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="MassiveCompute.cpp" />
+    <ClCompile Include="Image.cpp" />
+    <ClCompile Include="Schedulers\StealingBlockScheduler.cpp" />
+    <ClCompile Include="Helpers.cpp" />
+    <ClCompile Include="Schedulers\EqualBlockScheduler.cpp" />
+    <ClCompile Include="Schedulers\BlockQueue.cpp" />
+    <ClCompile Include="Schedulers\ConstantBlockSchedulerWithThreads.cpp" />
+    <ClCompile Include="Schedulers\ConstantBlockScheduler.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Chunk.h" />
+    <ClInclude Include="Image.h" />
+    <ClInclude Include="BaseFunctor.h" />
+    <ClInclude Include="Schedulers\StealingBlockScheduler.h" />
+    <ClInclude Include="Helpers.h" />
+    <ClInclude Include="Schedulers\EqualBlockScheduler.h" />
+    <ClInclude Include="Schedulers\BlockQueue.h" />
+    <ClInclude Include="Schedulers\ConstantBlockSchedulerWithThreads.h" />
+    <ClInclude Include="Schedulers\ConstantBlockScheduler.h" />
+  </ItemGroup>
+</Project>

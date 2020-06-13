@@ -38,20 +38,20 @@ const float* Image::GetData() const
     return this->data.data();
 }
 
-std::optional<Chunk> Image::GetChunk(size_t left, size_t top, size_t maxWidth, size_t maxHeight)
+std::optional<Block> Image::GetBlock(size_t left, size_t top, size_t maxWidth, size_t maxHeight)
 {
-    auto chunk = this->GetChunkRect(left, top, maxWidth, maxHeight);
-    if (!chunk)
+    auto block = this->GetBlockRect(left, top, maxWidth, maxHeight);
+    if (!block)
     {
         return std::nullopt;
     }
 
-    chunk->image = this->data.data();
+    block->image = this->data.data();
 
-    return chunk;
+    return block;
 }
 
-std::optional<Chunk> Image::GetChunkRect(size_t left, size_t top, size_t maxWidth, size_t maxHeight) const
+std::optional<Block> Image::GetBlockRect(size_t left, size_t top, size_t maxWidth, size_t maxHeight) const
 {
     if (this->data.empty())
     {
@@ -67,14 +67,14 @@ std::optional<Chunk> Image::GetChunkRect(size_t left, size_t top, size_t maxWidt
     size_t right = (std::min)(left + maxWidth, this->width);
     size_t bottom = (std::min)(top + maxHeight, this->height);
 
-    Chunk chunk;
+    Block block;
 
-    chunk.left = left;
-    chunk.top = top;
-    chunk.right = right;
-    chunk.bottom = bottom;
-    chunk.imageWidth = this->width;
-    chunk.imageHeight = this->height;
+    block.left = left;
+    block.top = top;
+    block.right = right;
+    block.bottom = bottom;
+    block.imageWidth = this->width;
+    block.imageHeight = this->height;
 
-    return chunk;
+    return block;
 }

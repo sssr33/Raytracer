@@ -1,5 +1,5 @@
 #pragma once
-#include "Chunk.h"
+#include "Block.h"
 
 #include <vector>
 #include <optional>
@@ -17,12 +17,12 @@ public:
     size_t GetHeight() const;
     const float* GetData() const;
 
-    std::optional<Chunk> GetChunk(size_t left, size_t top, size_t maxWidth, size_t maxHeight);
+    std::optional<Block> GetBlock(size_t left, size_t top, size_t maxWidth, size_t maxHeight);
 
 private:
     size_t width = 0;
     size_t height = 0;
     std::vector<float> data;
 
-    std::optional<Chunk> GetChunkRect(size_t left, size_t top, size_t maxWidth, size_t maxHeight) const;
+    std::optional<Block> GetBlockRect(size_t left, size_t top, size_t maxWidth, size_t maxHeight) const;
 };

@@ -29,11 +29,11 @@ void EqualBlockScheduler::operator()(Image& img, BaseFunctor functor)
 }
 
 EqualBlockScheduler::ThreadFunctor::ThreadFunctor(Image& img, BaseFunctor functor, size_t y, size_t height)
-	: chunk(*img.GetChunk(0, y, img.GetWidth(), height))
+	: block(*img.GetBlock(0, y, img.GetWidth(), height))
 	, functor(std::move(functor))
 {}
 
 void EqualBlockScheduler::ThreadFunctor::operator()()
 {
-	this->functor(this->chunk);
+	this->functor(this->block);
 }

@@ -9,7 +9,7 @@ public:
 	BlockQueue() = default;
 	BlockQueue(Image& img, size_t maxBlockWidth, size_t maxBlockHeight);
 
-	std::optional<Chunk> Pop();
+	std::optional<Block> Pop();
 
 private:
 	const size_t maxBlockWidth = 0;

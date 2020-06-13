@@ -1,6 +1,6 @@
 #pragma once
-#include "Chunk.h"
+#include "Block.h"
 
 #include <functional>
 
-using BaseFunctor = std::function<void(const Chunk&)>;
+using BaseFunctor = std::function<void(const Block&)>;

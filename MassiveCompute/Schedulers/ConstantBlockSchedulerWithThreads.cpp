@@ -96,12 +96,12 @@ void ConstantBlockSchedulerWithThreads::Main(BaseFunctor functor)
 {
 	while (true)
 	{
-		std::optional<Chunk> chunk = this->blockQueue->Pop();
-		if (!chunk)
+		std::optional<Block> block = this->blockQueue->Pop();
+		if (!block)
 		{
 			return;
 		}
 
-		functor(*chunk);
+		functor(*block);
 	}
 }

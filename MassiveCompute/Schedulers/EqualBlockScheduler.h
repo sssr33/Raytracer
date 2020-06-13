@@ -18,7 +18,7 @@ private:
 		void operator()();
 
 	private:
-		Chunk chunk;
+		Block block;
 		BaseFunctor functor;
 	};
 };

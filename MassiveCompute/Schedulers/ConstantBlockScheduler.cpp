@@ -11,7 +11,7 @@ void ConstantBlockScheduler::operator()(Image& img, BaseFunctor functor, size_t 
 	BlockQueue blockQueue(img, maxBlockWidth, maxBlockHeight);
 	size_t threadsX = Helpers::CeiledDiv(img.GetWidth(), maxBlockWidth);
 	size_t threadsY = Helpers::CeiledDiv(img.GetHeight(), maxBlockHeight);
-	size_t workerCount = (std::min)(threadsX * threadsY - 1, std::thread::hardware_concurrency() - 1);
+	size_t workerCount = (std::min)(threadsX * threadsY - 1, static_cast<size_t>(std::thread::hardware_concurrency() - 1));
 
 	workerFutures.reserve(workerCount);
 
@@ -33,12 +33,12 @@ void ConstantBlockScheduler::Main(BaseFunctor functor, BlockQueue& blockQueue)
 {
 	while (true)
 	{
-		std::optional<Chunk> chunk = blockQueue.Pop();
-		if (!chunk)
+		std::optional<Block> block = blockQueue.Pop();
+		if (!block)
 		{
 			return;
 		}
 
-		functor(*chunk);
+		functor(*block);
 	}
 }

@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-struct Chunk
+struct Block
 {
     size_t left = 0; // inclusive
     size_t top = 0; // inclusive

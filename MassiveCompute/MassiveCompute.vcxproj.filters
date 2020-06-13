@@ -9,9 +9,9 @@
     <ClCompile Include="Schedulers\BlockQueue.cpp" />
     <ClCompile Include="Schedulers\ConstantBlockSchedulerWithThreads.cpp" />
     <ClCompile Include="Schedulers\ConstantBlockScheduler.cpp" />
+    <ClCompile Include="ImageBlockIndex.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Chunk.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="BaseFunctor.h" />
     <ClInclude Include="Schedulers\StealingBlockScheduler.h" />
@@ -20,5 +20,7 @@
     <ClInclude Include="Schedulers\BlockQueue.h" />
     <ClInclude Include="Schedulers\ConstantBlockSchedulerWithThreads.h" />
     <ClInclude Include="Schedulers\ConstantBlockScheduler.h" />
+    <ClInclude Include="Block.h" />
+    <ClInclude Include="ImageBlockIndex.h" />
   </ItemGroup>
 </Project>

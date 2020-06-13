@@ -1,4 +1,5 @@
 #include "BlockQueue.h"
+#include "../Helpers.h"
 
 #include <algorithm>
 
@@ -8,7 +9,7 @@ BlockQueue::BlockQueue(Image& img, size_t maxBlockWidth, size_t maxBlockHeight)
 	, image(&img)
 {}
 
-std::optional<Chunk> BlockQueue::Pop()
+std::optional<Block> BlockQueue::Pop()
 {
 	std::lock_guard<std::mutex> lk(this->mtx);
 
@@ -17,17 +18,17 @@ std::optional<Chunk> BlockQueue::Pop()
 		return std::nullopt;
 	}
 
-	std::optional<Chunk> chunk = this->image->GetChunk(this->left, this->top, this->maxBlockWidth, this->maxBlockHeight);
+	std::optional<Block> block = this->image->GetBlock(this->left, this->top, this->maxBlockWidth, this->maxBlockHeight);
 
-	if (!chunk)
+	if (!block)
 	{
 		this->left = 0;
 		this->top += this->maxBlockHeight;
 
-		chunk = this->image->GetChunk(this->left, this->top, this->maxBlockWidth, this->maxBlockHeight);
+		block = this->image->GetBlock(this->left, this->top, this->maxBlockWidth, this->maxBlockHeight);
 	}
 
 	this->left += this->maxBlockWidth;
 
-	return chunk;
+	return block;
 }

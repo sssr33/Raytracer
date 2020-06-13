@@ -160,6 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Helpers.cpp" />
+    <ClCompile Include="ImageBlockIndex.cpp" />
     <ClCompile Include="Schedulers\BlockQueue.cpp" />
     <ClCompile Include="Schedulers\ConstantBlockScheduler.cpp" />
     <ClCompile Include="Schedulers\EqualBlockScheduler.cpp" />
@@ -170,8 +171,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseFunctor.h" />
-    <ClInclude Include="Chunk.h" />
+    <ClInclude Include="Block.h" />
     <ClInclude Include="Helpers.h" />
+    <ClInclude Include="ImageBlockIndex.h" />
     <ClInclude Include="Schedulers\BlockQueue.h" />
     <ClInclude Include="Schedulers\ConstantBlockScheduler.h" />
     <ClInclude Include="Schedulers\EqualBlockScheduler.h" />

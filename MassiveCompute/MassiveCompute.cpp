@@ -6,6 +6,7 @@
 #include "Schedulers/EqualBlockScheduler.h"
 #include "Schedulers/ConstantBlockScheduler.h"
 #include "Schedulers/ConstantBlockSchedulerWithThreads.h"
+#include "Helpers.h"
 
 #include <iostream>
 #include <cstdint>
@@ -23,18 +24,18 @@
 
 struct Functor
 {
-    void operator()(const Chunk &chunk)
+    void operator()(const Block& block)
     {
-        for (size_t y = chunk.top; y < chunk.bottom; y++)
+        for (size_t y = block.top; y < block.bottom; y++)
         {
-            float* dst = chunk.image + y * chunk.imageWidth;
+            float* dst = block.image + y * block.imageWidth;
 
-            for (size_t x = chunk.left; x < chunk.right; x++)
+            for (size_t x = block.left; x < block.right; x++)
             {
                 for (int i = 0; i < 1000; i++)
                 {
-                    float u = static_cast<float>(x) / static_cast<float>(chunk.imageWidth);
-                    float v = static_cast<float>(y) / static_cast<float>(chunk.imageHeight);
+                    float u = static_cast<float>(x) / static_cast<float>(block.imageWidth);
+                    float v = static_cast<float>(y) / static_cast<float>(block.imageHeight);
 
                     float val = u * v;// std::cosf(u) + std::sinf(v) + std::tanf(u);
 
@@ -88,7 +89,7 @@ Image GetExpected(size_t width, size_t height, BaseFunctor functor)
 
     auto img = Image(width, height);
 
-    functor(*img.GetChunk(0, 0, width, height));
+    functor(*img.GetBlock(0, 0, width, height));
 
     return img;
 }

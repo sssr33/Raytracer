@@ -1,22 +1,22 @@
 #pragma once
 #include "../Image.h"
-
-#include <mutex>
+#include "../ImageBlockIndex.h"
 
 class BlockQueue
 {
 public:
-	BlockQueue() = default;
 	BlockQueue(Image& img, size_t maxBlockWidth, size_t maxBlockHeight);
+
+	bool Empty() const;
+	size_t Size() const;
 
 	std::optional<Block> Pop();
 
-private:
-	const size_t maxBlockWidth = 0;
-	const size_t maxBlockHeight = 0;
+	// divides the queue into two parts. Returned queue contains items from middle to end.
+	BlockQueue SliceBack(size_t maxItemCount);
 
-	std::mutex mtx;
-	size_t left = 0;
-	size_t top = 0;
-	Image* image = nullptr;
+private:
+	ImageBlockIndex blockIdx;
+	size_t curBlockIdx = 0;
+	size_t endBlockIdx = 0; // block behind last valid index
 };

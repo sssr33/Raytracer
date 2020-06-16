@@ -2,33 +2,63 @@
 #include "../Helpers.h"
 
 #include <algorithm>
+#include <cassert>
 
 BlockQueue::BlockQueue(Image& img, size_t maxBlockWidth, size_t maxBlockHeight)
-	: maxBlockWidth((std::min)(maxBlockWidth, img.GetWidth()))
-	, maxBlockHeight((std::min)(maxBlockHeight, img.GetHeight()))
-	, image(&img)
+	: blockIdx(
+		img,
+		(std::min)(maxBlockWidth, img.GetWidth()),
+		(std::min)(maxBlockHeight, img.GetHeight())
+	)
+	, endBlockIdx(blockIdx.GetBlockCount())
 {}
+
+bool BlockQueue::Empty() const
+{
+	bool empty = this->curBlockIdx >= this->endBlockIdx;
+	return empty;
+}
+
+size_t BlockQueue::Size() const
+{
+	if (this->Empty())
+	{
+		return 0;
+	}
+
+	size_t size = this->endBlockIdx - this->curBlockIdx;
+	return size;
+}
 
 std::optional<Block> BlockQueue::Pop()
 {
-	std::lock_guard<std::mutex> lk(this->mtx);
-
-	if (this->top >= this->image->GetHeight())
+	if (this->Empty())
 	{
 		return std::nullopt;
 	}
 
-	std::optional<Block> block = this->image->GetBlock(this->left, this->top, this->maxBlockWidth, this->maxBlockHeight);
+	std::optional<Block> block = this->blockIdx.GetBlock(this->curBlockIdx);
+	this->curBlockIdx++;
 
-	if (!block)
-	{
-		this->left = 0;
-		this->top += this->maxBlockHeight;
-
-		block = this->image->GetBlock(this->left, this->top, this->maxBlockWidth, this->maxBlockHeight);
-	}
-
-	this->left += this->maxBlockWidth;
+	assert(block);
 
 	return block;
+}
+
+BlockQueue BlockQueue::SliceBack(size_t maxItemCount)
+{
+	BlockQueue sliced(
+		this->blockIdx.GetImage(),
+		this->blockIdx.GetWidthBlockCount(),
+		this->blockIdx.GetHeightBlockCount()
+	);
+
+	size_t sliceSize = (std::min)(this->Size(), maxItemCount);
+
+	this->endBlockIdx -= sliceSize;
+
+	sliced.curBlockIdx = this->endBlockIdx;
+	sliced.endBlockIdx = sliced.curBlockIdx + sliceSize;
+
+	return sliced;
 }

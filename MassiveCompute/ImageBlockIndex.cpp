@@ -47,8 +47,8 @@ size_t ImageBlockIndex::GetBlockCount() const
 
 std::optional<Block> ImageBlockIndex::GetBlock(size_t idx)
 {
-	size_t x = this->GetWidthBlockCount() % idx;
-	size_t y = this->GetWidthBlockCount() / idx;
+	size_t x = idx % this->GetWidthBlockCount();
+	size_t y = idx / this->GetWidthBlockCount();
 
 	return this->GetBlock(x, y);
 }

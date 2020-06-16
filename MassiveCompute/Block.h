@@ -11,4 +11,8 @@ struct Block
     size_t imageWidth = 0;
     size_t imageHeight = 0;
     float* image = nullptr;
+
+    bool operator==(const Block& other) const;
+
+    bool SameParameters(const Block& other) const;
 };

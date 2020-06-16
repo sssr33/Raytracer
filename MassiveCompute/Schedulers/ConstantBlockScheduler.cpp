@@ -8,7 +8,7 @@
 void ConstantBlockScheduler::operator()(Image& img, BaseFunctor functor, size_t maxBlockWidth, size_t maxBlockHeight)
 {
 	std::vector<std::future<void>> workerFutures;
-	BlockQueue blockQueue(img, maxBlockWidth, maxBlockHeight);
+	SimpleBlockQueueMt blockQueue(img, maxBlockWidth, maxBlockHeight);
 	size_t threadsX = Helpers::CeiledDiv(img.GetWidth(), maxBlockWidth);
 	size_t threadsY = Helpers::CeiledDiv(img.GetHeight(), maxBlockHeight);
 	size_t workerCount = (std::min)(threadsX * threadsY - 1, static_cast<size_t>(std::thread::hardware_concurrency() - 1));
@@ -29,7 +29,7 @@ void ConstantBlockScheduler::operator()(Image& img, BaseFunctor functor, size_t 
 	}
 }
 
-void ConstantBlockScheduler::Main(BaseFunctor functor, BlockQueue& blockQueue)
+void ConstantBlockScheduler::Main(BaseFunctor functor, SimpleBlockQueueMt& blockQueue)
 {
 	while (true)
 	{

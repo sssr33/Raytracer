@@ -1,5 +1,5 @@
 #pragma once
-#include "BlockQueue.h"
+#include "SimpleBlockQueueMt.h"
 #include "../Image.h"
 #include "../BaseFunctor.h"
 
@@ -16,5 +16,5 @@ public:
 	void operator()(Image& img, BaseFunctor functor, size_t maxBlockWidth, size_t maxBlockHeight);
 
 private:
-	static void Main(BaseFunctor functor, BlockQueue& blockQueue);
+	static void Main(BaseFunctor functor, SimpleBlockQueueMt& blockQueue);
 };

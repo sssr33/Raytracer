@@ -1,5 +1,5 @@
 #pragma once
-#include "BlockQueue.h"
+#include "SimpleBlockQueueMt.h"
 #include "../Image.h"
 #include "../BaseFunctor.h"
 
@@ -32,5 +32,5 @@ private:
 
 	std::vector<std::thread> workers;
 
-	BlockQueue* blockQueue = nullptr;
+	SimpleBlockQueueMt* blockQueue = nullptr;
 };

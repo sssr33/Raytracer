@@ -32,7 +32,7 @@ struct Functor
 
             for (size_t x = block.left; x < block.right; x++)
             {
-                for (int i = 0; i < 1000; i++)
+                //for (int i = 0; i < 1000; i++)
                 {
                     float u = static_cast<float>(x) / static_cast<float>(block.imageWidth);
                     float v = static_cast<float>(y) / static_cast<float>(block.imageHeight);

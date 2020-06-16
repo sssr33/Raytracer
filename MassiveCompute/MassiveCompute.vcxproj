@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Block.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="ImageBlockIndex.cpp" />
     <ClCompile Include="Schedulers\BlockQueue.cpp" />
@@ -167,6 +168,7 @@
     <ClCompile Include="Schedulers\ConstantBlockSchedulerWithThreads.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="MassiveCompute.cpp" />
+    <ClCompile Include="Schedulers\SimpleBlockQueueMt.cpp" />
     <ClCompile Include="Schedulers\StealingBlockScheduler.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -179,6 +181,7 @@
     <ClInclude Include="Schedulers\EqualBlockScheduler.h" />
     <ClInclude Include="Schedulers\ConstantBlockSchedulerWithThreads.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="Schedulers\SimpleBlockQueueMt.h" />
     <ClInclude Include="Schedulers\StealingBlockScheduler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -2,11 +2,11 @@
 #include "Helpers.h"
 
 ImageBlockIndex::ImageBlockIndex(Image& img, size_t blockWidth, size_t blockHeight)
-	: img(img)
+	: img(&img)
 	, blockWidth(blockWidth)
 	, blockHeight(blockHeight)
-	, widthBlockCount(Helpers::CeiledDiv(this->img.GetWidth(), this->blockWidth))
-	, heightBlockCount(Helpers::CeiledDiv(this->img.GetHeight(), this->blockHeight))
+	, widthBlockCount(Helpers::CeiledDiv(this->img->GetWidth(), this->blockWidth))
+	, heightBlockCount(Helpers::CeiledDiv(this->img->GetHeight(), this->blockHeight))
 	, blockCount(this->widthBlockCount * this->heightBlockCount)
 {}
 
@@ -20,12 +20,12 @@ size_t ImageBlockIndex::GetBlockHeight() const
 	return this->blockHeight;
 }
 
-Image& ImageBlockIndex::GetImage()
+Image* ImageBlockIndex::GetImage()
 {
 	return this->img;
 }
 
-const Image& ImageBlockIndex::GetImage() const
+const Image* ImageBlockIndex::GetImage() const
 {
 	return this->img;
 }
@@ -55,8 +55,13 @@ std::optional<Block> ImageBlockIndex::GetBlock(size_t idx)
 
 std::optional<Block> ImageBlockIndex::GetBlock(size_t x, size_t y)
 {
+	if (!this->img)
+	{
+		return std::nullopt;
+	}
+
 	size_t left = x * this->blockWidth;
 	size_t top = y * this->blockHeight;
 
-	return this->img.GetBlock(left, top, this->blockWidth, this->blockHeight);
+	return this->img->GetBlock(left, top, this->blockWidth, this->blockHeight);
 }

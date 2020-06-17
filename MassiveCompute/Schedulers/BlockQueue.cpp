@@ -47,10 +47,12 @@ std::optional<Block> BlockQueue::Pop()
 
 BlockQueue BlockQueue::SliceBack(size_t maxItemCount)
 {
+	assert(this->blockIdx.GetImage() != nullptr);
+
 	BlockQueue sliced(
-		this->blockIdx.GetImage(),
-		this->blockIdx.GetWidthBlockCount(),
-		this->blockIdx.GetHeightBlockCount()
+		*this->blockIdx.GetImage(),
+		this->blockIdx.GetBlockWidth(),
+		this->blockIdx.GetBlockHeight()
 	);
 
 	size_t sliceSize = (std::min)(this->Size(), maxItemCount);

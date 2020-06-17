@@ -6,6 +6,7 @@
 #include "Schedulers/EqualBlockScheduler.h"
 #include "Schedulers/ConstantBlockScheduler.h"
 #include "Schedulers/ConstantBlockSchedulerWithThreads.h"
+#include "Schedulers/StealingBlockScheduler.h"
 #include "Helpers.h"
 
 #include <iostream>
@@ -61,20 +62,29 @@ int main()
     EqualBlockScheduler equalScheduler;
     ConstantBlockScheduler constanceScheduler;
     ConstantBlockSchedulerWithThreads constanceSchedulerWithThreads;
+    StealingBlockScheduler stealingScheduler;
 
     while (true)
     {
         Image equalImg(ImgWidth, ImgHeight);
         Image constantImg(ImgWidth, ImgHeight);
         Image constantWThreadsImg(ImgWidth, ImgHeight);
+        Image stealingImg(ImgWidth, ImgHeight);
 
         equalScheduler(equalImg, Functor());
         constanceScheduler(constantImg, Functor(), constantWidth, constantHeight);
         constanceSchedulerWithThreads(constantWThreadsImg, Functor(), constantWidth, constantHeight);
+        stealingScheduler(stealingImg, Functor(), constantWidth, constantHeight);
 
         bool equalSame = equalImg == expectedImg;
         bool constantSame = constantImg == expectedImg;
         bool constantWThreadsSame = constantWThreadsImg == expectedImg;
+        bool stealingSame = stealingImg == expectedImg;
+
+        assert(equalSame);
+        assert(constantSame);
+        assert(constantWThreadsSame);
+        assert(stealingSame);
 
         int stop = 324;
     }

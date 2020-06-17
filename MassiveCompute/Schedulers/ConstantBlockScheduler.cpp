@@ -1,6 +1,5 @@
 #include "ConstantBlockScheduler.h"
 
-#include <thread>
 #include <algorithm>
 #include <future>
 

@@ -19,9 +19,6 @@ public:
 	void operator()(Image& img, BaseFunctor functor, size_t maxBlockWidth, size_t maxBlockHeight);
 
 private:
-	void WorkerMain();
-	void Main(BaseFunctor functor);
-
 	std::mutex mtx;
 	std::condition_variable cvWorkers;
 	std::condition_variable cvMain;
@@ -33,4 +30,7 @@ private:
 	std::vector<std::thread> workers;
 
 	SimpleBlockQueueMt* blockQueue = nullptr;
+
+	void WorkerMain();
+	void Main(BaseFunctor functor);
 };

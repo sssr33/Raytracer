@@ -5,7 +5,10 @@
 class BlockQueue
 {
 public:
+	//BlockQueue() = default;
 	BlockQueue(Image& img, size_t maxBlockWidth, size_t maxBlockHeight);
+
+	//BlockQueue& operator=(const BlockQueue&) = default;
 
 	bool Empty() const;
 	size_t Size() const;

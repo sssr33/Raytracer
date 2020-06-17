@@ -31,11 +31,9 @@ ConstantBlockSchedulerWithThreads::~ConstantBlockSchedulerWithThreads()
 
 void ConstantBlockSchedulerWithThreads::operator()(Image& img, BaseFunctor functor, size_t maxBlockWidth, size_t maxBlockHeight)
 {
-	size_t threadsX = Helpers::CeiledDiv(img.GetWidth(), maxBlockWidth);
-	size_t threadsY = Helpers::CeiledDiv(img.GetHeight(), maxBlockHeight);
-	size_t workerCount = (std::min)(threadsX * threadsY - 1, this->workers.size());
-
 	SimpleBlockQueueMt blockQueueForRun(img, maxBlockWidth, maxBlockHeight);
+	size_t workerCount = (std::min)(blockQueueForRun.Size() - 1, this->workers.size());
+
 	this->blockQueue = &blockQueueForRun;
 
 	{

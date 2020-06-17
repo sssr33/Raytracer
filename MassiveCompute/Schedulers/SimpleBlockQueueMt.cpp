@@ -8,6 +8,12 @@ SimpleBlockQueueMt::SimpleBlockQueueMt(Image& img, size_t maxBlockWidth, size_t 
 	: queue(img, maxBlockWidth, maxBlockHeight)
 {}
 
+size_t SimpleBlockQueueMt::Size() const
+{
+	std::lock_guard<std::mutex> lk(this->mtx);
+	return this->queue.Size();
+}
+
 std::optional<Block> SimpleBlockQueueMt::Pop()
 {
 	std::lock_guard<std::mutex> lk(this->mtx);

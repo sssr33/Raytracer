@@ -49,7 +49,7 @@ struct Functor
 
 Image GetExpected(size_t width, size_t height, BaseFunctor functor);
 
-int main()
+int MassiveComputeTest()
 {
     const size_t ImgHeight = 1080;
     const size_t ImgWidth = (ImgHeight * 16) / 9;

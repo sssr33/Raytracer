@@ -2,30 +2,105 @@
 
 #include <stdexcept>
 #include <mutex>
+#include <utility>
+#include <cassert>
 
 const std::wstring Window::WndClassName = L"RaytraceWindow";
 
-Window::Window()
+Window::Window(const std::wstring& title)
     : wndReg(Window::GetWndRegistration())
-{}
-
-void Window::CreateWnd()
 {
+    this->hwnd.reset(CreateWindowW(Window::WndClassName.c_str(), title.c_str(), WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, Window::GetHInstance(), this));
 
+    if (!this->hwnd)
+    {
+        throw std::exception();
+    }
+
+    ShowWindow(this->hwnd.get(), SW_SHOW);
+    UpdateWindow(this->hwnd.get());
+}
+
+Window::Window(Window&& other) noexcept
+{
+    swap(*this, other);
+}
+
+Window& Window::operator=(Window other) noexcept
+{
+    swap(*this, other);
+    return *this;
+}
+
+void swap(Window& a, Window& b) noexcept
+{
+    using std::swap;
+    swap(a.wndReg, b.wndReg);
+    swap(a.hwnd, b.hwnd);
+    swap(a.quit, b.quit);
+
+    // swap <GWLP_USERDATA> for both windows so that they can to use right <Window> instance in theirs <WndProc>
+
+    if (a.hwnd)
+    {
+        SetWindowLongPtrW(a.hwnd.get(), GWLP_USERDATA, reinterpret_cast<LONG_PTR>(&a));
+    }
+
+    if (b.hwnd)
+    {
+        SetWindowLongPtrW(b.hwnd.get(), GWLP_USERDATA, reinterpret_cast<LONG_PTR>(&b));
+    }
+}
+
+std::variant<Window::Nothing, Window::Quit> Window::ProcessMessages(size_t maxToProcess)
+{
+    MSG msg = {};
+
+    for (size_t i = 0; i < maxToProcess && PeekMessageW(&msg, this->hwnd.get(), 0, 0, PM_REMOVE); i++)
+    {
+        // Translate the message and dispatch it to WindowProc()
+        TranslateMessage(&msg);
+        DispatchMessageW(&msg);
+    }
+
+    if (this->quit)
+    {
+        return Quit();
+    }
+
+    return Nothing();
 }
 
 LRESULT Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-    return DefWindowProcW(hwnd, msg, wparam, lparam);
+    Window* wnd = reinterpret_cast<Window*>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
+
+    switch (msg)
+    {
+    case WM_CREATE:
+    {
+        LPCREATESTRUCTW createParams = reinterpret_cast<LPCREATESTRUCTW>(lparam);
+        SetWindowLongPtrW(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(createParams->lpCreateParams));
+
+        break;
+    }
+    case WM_DESTROY:
+        assert(wnd);
+        // use this instead of <PostQuitMessage> because it posts message not for specific window and then any window on thread can peek it
+        wnd->quit = true;
+        break;
+    default:
+        return DefWindowProcW(hwnd, msg, wparam, lparam);
+    }
+
+    return 0;
 }
 
 HINSTANCE Window::GetHInstance()
 {
     return GetModuleHandle(NULL);
 }
-
-
-
 
 std::shared_ptr<Window::WndClassRegistration> Window::GetWndRegistration()
 {
@@ -43,6 +118,9 @@ std::shared_ptr<Window::WndClassRegistration> Window::GetWndRegistration()
 
     return reg;
 }
+
+
+
 
 Window::WndClassRegistration::WndClassRegistration()
 {
@@ -93,4 +171,12 @@ void Window::WndClassRegistration::Unregister()
             throw std::exception();
         }
     }
+}
+
+
+
+
+void Window::HwndDeleter::operator()(HWND hwnd)
+{
+    DestroyWindow(hwnd);
 }

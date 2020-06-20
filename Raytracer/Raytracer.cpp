@@ -5,20 +5,41 @@
 #include "Window.h"
 #include <MassiveCompute/MassiveComputeTest.h>
 
+template <class _Ty, class... _Types>
+constexpr bool is(const std::variant<_Types...>& _Var) noexcept
+{
+    return std::holds_alternative<_Ty>(_Var);
+}
+
 int main()
 {
     //MassiveComputeTest();
 
     {
-        Window wnd;
-        Window wnd2;
-    }
+        Window wnd(L"wnd 1");
+        Window wnd2(L"wnd 2");
 
-    {
-        Window wnd;
-        Window wnd2;
+        bool wndActive = true;
+        bool wnd2Active = true;
+
+        int count = 0;
+
+        while (wndActive || wnd2Active)
+        {
+            wndActive = !is<Window::Quit>(wnd.ProcessMessages());
+            wnd2Active = !is<Window::Quit>(wnd2.ProcessMessages());
+
+            if (!wndActive)
+            {
+                int stop = 432;
+            }
+
+            if (!wnd2Active)
+            {
+                int stop = 432;
+            }
+        }
     }
-    
 
 
     std::cout << "Hello World!\n";

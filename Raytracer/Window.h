@@ -2,12 +2,25 @@
 
 #include <string>
 #include <memory>
+#include <type_traits>
+#include <variant>
 #include <Windows.h>
 
 class Window
 {
 public:
-	Window();
+	struct Nothing {};
+	struct Quit {};
+
+	Window(const std::wstring& title = L"");
+	Window(const Window&) = delete;
+	Window(Window&& other) noexcept;
+
+	Window& operator=(Window other) noexcept;
+
+	friend void swap(Window& a, Window& b) noexcept;
+
+	std::variant<Nothing, Quit> ProcessMessages(size_t maxToProcess = 10);
 
 private:
 	class WndClassRegistration
@@ -19,13 +32,18 @@ private:
 		void Unregister();
 	};
 
-	static const std::wstring WndClassName;
-
-	std::shared_ptr<WndClassRegistration> wndReg;
-
-	void CreateWnd();
+	struct HwndDeleter
+	{
+		void operator()(HWND hwnd);
+	};
 
 	static LRESULT WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	static HINSTANCE GetHInstance();
 	static std::shared_ptr<WndClassRegistration> GetWndRegistration();
+
+	static const std::wstring WndClassName;
+
+	std::shared_ptr<WndClassRegistration> wndReg;
+	std::unique_ptr<std::remove_pointer_t<HWND>, HwndDeleter> hwnd;
+	bool quit = false;
 };

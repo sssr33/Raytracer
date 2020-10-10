@@ -1,10 +1,11 @@
 #include "StealingBlockScheduler.h"
-#include "../Helpers.h"
 
 #include <algorithm>
 #include <future>
 #include <cassert>
 #include <atomic>
+#include <iterator>
+#include <Helpers/Math.h>
 
 void StealingBlockScheduler::operator()(Image& img, BaseFunctor functor, size_t maxBlockWidth, size_t maxBlockHeight)
 {
@@ -137,7 +138,7 @@ BlockQueue StealingBlockScheduler::StealingBlockQueue::StealHalf()
 	std::lock_guard<std::mutex> lk(this->mtx);
 	size_t size = this->blockQueue.Size();
 	// use CeiledDiv to steal greater part for child queue which will be processed soon
-	size_t half = Helpers::CeiledDiv(size, 2);
+	size_t half = Helpers::Math::CeiledDiv(size, 2);
 	BlockQueue otherQueue = this->blockQueue.SliceBack(half);
 
 	return otherQueue;

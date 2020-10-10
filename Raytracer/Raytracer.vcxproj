@@ -171,6 +171,9 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Helpers\Helpers.vcxproj">
+      <Project>{50d23176-85f0-4983-9df8-fa10bd814d19}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\MassiveCompute\MassiveCompute.vcxproj">
       <Project>{bda7edac-e155-4dff-919d-759050bace9a}</Project>
     </ProjectReference>

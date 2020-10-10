@@ -1,12 +1,13 @@
 #include "ImageBlockIndex.h"
-#include "Helpers.h"
+
+#include <Helpers/Math.h>
 
 ImageBlockIndex::ImageBlockIndex(Image& img, size_t blockWidth, size_t blockHeight)
 	: img(&img)
 	, blockWidth(blockWidth)
 	, blockHeight(blockHeight)
-	, widthBlockCount(Helpers::CeiledDiv(this->img->GetWidth(), this->blockWidth))
-	, heightBlockCount(Helpers::CeiledDiv(this->img->GetHeight(), this->blockHeight))
+	, widthBlockCount(Helpers::Math::CeiledDiv(this->img->GetWidth(), this->blockWidth))
+	, heightBlockCount(Helpers::Math::CeiledDiv(this->img->GetHeight(), this->blockHeight))
 	, blockCount(this->widthBlockCount * this->heightBlockCount)
 {}
 

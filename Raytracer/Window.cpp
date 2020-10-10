@@ -72,6 +72,11 @@ std::variant<Window::Nothing, Window::Quit> Window::ProcessMessages(size_t maxTo
     return Nothing();
 }
 
+Arg::MsgProcessed Window::ProcessMessage(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+    return Arg::MsgProcessed(false);
+}
+
 LRESULT Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     Window* wnd = reinterpret_cast<Window*>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
@@ -91,7 +96,14 @@ LRESULT Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         wnd->quit = true;
         break;
     default:
-        return DefWindowProcW(hwnd, msg, wparam, lparam);
+        if (wnd && wnd->ProcessMessage(hwnd, msg, wparam, lparam))
+        {
+            return 0;
+        }
+        else
+        {
+            return DefWindowProcW(hwnd, msg, wparam, lparam);
+        }
     }
 
     return 0;

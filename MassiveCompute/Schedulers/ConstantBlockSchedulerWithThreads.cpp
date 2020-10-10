@@ -1,5 +1,4 @@
 #include "ConstantBlockSchedulerWithThreads.h"
-#include "../Helpers.h"
 
 #include <thread>
 #include <algorithm>

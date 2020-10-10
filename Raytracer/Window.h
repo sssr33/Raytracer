@@ -5,6 +5,12 @@
 #include <type_traits>
 #include <variant>
 #include <Windows.h>
+#include <Helpers/Strong.h>
+
+namespace Arg
+{
+	using MsgProcessed = Helpers::Strong<bool, struct MsgProcessedParameter>;
+}
 
 class Window
 {
@@ -36,6 +42,8 @@ private:
 	{
 		void operator()(HWND hwnd);
 	};
+
+	virtual Arg::MsgProcessed ProcessMessage(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 	static LRESULT WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	static HINSTANCE GetHInstance();

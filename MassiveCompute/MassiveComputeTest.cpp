@@ -7,7 +7,6 @@
 #include "Schedulers/ConstantBlockScheduler.h"
 #include "Schedulers/ConstantBlockSchedulerWithThreads.h"
 #include "Schedulers/StealingBlockScheduler.h"
-#include "Helpers.h"
 
 #include <iostream>
 #include <cstdint>

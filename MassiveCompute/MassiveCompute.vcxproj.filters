@@ -3,7 +3,6 @@
   <ItemGroup>
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="Schedulers\StealingBlockScheduler.cpp" />
-    <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="Schedulers\EqualBlockScheduler.cpp" />
     <ClCompile Include="Schedulers\BlockQueue.cpp" />
     <ClCompile Include="Schedulers\ConstantBlockSchedulerWithThreads.cpp" />
@@ -17,7 +16,6 @@
     <ClInclude Include="Image.h" />
     <ClInclude Include="BaseFunctor.h" />
     <ClInclude Include="Schedulers\StealingBlockScheduler.h" />
-    <ClInclude Include="Helpers.h" />
     <ClInclude Include="Schedulers\EqualBlockScheduler.h" />
     <ClInclude Include="Schedulers\BlockQueue.h" />
     <ClInclude Include="Schedulers\ConstantBlockSchedulerWithThreads.h" />

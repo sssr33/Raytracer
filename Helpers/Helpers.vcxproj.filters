@@ -3,8 +3,17 @@
   <ItemGroup>
     <ClInclude Include="Math.h" />
     <ClInclude Include="Strong.h" />
+    <ClInclude Include="Point2D.h" />
+    <ClInclude Include="Size2D.h" />
+    <ClInclude Include="GdiObjectDeleter.h" />
+    <ClInclude Include="is.h" />
+    <ClInclude Include="GdiDcDeleter.h" />
+    <ClInclude Include="GdiDcRelease.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math.cpp" />
+    <ClCompile Include="GdiObjectDeleter.cpp" />
+    <ClCompile Include="GdiDcDeleter.cpp" />
+    <ClCompile Include="GdiDcRelease.cpp" />
   </ItemGroup>
 </Project>

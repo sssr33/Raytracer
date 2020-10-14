@@ -19,10 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GdiDcDeleter.cpp" />
+    <ClCompile Include="GdiDcRelease.cpp" />
+    <ClCompile Include="GdiObjectDeleter.cpp" />
     <ClCompile Include="Math.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GdiDcDeleter.h" />
+    <ClInclude Include="GdiDcRelease.h" />
+    <ClInclude Include="GdiObjectDeleter.h" />
+    <ClInclude Include="is.h" />
     <ClInclude Include="Math.h" />
+    <ClInclude Include="Point2D.h" />
+    <ClInclude Include="Size2D.h" />
     <ClInclude Include="Strong.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

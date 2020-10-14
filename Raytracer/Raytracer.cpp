@@ -1,20 +1,19 @@
 // Raytracer.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include <iostream>
 #include "Window.h"
-#include <MassiveCompute/MassiveComputeTest.h>
+#include "GameWindow.h"
+#include "RayTraceWindowHandler.h"
 
-template <class _Ty, class... _Types>
-constexpr bool is(const std::variant<_Types...>& _Var) noexcept
-{
-    return std::holds_alternative<_Ty>(_Var);
-}
+#include <iostream>
+#include <Helpers/is.h>
+#include <MassiveCompute/MassiveComputeTest.h>
 
 int main()
 {
+    RayTraceWindowHandler rayTraceHandler;
     // https://devblogs.microsoft.com/oldnewthing/20050217-00/?p=36423
-    Window wnd(L"Raytracer");
+    GameWindow wnd(rayTraceHandler, L"Raytracer");
 
     while (!is<Window::Quit>(wnd.ProcessMessages()))
     {

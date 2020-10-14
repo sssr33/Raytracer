@@ -7,8 +7,8 @@
 
 const std::wstring Window::WndClassName = L"RaytraceWindow";
 
-Window::Window(const std::wstring& title)
-    : wndReg(Window::GetWndRegistration())
+Window::Window(IWindowMessageHandler* msgHandler, const std::wstring& title)
+    : msgHandler(msgHandler), wndReg(Window::GetWndRegistration())
 {
     this->hwnd.reset(CreateWindowW(Window::WndClassName.c_str(), title.c_str(), WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, Window::GetHInstance(), this));
@@ -36,6 +36,7 @@ Window& Window::operator=(Window other) noexcept
 void swap(Window& a, Window& b) noexcept
 {
     using std::swap;
+    swap(a.msgHandler, b.msgHandler);
     swap(a.wndReg, b.wndReg);
     swap(a.hwnd, b.hwnd);
     swap(a.quit, b.quit);
@@ -51,6 +52,11 @@ void swap(Window& a, Window& b) noexcept
     {
         SetWindowLongPtrW(b.hwnd.get(), GWLP_USERDATA, reinterpret_cast<LONG_PTR>(&b));
     }
+}
+
+HWND Window::GetHWND() const
+{
+    return this->hwnd.get();
 }
 
 std::variant<Window::Nothing, Window::Quit> Window::ProcessMessages(size_t maxToProcess)
@@ -72,11 +78,6 @@ std::variant<Window::Nothing, Window::Quit> Window::ProcessMessages(size_t maxTo
     return Nothing();
 }
 
-Arg::MsgProcessed Window::ProcessMessage(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
-{
-    return Arg::MsgProcessed(false);
-}
-
 LRESULT Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     Window* wnd = reinterpret_cast<Window*>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
@@ -96,7 +97,7 @@ LRESULT Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
         wnd->quit = true;
         break;
     default:
-        if (wnd && wnd->ProcessMessage(hwnd, msg, wparam, lparam))
+        if (wnd && wnd->msgHandler && wnd->msgHandler->ProcessMessage(hwnd, msg, wparam, lparam))
         {
             return 0;
         }

@@ -3,8 +3,19 @@
   <ItemGroup>
     <ClCompile Include="Raytracer.cpp" />
     <ClCompile Include="Window.cpp" />
+    <ClCompile Include="GameWindow.cpp" />
+    <ClCompile Include="HDCBackBuffer.cpp" />
+    <ClCompile Include="SystemBackBufferLock.cpp" />
+    <ClCompile Include="RayTraceWindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
+    <ClInclude Include="GameWindow.h" />
+    <ClInclude Include="IGameWindowHandler.h" />
+    <ClInclude Include="ISystemBackBuffer.h" />
+    <ClInclude Include="HDCBackBuffer.h" />
+    <ClInclude Include="SystemBackBufferLock.h" />
+    <ClInclude Include="RayTraceWindowHandler.h" />
+    <ClInclude Include="IWindowMessageHandler.h" />
   </ItemGroup>
 </Project>

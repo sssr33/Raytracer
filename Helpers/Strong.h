@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 namespace Helpers
 {
 	// based on https://www.fluentcpp.com/2016/12/08/strong-types-for-strong-interfaces/

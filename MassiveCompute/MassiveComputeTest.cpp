@@ -22,6 +22,40 @@
 #include <algorithm>
 #include <Windows.h>
 
+class ImageWithData : public Image
+{
+public:
+    ImageWithData() = default;
+    ImageWithData(size_t width, size_t height)
+        : Image(width, height)
+        , data(this->GetWidth() * this->GetHeight())
+    {}
+
+    bool operator==(const ImageWithData& other) const
+    {
+        bool equ = Image::operator==(other)
+            && this->data == other.data;
+    }
+
+    bool operator!=(const ImageWithData& other) const
+    {
+        return !this->operator==(other);
+    }
+
+    const float* GetData() const
+    {
+        return this->data.data();
+    }
+
+    float* GetData()
+    {
+        return this->data.data();
+    }
+
+private:
+    std::vector<float> data;
+};
+
 struct Functor
 {
     void operator()(const Block& block)
@@ -46,7 +80,7 @@ struct Functor
     }
 };
 
-Image GetExpected(size_t width, size_t height, BaseFunctor functor);
+ImageWithData GetExpected(size_t width, size_t height, BaseFunctor functor);
 
 int MassiveComputeTest()
 {
@@ -56,7 +90,7 @@ int MassiveComputeTest()
     size_t constantWidth = ImgWidth;
     size_t constantHeight = 1;
 
-    Image expectedImg = GetExpected(ImgWidth, ImgHeight, Functor());
+    ImageWithData expectedImg = GetExpected(ImgWidth, ImgHeight, Functor());
 
     EqualBlockScheduler equalScheduler;
     ConstantBlockScheduler constanceScheduler;
@@ -65,10 +99,10 @@ int MassiveComputeTest()
 
     while (true)
     {
-        Image equalImg(ImgWidth, ImgHeight);
-        Image constantImg(ImgWidth, ImgHeight);
-        Image constantWThreadsImg(ImgWidth, ImgHeight);
-        Image stealingImg(ImgWidth, ImgHeight);
+        ImageWithData equalImg(ImgWidth, ImgHeight);
+        ImageWithData constantImg(ImgWidth, ImgHeight);
+        ImageWithData constantWThreadsImg(ImgWidth, ImgHeight);
+        ImageWithData stealingImg(ImgWidth, ImgHeight);
 
         equalScheduler(equalImg, Functor());
         constanceScheduler(constantImg, Functor(), constantWidth, constantHeight);
@@ -89,14 +123,14 @@ int MassiveComputeTest()
     }
 }
 
-Image GetExpected(size_t width, size_t height, BaseFunctor functor)
+ImageWithData GetExpected(size_t width, size_t height, BaseFunctor functor)
 {
     if (!width || !height)
     {
-        return Image();
+        return ImageWithData();
     }
 
-    auto img = Image(width, height);
+    ImageWithData img = ImageWithData(width, height);
 
     functor(*img.GetBlock(0, 0, width, height));
 

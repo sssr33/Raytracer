@@ -38,24 +38,10 @@ const float* Image::GetData() const
     return this->data.data();
 }
 
-std::optional<Block> Image::GetBlock(size_t left, size_t top, size_t maxWidth, size_t maxHeight)
+std::optional<Block> Image::GetBlock(size_t left, size_t top, size_t maxWidth, size_t maxHeight) const
 {
-    auto block = this->GetBlockRect(left, top, maxWidth, maxHeight);
-    if (!block)
+    if (!this->width || !this->height)
     {
-        return std::nullopt;
-    }
-
-    block->image = this->data.data();
-
-    return block;
-}
-
-std::optional<Block> Image::GetBlockRect(size_t left, size_t top, size_t maxWidth, size_t maxHeight) const
-{
-    if (this->data.empty())
-    {
-        assert(!this->width && !this->height);
         return std::nullopt;
     }
 

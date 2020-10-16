@@ -15,14 +15,10 @@ public:
 
     size_t GetWidth() const;
     size_t GetHeight() const;
-    const float* GetData() const;
 
-    std::optional<Block> GetBlock(size_t left, size_t top, size_t maxWidth, size_t maxHeight);
+    std::optional<Block> GetBlock(size_t left, size_t top, size_t maxWidth, size_t maxHeight) const;
 
 private:
     size_t width = 0;
     size_t height = 0;
-    std::vector<float> data;
-
-    std::optional<Block> GetBlockRect(size_t left, size_t top, size_t maxWidth, size_t maxHeight) const;
 };

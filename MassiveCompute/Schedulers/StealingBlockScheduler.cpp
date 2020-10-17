@@ -11,6 +11,11 @@ namespace MassiveCompute
 {
 	void StealingBlockScheduler::operator()(Image& img, BaseFunctor functor, size_t maxBlockWidth, size_t maxBlockHeight)
 	{
+		if (img.Empty())
+		{
+			return;
+		}
+
 		BlockQueue blockQueue(img, maxBlockWidth, maxBlockHeight);
 		size_t workerCount = (std::min)(blockQueue.Size() - 1, static_cast<size_t>(std::thread::hardware_concurrency() - 1));
 		std::vector<std::shared_ptr<StealingBlockQueue>> poolQueues =

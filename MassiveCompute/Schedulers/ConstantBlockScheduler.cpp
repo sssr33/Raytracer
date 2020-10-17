@@ -7,6 +7,11 @@ namespace MassiveCompute
 {
 	void ConstantBlockScheduler::operator()(Image& img, BaseFunctor functor, size_t maxBlockWidth, size_t maxBlockHeight)
 	{
+		if (img.Empty())
+		{
+			return;
+		}
+
 		std::vector<std::future<void>> workerFutures;
 		SimpleBlockQueueMt blockQueue(img, maxBlockWidth, maxBlockHeight);
 		size_t workerCount = (std::min)(blockQueue.Size() - 1, static_cast<size_t>(std::thread::hardware_concurrency() - 1));

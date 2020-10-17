@@ -99,44 +99,47 @@ struct FunctorFactory
 
 ImageWithData GetExpected(size_t width, size_t height, std::function<MassiveCompute::BaseFunctor(ImageWithData&)> functorFactory);
 
-int MassiveComputeTest()
+void MassiveComputeTest()
 {
-    const size_t ImgHeight = 1080;
-    const size_t ImgWidth = (ImgHeight * 16) / 9;
-
-    size_t constantWidth = ImgWidth;
-    size_t constantHeight = 1;
-
-    const ImageWithData expectedImg = GetExpected(ImgWidth, ImgHeight, FunctorFactory());
-
-    MassiveCompute::EqualBlockScheduler equalScheduler;
-    MassiveCompute::ConstantBlockScheduler constantScheduler;
-    MassiveCompute::ConstantBlockSchedulerWithThreads constantSchedulerWithThreads;
-    MassiveCompute::StealingBlockScheduler stealingScheduler;
-
-    while (true)
+    for (size_t height = 0; height < 2161; height++)
     {
-        ImageWithData equalImg(ImgWidth, ImgHeight);
-        ImageWithData constantImg(ImgWidth, ImgHeight);
-        ImageWithData constantWThreadsImg(ImgWidth, ImgHeight);
-        ImageWithData stealingImg(ImgWidth, ImgHeight);
+        const size_t ImgHeight = height;
+        const size_t ImgWidth = (ImgHeight * 16) / 9;
 
-        equalScheduler(equalImg, Functor(equalImg));
-        constantScheduler(constantImg, Functor(constantImg), constantWidth, constantHeight);
-        constantSchedulerWithThreads(constantWThreadsImg, Functor(constantWThreadsImg), constantWidth, constantHeight);
-        stealingScheduler(stealingImg, Functor(stealingImg), constantWidth, constantHeight);
+        size_t constantWidth = ImgWidth;
+        size_t constantHeight = 1;
 
-        bool equalSame = equalImg == expectedImg;
-        bool constantSame = constantImg == expectedImg;
-        bool constantWThreadsSame = constantWThreadsImg == expectedImg;
-        bool stealingSame = stealingImg == expectedImg;
+        const ImageWithData expectedImg = GetExpected(ImgWidth, ImgHeight, FunctorFactory());
 
-        assert(equalSame);
-        assert(constantSame);
-        assert(constantWThreadsSame);
-        assert(stealingSame);
+        MassiveCompute::EqualBlockScheduler equalScheduler;
+        MassiveCompute::ConstantBlockScheduler constantScheduler;
+        MassiveCompute::ConstantBlockSchedulerWithThreads constantSchedulerWithThreads;
+        MassiveCompute::StealingBlockScheduler stealingScheduler;
 
-        int stop = 324;
+        //while (true)
+        {
+            ImageWithData equalImg(ImgWidth, ImgHeight);
+            ImageWithData constantImg(ImgWidth, ImgHeight);
+            ImageWithData constantWThreadsImg(ImgWidth, ImgHeight);
+            ImageWithData stealingImg(ImgWidth, ImgHeight);
+
+            equalScheduler(equalImg, Functor(equalImg));
+            constantScheduler(constantImg, Functor(constantImg), constantWidth, constantHeight);
+            constantSchedulerWithThreads(constantWThreadsImg, Functor(constantWThreadsImg), constantWidth, constantHeight);
+            stealingScheduler(stealingImg, Functor(stealingImg), constantWidth, constantHeight);
+
+            bool equalSame = equalImg == expectedImg;
+            bool constantSame = constantImg == expectedImg;
+            bool constantWThreadsSame = constantWThreadsImg == expectedImg;
+            bool stealingSame = stealingImg == expectedImg;
+
+            assert(equalSame);
+            assert(constantSame);
+            assert(constantWThreadsSame);
+            assert(stealingSame);
+
+            int stop = 324;
+        }
     }
 }
 

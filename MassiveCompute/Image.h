@@ -17,6 +17,7 @@ namespace MassiveCompute
 
         size_t GetWidth() const;
         size_t GetHeight() const;
+        bool Empty() const;
 
         std::optional<Block> GetBlock(size_t left, size_t top, size_t maxWidth, size_t maxHeight) const;
 

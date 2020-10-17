@@ -33,6 +33,12 @@ namespace MassiveCompute
         return this->height;
     }
 
+    bool Image::Empty() const
+    {
+        bool empty = this->width == 0 || this->height == 0;
+        return empty;
+    }
+
     std::optional<Block> Image::GetBlock(size_t left, size_t top, size_t maxWidth, size_t maxHeight) const
     {
         if (!this->width || !this->height)

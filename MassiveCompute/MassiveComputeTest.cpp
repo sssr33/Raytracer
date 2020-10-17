@@ -35,6 +35,8 @@ public:
     {
         bool equ = Image::operator==(other)
             && this->data == other.data;
+
+        return equ;
     }
 
     bool operator!=(const ImageWithData& other) const
@@ -58,11 +60,15 @@ private:
 
 struct Functor
 {
+    Functor(ImageWithData& img)
+        : img(img)
+    {}
+
     void operator()(const Block& block)
     {
         for (size_t y = block.top; y < block.bottom; y++)
         {
-            float* dst = block.image + y * block.imageWidth;
+            float* dst = img.get().GetData() + y * block.imageWidth;
 
             for (size_t x = block.left; x < block.right; x++)
             {
@@ -78,9 +84,20 @@ struct Functor
             }
         }
     }
+
+private:
+    std::reference_wrapper<ImageWithData> img;
 };
 
-ImageWithData GetExpected(size_t width, size_t height, BaseFunctor functor);
+struct FunctorFactory
+{
+    BaseFunctor operator()(ImageWithData& img)
+    {
+        return Functor(img);
+    }
+};
+
+ImageWithData GetExpected(size_t width, size_t height, std::function<BaseFunctor(ImageWithData&)> functorFactory);
 
 int MassiveComputeTest()
 {
@@ -90,7 +107,7 @@ int MassiveComputeTest()
     size_t constantWidth = ImgWidth;
     size_t constantHeight = 1;
 
-    ImageWithData expectedImg = GetExpected(ImgWidth, ImgHeight, Functor());
+    ImageWithData expectedImg = GetExpected(ImgWidth, ImgHeight, FunctorFactory());
 
     EqualBlockScheduler equalScheduler;
     ConstantBlockScheduler constanceScheduler;
@@ -104,10 +121,10 @@ int MassiveComputeTest()
         ImageWithData constantWThreadsImg(ImgWidth, ImgHeight);
         ImageWithData stealingImg(ImgWidth, ImgHeight);
 
-        equalScheduler(equalImg, Functor());
-        constanceScheduler(constantImg, Functor(), constantWidth, constantHeight);
-        constanceSchedulerWithThreads(constantWThreadsImg, Functor(), constantWidth, constantHeight);
-        stealingScheduler(stealingImg, Functor(), constantWidth, constantHeight);
+        equalScheduler(equalImg, Functor(equalImg));
+        constanceScheduler(constantImg, Functor(constantImg), constantWidth, constantHeight);
+        constanceSchedulerWithThreads(constantWThreadsImg, Functor(constantWThreadsImg), constantWidth, constantHeight);
+        stealingScheduler(stealingImg, Functor(stealingImg), constantWidth, constantHeight);
 
         bool equalSame = equalImg == expectedImg;
         bool constantSame = constantImg == expectedImg;
@@ -123,7 +140,7 @@ int MassiveComputeTest()
     }
 }
 
-ImageWithData GetExpected(size_t width, size_t height, BaseFunctor functor)
+ImageWithData GetExpected(size_t width, size_t height, std::function<BaseFunctor(ImageWithData&)> functorFactory)
 {
     if (!width || !height)
     {
@@ -132,7 +149,7 @@ ImageWithData GetExpected(size_t width, size_t height, BaseFunctor functor)
 
     ImageWithData img = ImageWithData(width, height);
 
-    functor(*img.GetBlock(0, 0, width, height));
+    functorFactory(img)(*img.GetBlock(0, 0, width, height));
 
     return img;
 }

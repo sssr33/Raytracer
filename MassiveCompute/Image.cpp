@@ -6,14 +6,12 @@
 Image::Image(size_t width, size_t height)
     : width(width)
     , height(height)
-    , data(this->width* this->height)
 {}
 
 bool Image::operator==(const Image& other) const
 {
     bool equ = this->width == other.width
-        && this->height == other.height
-        && this->data == other.data;
+        && this->height == other.height;
 
     return equ;
 }
@@ -31,11 +29,6 @@ size_t Image::GetWidth() const
 size_t Image::GetHeight() const
 {
     return this->height;
-}
-
-const float* Image::GetData() const
-{
-    return this->data.data();
 }
 
 std::optional<Block> Image::GetBlock(size_t left, size_t top, size_t maxWidth, size_t maxHeight) const

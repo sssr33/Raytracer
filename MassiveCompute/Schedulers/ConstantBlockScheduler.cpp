@@ -3,38 +3,41 @@
 #include <algorithm>
 #include <future>
 
-void ConstantBlockScheduler::operator()(Image& img, BaseFunctor functor, size_t maxBlockWidth, size_t maxBlockHeight)
+namespace MassiveCompute
 {
-	std::vector<std::future<void>> workerFutures;
-	SimpleBlockQueueMt blockQueue(img, maxBlockWidth, maxBlockHeight);
-	size_t workerCount = (std::min)(blockQueue.Size() - 1, static_cast<size_t>(std::thread::hardware_concurrency() - 1));
-
-	workerFutures.reserve(workerCount);
-
-	for (size_t i = 0; i < workerCount; i++)
+	void ConstantBlockScheduler::operator()(Image& img, BaseFunctor functor, size_t maxBlockWidth, size_t maxBlockHeight)
 	{
-		std::future<void> fut = std::async(std::launch::async, &ConstantBlockScheduler::Main, functor, std::ref(blockQueue));
-		workerFutures.push_back(std::move(fut));
-	}
+		std::vector<std::future<void>> workerFutures;
+		SimpleBlockQueueMt blockQueue(img, maxBlockWidth, maxBlockHeight);
+		size_t workerCount = (std::min)(blockQueue.Size() - 1, static_cast<size_t>(std::thread::hardware_concurrency() - 1));
 
-	ConstantBlockScheduler::Main(functor, blockQueue);
+		workerFutures.reserve(workerCount);
 
-	for (auto& fut : workerFutures)
-	{
-		fut.get();
-	}
-}
-
-void ConstantBlockScheduler::Main(BaseFunctor functor, SimpleBlockQueueMt& blockQueue)
-{
-	while (true)
-	{
-		std::optional<Block> block = blockQueue.Pop();
-		if (!block)
+		for (size_t i = 0; i < workerCount; i++)
 		{
-			return;
+			std::future<void> fut = std::async(std::launch::async, &ConstantBlockScheduler::Main, functor, std::ref(blockQueue));
+			workerFutures.push_back(std::move(fut));
 		}
 
-		functor(*block);
+		ConstantBlockScheduler::Main(functor, blockQueue);
+
+		for (auto& fut : workerFutures)
+		{
+			fut.get();
+		}
+	}
+
+	void ConstantBlockScheduler::Main(BaseFunctor functor, SimpleBlockQueueMt& blockQueue)
+	{
+		while (true)
+		{
+			std::optional<Block> block = blockQueue.Pop();
+			if (!block)
+			{
+				return;
+			}
+
+			functor(*block);
+		}
 	}
 }

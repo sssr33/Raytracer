@@ -10,11 +10,14 @@
 #include <functional>
 #include <memory>
 
-class ConstantBlockScheduler
+namespace MassiveCompute
 {
-public:
-	void operator()(Image& img, BaseFunctor functor, size_t maxBlockWidth, size_t maxBlockHeight);
+	class ConstantBlockScheduler
+	{
+	public:
+		void operator()(Image& img, BaseFunctor functor, size_t maxBlockWidth, size_t maxBlockHeight);
 
-private:
-	static void Main(BaseFunctor functor, SimpleBlockQueueMt& blockQueue);
-};
+	private:
+		static void Main(BaseFunctor functor, SimpleBlockQueueMt& blockQueue);
+	};
+}

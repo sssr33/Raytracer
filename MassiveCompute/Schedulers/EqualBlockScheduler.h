@@ -4,21 +4,24 @@
 
 #include <functional>
 
-class EqualBlockScheduler
+namespace MassiveCompute
 {
-public:
-	void operator()(Image& img, BaseFunctor functor);
-
-private:
-	class ThreadFunctor
+	class EqualBlockScheduler
 	{
 	public:
-		ThreadFunctor(Image& img, BaseFunctor functor, size_t y, size_t height);
-
-		void operator()();
+		void operator()(Image& img, BaseFunctor functor);
 
 	private:
-		Block block;
-		BaseFunctor functor;
+		class ThreadFunctor
+		{
+		public:
+			ThreadFunctor(Image& img, BaseFunctor functor, size_t y, size_t height);
+
+			void operator()();
+
+		private:
+			Block block;
+			BaseFunctor functor;
+		};
 	};
-};
+}

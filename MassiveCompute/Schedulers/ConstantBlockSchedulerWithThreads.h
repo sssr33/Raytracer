@@ -10,27 +10,30 @@
 #include <functional>
 #include <memory>
 
-class ConstantBlockSchedulerWithThreads
+namespace MassiveCompute
 {
-public:
-	ConstantBlockSchedulerWithThreads();
-	~ConstantBlockSchedulerWithThreads();
+	class ConstantBlockSchedulerWithThreads
+	{
+	public:
+		ConstantBlockSchedulerWithThreads();
+		~ConstantBlockSchedulerWithThreads();
 
-	void operator()(Image& img, BaseFunctor functor, size_t maxBlockWidth, size_t maxBlockHeight);
+		void operator()(Image& img, BaseFunctor functor, size_t maxBlockWidth, size_t maxBlockHeight);
 
-private:
-	std::mutex mtx;
-	std::condition_variable cvWorkers;
-	std::condition_variable cvMain;
-	size_t workersStart = 0;
-	size_t workersActive = 0;
-	bool exit = false;
-	BaseFunctor functor;
+	private:
+		std::mutex mtx;
+		std::condition_variable cvWorkers;
+		std::condition_variable cvMain;
+		size_t workersStart = 0;
+		size_t workersActive = 0;
+		bool exit = false;
+		BaseFunctor functor;
 
-	std::vector<std::thread> workers;
+		std::vector<std::thread> workers;
 
-	SimpleBlockQueueMt* blockQueue = nullptr;
+		SimpleBlockQueueMt* blockQueue = nullptr;
 
-	void WorkerMain();
-	void Main(BaseFunctor functor);
-};
+		void WorkerMain();
+		void Main(BaseFunctor functor);
+	};
+}

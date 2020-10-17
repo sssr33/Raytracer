@@ -3,4 +3,7 @@
 
 #include <functional>
 
-using BaseFunctor = std::function<void(const Block&)>;
+namespace MassiveCompute
+{
+    using BaseFunctor = std::function<void(const Block&)>;
+}

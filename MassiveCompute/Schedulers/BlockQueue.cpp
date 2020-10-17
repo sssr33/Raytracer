@@ -3,63 +3,66 @@
 #include <algorithm>
 #include <cassert>
 
-BlockQueue::BlockQueue(Image& img, size_t maxBlockWidth, size_t maxBlockHeight)
-	: blockIdx(
-		img,
-		(std::min)(maxBlockWidth, img.GetWidth()),
-		(std::min)(maxBlockHeight, img.GetHeight())
-	)
-	, endBlockIdx(blockIdx.GetBlockCount())
-{}
-
-bool BlockQueue::Empty() const
+namespace MassiveCompute
 {
-	bool empty = this->curBlockIdx >= this->endBlockIdx;
-	return empty;
-}
+	BlockQueue::BlockQueue(Image& img, size_t maxBlockWidth, size_t maxBlockHeight)
+		: blockIdx(
+			img,
+			(std::min)(maxBlockWidth, img.GetWidth()),
+			(std::min)(maxBlockHeight, img.GetHeight())
+		)
+		, endBlockIdx(blockIdx.GetBlockCount())
+	{}
 
-size_t BlockQueue::Size() const
-{
-	if (this->Empty())
+	bool BlockQueue::Empty() const
 	{
-		return 0;
+		bool empty = this->curBlockIdx >= this->endBlockIdx;
+		return empty;
 	}
 
-	size_t size = this->endBlockIdx - this->curBlockIdx;
-	return size;
-}
-
-std::optional<Block> BlockQueue::Pop()
-{
-	if (this->Empty())
+	size_t BlockQueue::Size() const
 	{
-		return std::nullopt;
+		if (this->Empty())
+		{
+			return 0;
+		}
+
+		size_t size = this->endBlockIdx - this->curBlockIdx;
+		return size;
 	}
 
-	std::optional<Block> block = this->blockIdx.GetBlock(this->curBlockIdx);
-	this->curBlockIdx++;
+	std::optional<Block> BlockQueue::Pop()
+	{
+		if (this->Empty())
+		{
+			return std::nullopt;
+		}
 
-	assert(block);
+		std::optional<Block> block = this->blockIdx.GetBlock(this->curBlockIdx);
+		this->curBlockIdx++;
 
-	return block;
-}
+		assert(block);
 
-BlockQueue BlockQueue::SliceBack(size_t maxItemCount)
-{
-	assert(this->blockIdx.GetImage() != nullptr);
+		return block;
+	}
 
-	BlockQueue sliced(
-		*this->blockIdx.GetImage(),
-		this->blockIdx.GetBlockWidth(),
-		this->blockIdx.GetBlockHeight()
-	);
+	BlockQueue BlockQueue::SliceBack(size_t maxItemCount)
+	{
+		assert(this->blockIdx.GetImage() != nullptr);
 
-	size_t sliceSize = (std::min)(this->Size(), maxItemCount);
+		BlockQueue sliced(
+			*this->blockIdx.GetImage(),
+			this->blockIdx.GetBlockWidth(),
+			this->blockIdx.GetBlockHeight()
+		);
 
-	this->endBlockIdx -= sliceSize;
+		size_t sliceSize = (std::min)(this->Size(), maxItemCount);
 
-	sliced.curBlockIdx = this->endBlockIdx;
-	sliced.endBlockIdx = sliced.curBlockIdx + sliceSize;
+		this->endBlockIdx -= sliceSize;
 
-	return sliced;
+		sliced.curBlockIdx = this->endBlockIdx;
+		sliced.endBlockIdx = sliced.curBlockIdx + sliceSize;
+
+		return sliced;
+	}
 }

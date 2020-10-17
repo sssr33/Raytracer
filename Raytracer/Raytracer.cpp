@@ -11,6 +11,8 @@
 
 int main()
 {
+    MassiveComputeTest();
+
     RayTraceWindowHandler rayTraceHandler;
     // https://devblogs.microsoft.com/oldnewthing/20050217-00/?p=36423
     GameWindow wnd(rayTraceHandler, L"Raytracer");

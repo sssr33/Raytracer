@@ -107,7 +107,7 @@ int MassiveComputeTest()
     size_t constantWidth = ImgWidth;
     size_t constantHeight = 1;
 
-    ImageWithData expectedImg = GetExpected(ImgWidth, ImgHeight, FunctorFactory());
+    const ImageWithData expectedImg = GetExpected(ImgWidth, ImgHeight, FunctorFactory());
 
     EqualBlockScheduler equalScheduler;
     ConstantBlockScheduler constanceScheduler;

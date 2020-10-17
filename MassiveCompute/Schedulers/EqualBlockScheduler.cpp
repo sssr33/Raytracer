@@ -2,6 +2,7 @@
 
 #include <future>
 #include <vector>
+#include <cassert>
 
 void EqualBlockScheduler::operator()(Image& img, BaseFunctor functor)
 {
@@ -19,8 +20,10 @@ void EqualBlockScheduler::operator()(Image& img, BaseFunctor functor)
 		threadFutures.push_back(std::move(fut));
 	}
 
+	assert(y <= img.GetHeight());
+
 	// run main thread
-	ThreadFunctor(img, functor, y, heightPerThread)();
+	ThreadFunctor(img, functor, y, img.GetHeight() - y)();
 
 	for (auto& fut : threadFutures)
 	{

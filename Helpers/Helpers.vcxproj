@@ -31,6 +31,7 @@
     <ClInclude Include="is.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Point2D.h" />
+    <ClInclude Include="PropagateConst.h" />
     <ClInclude Include="Size2D.h" />
     <ClInclude Include="Strong.h" />
   </ItemGroup>

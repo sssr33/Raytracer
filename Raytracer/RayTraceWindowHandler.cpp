@@ -1,4 +1,8 @@
 #include "RayTraceWindowHandler.h"
+#include "Image/BGRA.h"
+#include "Image/ImageView.h"
+
+#include <MassiveCompute/Schedulers/StealingBlockScheduler.h>
 
 void RayTraceWindowHandler::GameLoop(ISystemBackBuffer& backBuffer)
 {
@@ -20,25 +24,23 @@ void RayTraceWindowHandler::OnRepaint(ISystemBackBuffer& backBuffer)
 		return;
 	}
 
-	struct RGBA
-	{
-		uint8_t b, g, r, a;
-	};
+	BGRA<uint8_t>* pixels = reinterpret_cast<BGRA<uint8_t>*>(data.data);
+	ImageView<BGRA<uint8_t>> imageView(data.size.width, data.size.height, pixels);
 
-	RGBA* pixels = reinterpret_cast<RGBA*>(data.data);
-
-	for (uint32_t y = 0; y < data.size.height; y++)
+	for (size_t y = 0, height = imageView.GetHeight(); y < height; y++)
 	{
-		for (uint32_t x = 0; x < data.size.width; x++)
+		BGRA<uint8_t>* row = imageView.GetRow(y);
+
+		for (size_t x = 0, width = imageView.GetWidth(); x < width; x++)
 		{
-			RGBA pixel = {};
+			BGRA<uint8_t> pixel = {};
 
-			float val = (float)y / (float)data.size.height;
+			float val = (float)y / (float)height;
 
 			pixel.r = (uint8_t)(val * 255.f);
 			pixel.a = 255;
 
-			pixels[x + y * data.size.width] = pixel;
+			row[x] = pixel;
 		}
 	}
 }

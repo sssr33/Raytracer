@@ -186,6 +186,8 @@
     <ClInclude Include="GameWindow.h" />
     <ClInclude Include="HDCBackBuffer.h" />
     <ClInclude Include="IGameWindowHandler.h" />
+    <ClInclude Include="Image\BGRA.h" />
+    <ClInclude Include="Image\ImageView.h" />
     <ClInclude Include="ISystemBackBuffer.h" />
     <ClInclude Include="IWindowMessageHandler.h" />
     <ClInclude Include="RayTraceWindowHandler.h" />

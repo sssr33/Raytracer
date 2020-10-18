@@ -1,6 +1,7 @@
 #include "RayTraceWindowHandler.h"
 #include "Image/BGRA.h"
 #include "Image/ImageView.h"
+#include "Render/Functor/TestGradientFunctor.h"
 
 #include <MassiveCompute/Schedulers/StealingBlockScheduler.h>
 
@@ -26,23 +27,17 @@ void RayTraceWindowHandler::OnRepaint(ISystemBackBuffer& backBuffer)
 
 	BGRA<uint8_t>* pixels = reinterpret_cast<BGRA<uint8_t>*>(data.data);
 	ImageView<BGRA<uint8_t>> imageView(data.size.width, data.size.height, pixels);
+	MassiveCompute::StealingBlockScheduler stealingScheduler;
 
-	for (size_t y = 0, height = imageView.GetHeight(); y < height; y++)
-	{
-		BGRA<uint8_t>* row = imageView.GetRow(y);
+	stealingScheduler(imageView, TestGradientFunctor(imageView), imageView.GetWidth(), 1);
 
-		for (size_t x = 0, width = imageView.GetWidth(); x < width; x++)
-		{
-			BGRA<uint8_t> pixel = {};
-
-			float val = (float)y / (float)height;
-
-			pixel.r = (uint8_t)(val * 255.f);
-			pixel.a = 255;
-
-			row[x] = pixel;
-		}
-	}
+	// single thread, for test
+	/*MassiveCompute::Block block;
+	block.left = 0;
+	block.top = 0;
+	block.right = block.imageWidth = imageView.GetWidth();
+	block.bottom = block.imageHeight = imageView.GetHeight();
+	(TestGradientFunctor(imageView))(block);*/
 }
 
 void RayTraceWindowHandler::OnMouseLeftPress(const Helpers::Point2D<float>& pt)

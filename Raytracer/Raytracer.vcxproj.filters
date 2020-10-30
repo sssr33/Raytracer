@@ -8,6 +8,8 @@
     <ClCompile Include="SystemBackBufferLock.cpp" />
     <ClCompile Include="RayTraceWindowHandler.cpp" />
     <ClCompile Include="Render\Functor\TestGradientFunctor.cpp" />
+    <ClCompile Include="Render\RayTraceRenderTask.cpp" />
+    <ClCompile Include="Render\RayTraceRenderTaskParams.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -21,5 +23,7 @@
     <ClInclude Include="Image\BGRA.h" />
     <ClInclude Include="Image\ImageView.h" />
     <ClInclude Include="Render\Functor\TestGradientFunctor.h" />
+    <ClInclude Include="Render\RayTraceRenderTask.h" />
+    <ClInclude Include="Render\RayTraceRenderTaskParams.h" />
   </ItemGroup>
 </Project>

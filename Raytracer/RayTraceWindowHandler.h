@@ -22,4 +22,5 @@ public:
 	void OnMouseWheel(float delta) override;
 
 private:
+	Helpers::Size2D<uint32_t> currentSize;
 };

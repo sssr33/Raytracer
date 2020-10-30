@@ -170,8 +170,10 @@
     <ClCompile Include="GameWindow.cpp" />
     <ClCompile Include="HDCBackBuffer.cpp" />
     <ClCompile Include="Raytracer.cpp" />
+    <ClCompile Include="Render\RayTraceRenderTask.cpp" />
     <ClCompile Include="RayTraceWindowHandler.cpp" />
     <ClCompile Include="Render\Functor\TestGradientFunctor.cpp" />
+    <ClCompile Include="Render\RayTraceRenderTaskParams.cpp" />
     <ClCompile Include="SystemBackBufferLock.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -191,8 +193,10 @@
     <ClInclude Include="Image\ImageView.h" />
     <ClInclude Include="ISystemBackBuffer.h" />
     <ClInclude Include="IWindowMessageHandler.h" />
+    <ClInclude Include="Render\RayTraceRenderTask.h" />
     <ClInclude Include="RayTraceWindowHandler.h" />
     <ClInclude Include="Render\Functor\TestGradientFunctor.h" />
+    <ClInclude Include="Render\RayTraceRenderTaskParams.h" />
     <ClInclude Include="SystemBackBufferLock.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>

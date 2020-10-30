@@ -12,7 +12,7 @@ void RayTraceWindowHandler::GameLoop(ISystemBackBuffer& backBuffer)
 
 void RayTraceWindowHandler::OnResize(const Helpers::Size2D<uint32_t>& newSize)
 {
-
+	this->currentSize = newSize;
 }
 
 void RayTraceWindowHandler::OnRepaint(ISystemBackBuffer& backBuffer)

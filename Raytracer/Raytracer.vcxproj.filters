@@ -7,6 +7,7 @@
     <ClCompile Include="HDCBackBuffer.cpp" />
     <ClCompile Include="SystemBackBufferLock.cpp" />
     <ClCompile Include="RayTraceWindowHandler.cpp" />
+    <ClCompile Include="Render\Functor\TestGradientFunctor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -17,5 +18,8 @@
     <ClInclude Include="SystemBackBufferLock.h" />
     <ClInclude Include="RayTraceWindowHandler.h" />
     <ClInclude Include="IWindowMessageHandler.h" />
+    <ClInclude Include="Image\BGRA.h" />
+    <ClInclude Include="Image\ImageView.h" />
+    <ClInclude Include="Render\Functor\TestGradientFunctor.h" />
   </ItemGroup>
 </Project>

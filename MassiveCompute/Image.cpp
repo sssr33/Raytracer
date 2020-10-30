@@ -3,78 +3,66 @@
 #include <cassert>
 #include <algorithm>
 
-Image::Image(size_t width, size_t height)
-    : width(width)
-    , height(height)
-    , data(this->width* this->height)
-{}
-
-bool Image::operator==(const Image& other) const
+namespace MassiveCompute
 {
-    bool equ = this->width == other.width
-        && this->height == other.height
-        && this->data == other.data;
+    Image::Image(size_t width, size_t height)
+        : width(width)
+        , height(height)
+    {}
 
-    return equ;
-}
-
-bool Image::operator!=(const Image& other) const
-{
-    return !this->operator==(other);
-}
-
-size_t Image::GetWidth() const
-{
-    return this->width;
-}
-
-size_t Image::GetHeight() const
-{
-    return this->height;
-}
-
-const float* Image::GetData() const
-{
-    return this->data.data();
-}
-
-std::optional<Block> Image::GetBlock(size_t left, size_t top, size_t maxWidth, size_t maxHeight)
-{
-    auto block = this->GetBlockRect(left, top, maxWidth, maxHeight);
-    if (!block)
+    bool Image::operator==(const Image& other) const
     {
-        return std::nullopt;
+        bool equ = this->width == other.width
+            && this->height == other.height;
+
+        return equ;
     }
 
-    block->image = this->data.data();
-
-    return block;
-}
-
-std::optional<Block> Image::GetBlockRect(size_t left, size_t top, size_t maxWidth, size_t maxHeight) const
-{
-    if (this->data.empty())
+    bool Image::operator!=(const Image& other) const
     {
-        assert(!this->width && !this->height);
-        return std::nullopt;
+        return !this->operator==(other);
     }
 
-    if (left >= this->width || top >= this->height)
+    size_t Image::GetWidth() const
     {
-        return std::nullopt;
+        return this->width;
     }
 
-    size_t right = (std::min)(left + maxWidth, this->width);
-    size_t bottom = (std::min)(top + maxHeight, this->height);
+    size_t Image::GetHeight() const
+    {
+        return this->height;
+    }
 
-    Block block;
+    bool Image::Empty() const
+    {
+        bool empty = this->width == 0 || this->height == 0;
+        return empty;
+    }
 
-    block.left = left;
-    block.top = top;
-    block.right = right;
-    block.bottom = bottom;
-    block.imageWidth = this->width;
-    block.imageHeight = this->height;
+    std::optional<Block> Image::GetBlock(size_t left, size_t top, size_t maxWidth, size_t maxHeight) const
+    {
+        if (!this->width || !this->height)
+        {
+            return std::nullopt;
+        }
 
-    return block;
+        if (left >= this->width || top >= this->height)
+        {
+            return std::nullopt;
+        }
+
+        size_t right = (std::min)(left + maxWidth, this->width);
+        size_t bottom = (std::min)(top + maxHeight, this->height);
+
+        Block block;
+
+        block.left = left;
+        block.top = top;
+        block.right = right;
+        block.bottom = bottom;
+        block.imageWidth = this->width;
+        block.imageHeight = this->height;
+
+        return block;
+    }
 }

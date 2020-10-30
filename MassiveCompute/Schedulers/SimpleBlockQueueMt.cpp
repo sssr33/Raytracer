@@ -1,21 +1,24 @@
 #include "SimpleBlockQueueMt.h"
 
-SimpleBlockQueueMt::SimpleBlockQueueMt(BlockQueue queue)
-	: queue(std::move(queue))
-{}
-
-SimpleBlockQueueMt::SimpleBlockQueueMt(Image& img, size_t maxBlockWidth, size_t maxBlockHeight)
-	: queue(img, maxBlockWidth, maxBlockHeight)
-{}
-
-size_t SimpleBlockQueueMt::Size() const
+namespace MassiveCompute
 {
-	std::lock_guard<std::mutex> lk(this->mtx);
-	return this->queue.Size();
-}
+	SimpleBlockQueueMt::SimpleBlockQueueMt(BlockQueue queue)
+		: queue(std::move(queue))
+	{}
 
-std::optional<Block> SimpleBlockQueueMt::Pop()
-{
-	std::lock_guard<std::mutex> lk(this->mtx);
-	return this->queue.Pop();
+	SimpleBlockQueueMt::SimpleBlockQueueMt(Image& img, size_t maxBlockWidth, size_t maxBlockHeight)
+		: queue(img, maxBlockWidth, maxBlockHeight)
+	{}
+
+	size_t SimpleBlockQueueMt::Size() const
+	{
+		std::lock_guard<std::mutex> lk(this->mtx);
+		return this->queue.Size();
+	}
+
+	std::optional<Block> SimpleBlockQueueMt::Pop()
+	{
+		std::lock_guard<std::mutex> lk(this->mtx);
+		return this->queue.Pop();
+	}
 }

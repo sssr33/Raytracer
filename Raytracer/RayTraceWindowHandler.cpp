@@ -1,4 +1,9 @@
 #include "RayTraceWindowHandler.h"
+#include "Image/BGRA.h"
+#include "Image/ImageView.h"
+#include "Render/Functor/TestGradientFunctor.h"
+
+#include <MassiveCompute/Schedulers/StealingBlockScheduler.h>
 
 void RayTraceWindowHandler::GameLoop(ISystemBackBuffer& backBuffer)
 {
@@ -20,27 +25,19 @@ void RayTraceWindowHandler::OnRepaint(ISystemBackBuffer& backBuffer)
 		return;
 	}
 
-	struct RGBA
-	{
-		uint8_t b, g, r, a;
-	};
+	BGRA<uint8_t>* pixels = reinterpret_cast<BGRA<uint8_t>*>(data.data);
+	ImageView<BGRA<uint8_t>> imageView(data.size.width, data.size.height, pixels);
+	MassiveCompute::StealingBlockScheduler stealingScheduler;
 
-	RGBA* pixels = reinterpret_cast<RGBA*>(data.data);
+	stealingScheduler(imageView, TestGradientFunctor(imageView), imageView.GetWidth(), 1);
 
-	for (uint32_t y = 0; y < data.size.height; y++)
-	{
-		for (uint32_t x = 0; x < data.size.width; x++)
-		{
-			RGBA pixel = {};
-
-			float val = (float)y / (float)data.size.height;
-
-			pixel.r = (uint8_t)(val * 255.f);
-			pixel.a = 255;
-
-			pixels[x + y * data.size.width] = pixel;
-		}
-	}
+	// single thread, for test
+	/*MassiveCompute::Block block;
+	block.left = 0;
+	block.top = 0;
+	block.right = block.imageWidth = imageView.GetWidth();
+	block.bottom = block.imageHeight = imageView.GetHeight();
+	(TestGradientFunctor(imageView))(block);*/
 }
 
 void RayTraceWindowHandler::OnMouseLeftPress(const Helpers::Point2D<float>& pt)

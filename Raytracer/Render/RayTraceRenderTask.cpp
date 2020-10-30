@@ -2,6 +2,8 @@
 
 void RayTraceRenderTask::operator()(const RayTraceRenderTaskParams& params)
 {
+	if()
+
 	//State state(params.GetSize());
 }
 

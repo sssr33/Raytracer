@@ -9,7 +9,7 @@
     <ClCompile Include="RayTraceWindowHandler.cpp" />
     <ClCompile Include="Render\Functor\TestGradientFunctor.cpp" />
     <ClCompile Include="Render\RayTraceRenderTask.cpp" />
-    <ClCompile Include="Render\RayTraceRenderTaskParams.cpp" />
+    <ClCompile Include="Render\RayTraceRenderTaskState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -24,6 +24,7 @@
     <ClInclude Include="Image\ImageView.h" />
     <ClInclude Include="Render\Functor\TestGradientFunctor.h" />
     <ClInclude Include="Render\RayTraceRenderTask.h" />
-    <ClInclude Include="Render\RayTraceRenderTaskParams.h" />
+    <ClInclude Include="Image\Image.h" />
+    <ClInclude Include="Render\RayTraceRenderTaskState.h" />
   </ItemGroup>
 </Project>

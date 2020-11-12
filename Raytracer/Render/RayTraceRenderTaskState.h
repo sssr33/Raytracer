@@ -2,13 +2,15 @@
 #include "Image/Image.h"
 #include "Image/BGRA.h"
 
+#include <Helpers/Size2D.h>
+
 class RayTraceRenderTaskState
 {
 public:
-	RayTraceRenderTaskState(Image<BGRA<uint8_t>> resultImage);
+	RayTraceRenderTaskState(Image<BGRA<uint8_t>>&& resultImage);
 
-	const Helpers::Size2D<uint32_t>& GetSize() const;
+	Image<BGRA<uint8_t>>& GetResultImage();
 
 private:
-	Helpers::Size2D<uint32_t> size;
+	Image<BGRA<uint8_t>> resultImage;
 };

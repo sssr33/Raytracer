@@ -1,10 +1,10 @@
-#include "RayTraceRenderTaskParams.h"
+#include "RayTraceRenderTaskState.h"
 
-RayTraceRenderTaskParams::RayTraceRenderTaskParams(const Helpers::Size2D<uint32_t>& size)
-	: size(size)
+RayTraceRenderTaskState::RayTraceRenderTaskState(Image<BGRA<uint8_t>>&& resultImage)
+	: resultImage(std::move(resultImage))
 {}
 
-const Helpers::Size2D<uint32_t>& RayTraceRenderTaskParams::GetSize() const
+Image<BGRA<uint8_t>>& RayTraceRenderTaskState::GetResultImage()
 {
-	return this->size;
+	return this->resultImage;
 }

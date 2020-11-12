@@ -1,12 +1,8 @@
 #include "RayTraceRenderTask.h"
 
-void RayTraceRenderTask::operator()(const RayTraceRenderTaskParams& params)
+RayTraceRenderTaskState RayTraceRenderTask::operator()(
+	const RayTraceRenderTaskParams& params,
+	RayTraceRenderTaskState&& state)
 {
-	if()
-
-	//State state(params.GetSize());
+	return state;
 }
-
-//RayTraceRenderTask::State::State(const Helpers::Size2D<uint32_t>& size)
-//	: image(size.width, size.height)
-//{}

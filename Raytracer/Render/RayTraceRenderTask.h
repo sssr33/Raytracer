@@ -1,22 +1,15 @@
 #pragma once
 #include "RayTraceRenderTaskState.h"
+#include "RayTraceRenderTaskParams.h"
 #include "Image/Image.h"
 #include "Image/BGRA.h"
 
 class RayTraceRenderTask
 {
 public:
-	void operator()(const RayTraceRenderTaskState& params);
+	RayTraceRenderTaskState operator()(
+		const RayTraceRenderTaskParams& params,
+		RayTraceRenderTaskState&& state);
 
 private:
-	Image<BGRA<uint8_t>> image;
-
-	/*class State
-	{
-	public:
-		State(const Helpers::Size2D<uint32_t>& size);
-
-	private:
-		Image<BGRA<uint8_t>> image;
-	};*/
 };

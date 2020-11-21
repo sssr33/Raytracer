@@ -47,14 +47,13 @@ void RayTraceWindowHandler::OnRepaint(ISystemBackBuffer& backBuffer)
 
 	BGRA<uint8_t>* pixels = reinterpret_cast<BGRA<uint8_t>*>(data.data);
 	ImageView<BGRA<uint8_t>> imageView(data.size.width, data.size.height, pixels);
-	ImageView<BGRA<uint8_t>> currentlyPresentingImageView = this->currentlyPresentingImage.MakeView();
 
 	const size_t width = std::min(this->currentlyPresentingImage.GetWidth(), imageView.GetWidth());
 	const size_t height = std::min(this->currentlyPresentingImage.GetHeight(), imageView.GetHeight());
 
 	MassiveCompute::StealingBlockScheduler stealingScheduler;
 
-	stealingScheduler(imageView, MakeCopyImageFunctor(imageView, currentlyPresentingImageView, width, height), imageView.GetWidth(), 1);
+	stealingScheduler(imageView, MakeCopyImageFunctor(imageView, this->currentlyPresentingImage.MakeView(), width, height), imageView.GetWidth(), 1);
 }
 
 void RayTraceWindowHandler::OnMouseLeftPress(const Helpers::Point2D<float>& pt)

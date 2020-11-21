@@ -1,7 +1,6 @@
 #pragma once
 #include "Image/ImageView.h"
 
-#include <utility>
 #include <algorithm>
 
 template<class PixelT>
@@ -25,21 +24,18 @@ public:
 
 		const size_t width = right - left;
 
-		const ImageView<PixelT>& src = this->src.get();
-		ImageView<PixelT>& dst = this->dst.get();
-
 		for (size_t y = top; y < bottom; y++)
 		{
-			const PixelT* srcRow = src.GetRow(y);
-			PixelT* dstRow = dst.GetRow(y);
+			const PixelT* srcRow = this->src.GetRow(y);
+			PixelT* dstRow = this->dst.GetRow(y);
 
 			std::copy(srcRow, srcRow + width, dstRow);
 		}
     }
 
 private:
-	std::reference_wrapper<ImageView<PixelT>> dst;
-	std::reference_wrapper<const ImageView<PixelT>> src;
+	ImageView<PixelT>& dst;
+	const ImageView<PixelT>& src;
 	size_t minWidth = 0;
 	size_t minHeight = 0;
 };

@@ -6,11 +6,11 @@ TestGradientFunctor::TestGradientFunctor(ImageView<BGRA<uint8_t>>& image)
 
 void TestGradientFunctor::operator()(const MassiveCompute::Block& block)
 {
-    const size_t height = image.get().GetHeight();
+    const size_t height = image.GetHeight();
 
     for (size_t y = block.top; y < block.bottom; y++)
     {
-        BGRA<uint8_t>* row = image.get().GetRow(y);
+        BGRA<uint8_t>* row = image.GetRow(y);
 
         for (size_t x = block.left; x < block.right; x++)
         {

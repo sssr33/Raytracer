@@ -2,6 +2,7 @@
 #include "Image/BGRA.h"
 #include "Image/ImageView.h"
 #include "Render/Functor/TestGradientFunctor.h"
+#include "Render/Functor/CopyImageFunctor.h"
 
 #include <Helpers/is_ready.h>
 #include <MassiveCompute/Schedulers/StealingBlockScheduler.h>
@@ -46,39 +47,14 @@ void RayTraceWindowHandler::OnRepaint(ISystemBackBuffer& backBuffer)
 
 	BGRA<uint8_t>* pixels = reinterpret_cast<BGRA<uint8_t>*>(data.data);
 	ImageView<BGRA<uint8_t>> imageView(data.size.width, data.size.height, pixels);
+	ImageView<BGRA<uint8_t>> currentlyPresentingImageView = this->currentlyPresentingImage.MakeView();
 
 	const size_t width = std::min(this->currentlyPresentingImage.GetWidth(), imageView.GetWidth());
 	const size_t height = std::min(this->currentlyPresentingImage.GetHeight(), imageView.GetHeight());
 
 	MassiveCompute::StealingBlockScheduler stealingScheduler;
 
-	/*stealingScheduler(imageView,
-		[](const MassiveCompute::Block& block)
-		{
-			block.
-		}, imageView.GetWidth(), 1);*/
-
-	for (size_t y = 0; y < height; y++)
-	{
-		const BGRA<uint8_t>* srcRow = this->currentlyPresentingImage.GetRow(y);
-		BGRA<uint8_t>* dstRow = imageView.GetRow(y);
-
-		std::memcpy(dstRow, srcRow, width * sizeof(*srcRow));
-	}
-
-	/*BGRA<uint8_t>* pixels = reinterpret_cast<BGRA<uint8_t>*>(data.data);
-	ImageView<BGRA<uint8_t>> imageView(data.size.width, data.size.height, pixels);
-	MassiveCompute::StealingBlockScheduler stealingScheduler;
-
-	stealingScheduler(imageView, TestGradientFunctor(imageView), imageView.GetWidth(), 1);*/
-
-	// single thread, for test
-	/*MassiveCompute::Block block;
-	block.left = 0;
-	block.top = 0;
-	block.right = block.imageWidth = imageView.GetWidth();
-	block.bottom = block.imageHeight = imageView.GetHeight();
-	(TestGradientFunctor(imageView))(block);*/
+	stealingScheduler(imageView, MakeCopyImageFunctor(imageView, currentlyPresentingImageView, width, height), imageView.GetWidth(), 1);
 }
 
 void RayTraceWindowHandler::OnMouseLeftPress(const Helpers::Point2D<float>& pt)
@@ -133,7 +109,7 @@ void RayTraceWindowHandler::TryStartRayTraceTask()
 
 	if (image.GetWidth() != this->currentSize.width || image.GetHeight() != this->currentSize.height)
 	{
-		image = Image<BGRA<uint8_t>>(this->currentSize.width, this->currentSize.height);
+		image = Image<BGRA<uint8_t>>::Resize(std::move(image), this->currentSize.width, this->currentSize.height);
 	}
 
 	this->rayTraceTask = std::async(
@@ -155,12 +131,20 @@ void RayTraceWindowHandler::TryFinishRayTraceTask()
 	this->currentlyPresentingImage = this->rayTraceTask.get();
 }
 
-Image<BGRA<uint8_t>> RayTraceWindowHandler::RayTraceMain(Image<BGRA<uint8_t>> resultImage, std::atomic<bool>& cancel)
+Image<BGRA<uint8_t>> RayTraceWindowHandler::RayTraceMain(Image<BGRA<uint8_t>> resultImage, std::atomic<bool>& /*cancel*/)
 {
 	ImageView<BGRA<uint8_t>> imageView(resultImage.GetWidth(), resultImage.GetHeight(), resultImage.GetData());
 	MassiveCompute::StealingBlockScheduler stealingScheduler;
 
 	stealingScheduler(imageView, TestGradientFunctor(imageView), imageView.GetWidth(), 1);
+
+	// single thread, for test
+	/*MassiveCompute::Block block;
+	block.left = 0;
+	block.top = 0;
+	block.right = block.imageWidth = imageView.GetWidth();
+	block.bottom = block.imageHeight = imageView.GetHeight();
+	(TestGradientFunctor(imageView))(block);*/
 
 	return resultImage;
 }

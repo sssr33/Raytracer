@@ -28,5 +28,6 @@
     <ClInclude Include="Image\Image.h" />
     <ClInclude Include="Render\RayTraceRenderTaskState.h" />
     <ClInclude Include="Render\RayTraceRenderTaskParams.h" />
+    <ClInclude Include="Render\Functor\CopyImageFunctor.h" />
   </ItemGroup>
 </Project>

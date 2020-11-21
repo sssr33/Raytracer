@@ -11,7 +11,7 @@ class Image : public MassiveCompute::Image
 public:
     Image() = default;
     Image(size_t width, size_t height)
-        : Image(width, height)
+        : MassiveCompute::Image(width, height)
         , data(this->GetWidth() * this->GetHeight())
     {}
 

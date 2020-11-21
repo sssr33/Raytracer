@@ -10,6 +10,7 @@
     <ClInclude Include="GdiDcDeleter.h" />
     <ClInclude Include="GdiDcRelease.h" />
     <ClInclude Include="PropagateConst.h" />
+    <ClInclude Include="is_ready.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math.cpp" />

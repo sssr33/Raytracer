@@ -29,6 +29,7 @@
     <ClInclude Include="GdiDcRelease.h" />
     <ClInclude Include="GdiObjectDeleter.h" />
     <ClInclude Include="is.h" />
+    <ClInclude Include="is_ready.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Point2D.h" />
     <ClInclude Include="PropagateConst.h" />

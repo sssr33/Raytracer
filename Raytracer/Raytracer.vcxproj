@@ -169,6 +169,8 @@
   <ItemGroup>
     <ClCompile Include="GameWindow.cpp" />
     <ClCompile Include="HDCBackBuffer.cpp" />
+    <ClCompile Include="Math\vec2.cpp" />
+    <ClCompile Include="Math\vec3.cpp" />
     <ClCompile Include="Raytracer.cpp" />
     <ClCompile Include="Render\RayTraceRenderTask.cpp" />
     <ClCompile Include="RayTraceWindowHandler.cpp" />
@@ -195,6 +197,11 @@
     <ClInclude Include="Image\ImageView.h" />
     <ClInclude Include="ISystemBackBuffer.h" />
     <ClInclude Include="IWindowMessageHandler.h" />
+    <ClInclude Include="Math\GetSetVec.h" />
+    <ClInclude Include="Math\swizzle.h" />
+    <ClInclude Include="Math\vec2.h" />
+    <ClInclude Include="Math\vec3.h" />
+    <ClInclude Include="Math\VecRef.h" />
     <ClInclude Include="Render\Functor\CopyImageFunctor.h" />
     <ClInclude Include="Render\RayTraceRenderTask.h" />
     <ClInclude Include="RayTraceWindowHandler.h" />

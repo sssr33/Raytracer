@@ -20,8 +20,8 @@ int main()
     swizzle<X, Y>(v1) = swizzle<X, X>(v1);
     swizzle<Y, X>(v1) = v2;
 
-    v1 = add(v1, v2);
-    swizzle<Y, X>(v1) = add(v1, v2);
+    v1 = v1 + v2;
+    swizzle<Y, X>(v1) = v1 + v2;
 
     vec3 v3;
     v3 = swizzle<X, X, X>(v1);
@@ -31,7 +31,8 @@ int main()
     v1 = { 1.f, 2.f };
     v2 = { 3.f, 4.f };
 
-    swizzle<Z, X>(v3) = add(v1, v2);
+    swizzle<Z, X>(v3) += v1 + v2;
+    swizzle<Z, X>(v3) = v1 + v2;
 
     //MassiveComputeTest();
 

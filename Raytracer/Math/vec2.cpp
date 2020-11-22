@@ -27,13 +27,3 @@ void vec2::setY(float v)
 {
     y = v;
 }
-
-vec2 add(vec2 a, vec2 b)
-{
-    vec2 res;
-
-    res.x = a.x + b.x;
-    res.y = a.y + b.y;
-
-    return res;
-}

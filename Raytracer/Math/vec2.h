@@ -2,7 +2,7 @@
 #include "GetSetVec.h"
 #include "swizzle.h"
 
-struct vec2
+struct vec2 : public VecRefBase2<vec2, vec2>
 {
     vec2() = default;
     explicit vec2(float v);
@@ -23,5 +23,3 @@ struct vec2
     float x;
     float y;
 };
-
-vec2 add(vec2 a, vec2 b);

@@ -9,8 +9,31 @@
 #include <Helpers/is.h>
 #include <MassiveCompute/MassiveComputeTest.h>
 
+#include "Math/vec2.h"
+#include "Math/vec3.h"
+
 int main()
 {
+    vec2 v1 = { 1.f, 2.f };
+    vec2 v2 = { 3.f, 4.f };
+
+    swizzle<X, Y>(v1) = swizzle<X, X>(v1);
+    swizzle<Y, X>(v1) = v2;
+
+    v1 = v1 + v2;
+    swizzle<Y, X>(v1) = v1 + v2;
+
+    vec3 v3;
+    v3 = swizzle<X, X, X>(v1);
+    v3 = vec3(v1.y);
+    v3 = swizzle<Y, X, Y>(v1);
+
+    v1 = { 1.f, 2.f };
+    v2 = { 3.f, 4.f };
+
+    swizzle<Z, X>(v3) += v1 + v2;
+    swizzle<Z, X>(v3) = v1 + v2;
+
     //MassiveComputeTest();
 
     RayTraceWindowHandler rayTraceHandler;

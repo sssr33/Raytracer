@@ -59,6 +59,9 @@ struct vv2
 
         
     };
+
+    void MMM() {};
+
     vv2<T>() {};
     vv2<T>(const T& _v) : x(_v), y(_v) {};
     vv2<T>(const T& _x, const T& _y) : x(_x), y(_y) {};
@@ -163,13 +166,16 @@ class swizzle22 {
 public:
     TT<T>& operator=(const TT<T>& rhs)
     {
-        ((v[Indexes::dst] = rhs[Indexes::src]), ...);
+        TT<T>& me = *(TT<T>*)this;
+
+        ((me.data[Indexes::dst] = rhs[Indexes::src]), ...);
         return *(TT<T>*)this;
     }
     operator TT<T>() const
     {
+        TT<T>& me = *(TT<T>*)this;
         // unpack
-        return TT<T>(v[Indexes::d]...);
+        return TT<T>(me.data[Indexes::d]...);
     }
 
     template<class ... NewIndexes> struct GenType
@@ -191,12 +197,114 @@ struct swizzle22Gen {
     typedef typename GenPairs<swizzle22GenHelper<TT, T>, Indexes...>::Gen T;
 };
 
+//template<int left>
+//struct swizzle123;
+//
+//template<int left, int idx>
+//struct swizzleItem : public swizzle123<left> {};
+
+
+// try with swizzle start structure to contain float or T with swizzle123
+template<class T, int left, int... idx>
+struct swizzle123
+{
+    union
+    {
+        swizzle123<T, left - 1, idx..., 0> x;
+        swizzle123<T, left - 1, idx..., 1> y;
+        swizzle123<T, left - 1, idx..., 2> z;
+        swizzle123<T, left - 1, idx..., 3> w;
+    };
+};
+
+template<class T, int... idx>
+struct swizzle123<T, 0, idx...> {};
+
+template <typename T = float>
+struct vv4
+{
+    union {
+        struct { T x, y, z, w; };
+        T data[4];
+
+
+        union
+        {
+            swizzle2<vv2, T, 0, 1> xy;
+            swizzle2<vv2, T, 0, 0> xx;
+            swizzle2<vv2, T, 1, 0> yx;
+            swizzle2<vv2, T, 0, 2> xz;
+            swizzle2<vv2, T, 2, 0> zx;
+            swizzle2<vv2, T, 1, 2> yz;
+            swizzle2<vv2, T, 2, 1> zy;
+        } swizzle;
+
+
+    };
+
+    vv4<T>() {};
+    operator T* () { return data; };
+    operator const T* () const { return static_cast<const T*>(data); };
+};
+
+// https://stackoverflow.com/questions/5839357/detect-operator-support-with-decltype-sfinae
+template<class F, class... T, typename = decltype(std::declval<F>()(std::declval<T>()...))>
+std::true_type  supports_test(const F&, const T&...);
+std::false_type supports_test(...);
+
+template<class> struct supports;
+template<class F, class... T> struct supports<F(T...)>
+    : decltype(supports_test(std::declval<F>(), std::declval<T>()...)){};
+
+template<class T>
+struct SSS
+{
+    T ff;
+
+    T& operator=(const T& rhs)
+    {
+        ff = rhs;
+        return ff;
+    }
+
+    operator T() const
+    {
+        // unpack
+        return ff;
+    }
+
+    // https://stackoverflow.com/questions/27433093/enable-conversion-operator-using-sfinae
+    template<typename U = T>
+    std::enable_if_t<supports<std::modulus<>(U, U)>::value, U> operator%(const T& rhs)
+    {
+        return ff % rhs;
+    }
+
+    std::enable_if_t<supports<std::plus<>(T, T)>::value, T> operator+(const T& rhs)
+    {
+        return ff + rhs;
+    }
+};
+
 int main()
 {
     {
+        SSS<float> i2;
+
+        i2 = i2 + i2;
+        //i2 = i2 % i2;
+
+        swizzle123<float, 4> asd;
+
+        v.w.x.y;
+
+        sizeof(asd);
+
         swizzle22Gen<vv2, float, 1, 0>::T xy;
 
         vv2<float> v(1, 2);
+
+        v.swizzle.xx;
 
         sizeof(xy);
 

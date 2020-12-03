@@ -206,23 +206,150 @@ template<int d, int s> struct IndexPair
 
 // try with swizzle start structure to contain float or T with swizzle123
 template<template<class VecT, class ComponentT, class ... Indexes> class OpHelper, class VecT, class ComponentT, int left, class ... Indexes>
-struct swizzleOp
+struct swizzleOp2
 {
     union
     {
-        swizzleOp<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<0, sizeof...(Indexes)>> x;
-        swizzleOp<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<1, sizeof...(Indexes)>> y;
-        swizzleOp<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<2, sizeof...(Indexes)>> z;
-        swizzleOp<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<3, sizeof...(Indexes)>> w;
+        swizzleOp2<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<0, sizeof...(Indexes)>> x;
+        swizzleOp2<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<1, sizeof...(Indexes)>> y;
     };
 
-    typename OpHelper<VecT, ComponentT, Indexes...>::T MMM() { typename OpHelper<VecT, ComponentT, Indexes...>::T asd; return asd; }
+    typedef OpHelper<VecT, ComponentT, Indexes...> OpHelp;
+    typedef typename OpHelp::T OpHelpT;
+
+    OpHelpT operator=(const OpHelpT rhs)
+    {
+        OpHelp::Assign(reinterpret_cast<VecT*>(this), rhs);
+        return OpHelp::Get(reinterpret_cast<const VecT*>(this));
+    }
+    operator OpHelpT() const
+    {
+        return OpHelp::Get(reinterpret_cast<const VecT*>(this));
+    }
+    OpHelpT operator()() const
+    {
+        return OpHelp::Get(reinterpret_cast<const VecT*>(this));
+    }
 };
 
 template<template<class VecT, class ComponentT, class ... Indexes> class OpHelper, class VecT, class ComponentT, class ... Indexes>
-struct swizzleOp<OpHelper, VecT, ComponentT, 0, Indexes...>
+struct swizzleOp2<OpHelper, VecT, ComponentT, 0, Indexes...>
 {
-    typename OpHelper<VecT, ComponentT, Indexes...>::T MMM() { typename OpHelper<VecT, ComponentT, Indexes...>::T asd; return asd; }
+    typedef OpHelper<VecT, ComponentT, Indexes...> OpHelp;
+    typedef typename OpHelp::T OpHelpT;
+
+    OpHelpT operator=(const OpHelpT rhs)
+    {
+        OpHelp::Assign(reinterpret_cast<VecT*>(this), rhs);
+        return OpHelp::Get(reinterpret_cast<const VecT*>(this));
+    }
+    operator OpHelpT() const
+    {
+        return OpHelp::Get(reinterpret_cast<const VecT*>(this));
+    }
+    OpHelpT operator()() const
+    {
+        return OpHelp::Get(reinterpret_cast<const VecT*>(this));
+    }
+};
+
+template<template<class VecT, class ComponentT, class ... Indexes> class OpHelper, class VecT, class ComponentT, int left, class ... Indexes>
+struct swizzleOp3
+{
+    union
+    {
+        swizzleOp3<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<0, sizeof...(Indexes)>> x;
+        swizzleOp3<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<1, sizeof...(Indexes)>> y;
+        swizzleOp3<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<2, sizeof...(Indexes)>> z;
+    };
+
+    typedef OpHelper<VecT, ComponentT, Indexes...> OpHelp;
+    typedef typename OpHelp::T OpHelpT;
+
+    OpHelpT operator=(const OpHelpT rhs)
+    {
+        OpHelp::Assign(reinterpret_cast<VecT*>(this), rhs);
+        return OpHelp::Get(reinterpret_cast<const VecT*>(this));
+    }
+    operator OpHelpT() const
+    {
+        return OpHelp::Get(reinterpret_cast<const VecT*>(this));
+    }
+    OpHelpT operator()() const
+    {
+        return OpHelp::Get(reinterpret_cast<const VecT*>(this));
+    }
+};
+
+template<template<class VecT, class ComponentT, class ... Indexes> class OpHelper, class VecT, class ComponentT, class ... Indexes>
+struct swizzleOp3<OpHelper, VecT, ComponentT, 0, Indexes...>
+{
+    typedef OpHelper<VecT, ComponentT, Indexes...> OpHelp;
+    typedef typename OpHelp::T OpHelpT;
+
+    OpHelpT operator=(const OpHelpT rhs)
+    {
+        OpHelp::Assign(reinterpret_cast<VecT*>(this), rhs);
+        return OpHelp::Get(reinterpret_cast<const VecT*>(this));
+    }
+    operator OpHelpT() const
+    {
+        return OpHelp::Get(reinterpret_cast<const VecT*>(this));
+    }
+    OpHelpT operator()() const
+    {
+        return OpHelp::Get(reinterpret_cast<const VecT*>(this));
+    }
+};
+
+template<template<class VecT, class ComponentT, class ... Indexes> class OpHelper, class VecT, class ComponentT, int left, class ... Indexes>
+struct swizzleOp4
+{
+    union
+    {
+        swizzleOp4<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<0, sizeof...(Indexes)>> x;
+        swizzleOp4<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<1, sizeof...(Indexes)>> y;
+        swizzleOp4<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<2, sizeof...(Indexes)>> z;
+        swizzleOp4<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<3, sizeof...(Indexes)>> w;
+    };
+
+    typedef OpHelper<VecT, ComponentT, Indexes...> OpHelp;
+    typedef typename OpHelp::T OpHelpT;
+
+    OpHelpT operator=(const OpHelpT rhs)
+    {
+        OpHelp::Assign(reinterpret_cast<VecT*>(this), rhs);
+        return OpHelp::Get(reinterpret_cast<const VecT*>(this));
+    }
+    operator OpHelpT() const
+    {
+        return OpHelp::Get(reinterpret_cast<const VecT*>(this));
+    }
+    OpHelpT operator()() const
+    {
+        return OpHelp::Get(reinterpret_cast<const VecT*>(this));
+    }
+};
+
+template<template<class VecT, class ComponentT, class ... Indexes> class OpHelper, class VecT, class ComponentT, class ... Indexes>
+struct swizzleOp4<OpHelper, VecT, ComponentT, 0, Indexes...>
+{
+    typedef OpHelper<VecT, ComponentT, Indexes...> OpHelp;
+    typedef typename OpHelp::T OpHelpT;
+
+    OpHelpT operator=(const OpHelpT rhs)
+    {
+        OpHelp::Assign(reinterpret_cast<VecT*>(this), rhs);
+        return OpHelp::Get(reinterpret_cast<const VecT*>(this));
+    }
+    operator OpHelpT() const
+    {
+        return OpHelp::Get(reinterpret_cast<const VecT*>(this));
+    }
+    OpHelpT operator()() const
+    {
+        return OpHelp::Get(reinterpret_cast<const VecT*>(this));
+    }
 };
 
 template<class VecT, class ComponentT, class ... Indexes>
@@ -238,14 +365,16 @@ struct vv2
 
         union
         {
-            swizzleOp<swizzleOpVecHelper, vv2, T, 1, IndexPair<0, 0>> x;
-            swizzleOp<swizzleOpVecHelper, vv2, T, 1, IndexPair<1, 0>> y;
+            swizzleOp2<swizzleOpVecHelper, vv2, T, 3, IndexPair<0, 0>> x;
+            swizzleOp2<swizzleOpVecHelper, vv2, T, 3, IndexPair<1, 0>> y;
         } swizzle;
 
 
     };
 
-    vv2<T>() {};
+    vv2<T>() = default;
+    vv2<T>(const T& v) : x(v), y(v) {};
+    vv2<T>(const T& x, const T& y) : x(x), y(y) {};
     operator T* () { return data; };
     operator const T* () const { return static_cast<const T*>(data); };
 };
@@ -260,15 +389,17 @@ struct vv3
 
         union
         {
-            swizzleOp<swizzleOpVecHelper, vv3, T, 2, IndexPair<0, 0>> x;
-            swizzleOp<swizzleOpVecHelper, vv3, T, 2, IndexPair<1, 0>> y;
-            swizzleOp<swizzleOpVecHelper, vv3, T, 2, IndexPair<2, 0>> z;
+            swizzleOp3<swizzleOpVecHelper, vv3, T, 3, IndexPair<0, 0>> x;
+            swizzleOp3<swizzleOpVecHelper, vv3, T, 3, IndexPair<1, 0>> y;
+            swizzleOp3<swizzleOpVecHelper, vv3, T, 3, IndexPair<2, 0>> z;
         } swizzle;
 
 
     };
 
-    vv3<T>() {};
+    vv3<T>() = default;
+    vv3<T>(const T& v) : x(v), y(v), z(v) {};
+    vv3<T>(const T& x, const T& y, const T& z) : x(x), y(y), z(z) {};
     operator T* () { return data; };
     operator const T* () const { return static_cast<const T*>(data); };
 };
@@ -283,16 +414,18 @@ struct vv4
 
         union
         {
-            swizzleOp<swizzleOpVecHelper, vv4, T, 3, IndexPair<0, 0>> x;
-            swizzleOp<swizzleOpVecHelper, vv4, T, 3, IndexPair<1, 0>> y;
-            swizzleOp<swizzleOpVecHelper, vv4, T, 3, IndexPair<2, 0>> z;
-            swizzleOp<swizzleOpVecHelper, vv4, T, 3, IndexPair<3, 0>> w;
+            swizzleOp4<swizzleOpVecHelper, vv4, T, 3, IndexPair<0, 0>> x;
+            swizzleOp4<swizzleOpVecHelper, vv4, T, 3, IndexPair<1, 0>> y;
+            swizzleOp4<swizzleOpVecHelper, vv4, T, 3, IndexPair<2, 0>> z;
+            swizzleOp4<swizzleOpVecHelper, vv4, T, 3, IndexPair<3, 0>> w;
         } swizzle;
 
 
     };
 
-    vv4<T>() {};
+    vv4<T>() = default;
+    vv4<T>(const T & v) : x(v), y(v), z(v), w(v) {};
+    vv4<T>(const T & x, const T & y, const T & z, const T& w) : x(x), y(y), z(z), w(w) {};
     operator T* () { return data; };
     operator const T* () const { return static_cast<const T*>(data); };
 };
@@ -322,12 +455,32 @@ template<class VecT, class ComponentT, class ... Indexes>
 struct swizzleOpVecHelper
 {
     typedef typename swizzleOpVecHelperTypes<ComponentT, sizeof...(Indexes)>::T T;
+
+    static void Assign(VecT* _this, const T rhs)
+    {
+        (((*_this)[Indexes::dst] = rhs[Indexes::src]), ...);
+    }
+
+    static T Get(const VecT* _this)
+    {
+        return T((*_this)[Indexes::dst]...);
+    }
 };
 
 template<class VecT, class ComponentT, class Index0>
 struct swizzleOpVecHelper<VecT, ComponentT, Index0>
 {
     typedef ComponentT T;
+
+    static void Assign(VecT* _this, const T rhs)
+    {
+        (*_this)[Index0::dst] = rhs;
+    }
+
+    static T Get(const VecT* _this)
+    {
+        return T((*_this)[Index0::dst]);
+    }
 };
 
 
@@ -373,15 +526,19 @@ struct swizzleOpVecHelper<VecT, ComponentT, Index0>
 int main()
 {
     {
-        vv2<float> v2;
-        vv3<float> v3;
-        vv4<float> v4;
-
-        v4.swizzle.x.x.x.x;
+        vv2<float> v2(1, 2);
+        vv3<float> v3(3, 4, 5);
+        vv4<float> v4(6, 7, 8, 9);
 
         sizeof(vv2<float>);
         sizeof(vv3<float>);
         sizeof(vv4<float>);
+
+        v2 = v2.swizzle.y.x;
+        v4 = v3.swizzle.x.z.z.y;
+        v4 = v2.swizzle.y.y.x.x;
+
+        int stop = 243;
     }
 
     //{

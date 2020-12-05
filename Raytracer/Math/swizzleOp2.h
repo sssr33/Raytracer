@@ -50,8 +50,64 @@ struct swizzleOp2<OpHelper, VecT, ComponentT, 0, Indexes...>
     }
 };
 
-template<template<class VecT, class ComponentT, class ... Indexes> class OpHelper, class VecT, class ComponentT, int left, class ... Indexes, class ... Indexes2>
-typename OpHelper<VecT, ComponentT, Indexes...>::T operator+(const swizzleOp2<OpHelper, VecT, ComponentT, left, Indexes...>& a, const swizzleOp2<OpHelper, VecT, ComponentT, left, Indexes2...>& b)
+template<template<class VecT, class ComponentT, class ... Indexes> class OpHelper, class VecT, class ComponentT, int left, class B, class ... Indexes>
+std::enable_if_t<std::is_convertible_v<B, typename OpHelper<VecT, ComponentT, Indexes...>::T>, typename OpHelper<VecT, ComponentT, Indexes...>::T> operator+(const swizzleOp2<OpHelper, VecT, ComponentT, left, Indexes...>& a, const B& b)
 {
     return static_cast<typename OpHelper<VecT, ComponentT, Indexes...>::T>(a) + static_cast<typename OpHelper<VecT, ComponentT, Indexes...>::T>(b);
+}
+
+template<template<class VecT, class ComponentT, class ... Indexes> class OpHelper, class VecT, class ComponentT, int left, class B, class ... Indexes>
+std::enable_if_t<std::is_convertible_v<B, typename OpHelper<VecT, ComponentT, Indexes...>::T>, typename OpHelper<VecT, ComponentT, Indexes...>::T> operator+=(swizzleOp2<OpHelper, VecT, ComponentT, left, Indexes...>& a, const B& b)
+{
+    auto res = a + b;
+    a = res;
+    return res;
+}
+
+template<template<class VecT, class ComponentT, class ... Indexes> class OpHelper, class VecT, class ComponentT, int left, class B, class ... Indexes>
+std::enable_if_t<std::is_convertible_v<B, typename OpHelper<VecT, ComponentT, Indexes...>::T>, typename OpHelper<VecT, ComponentT, Indexes...>::T> operator-(const swizzleOp2<OpHelper, VecT, ComponentT, left, Indexes...>& a, const B& b)
+{
+    return static_cast<typename OpHelper<VecT, ComponentT, Indexes...>::T>(a) - static_cast<typename OpHelper<VecT, ComponentT, Indexes...>::T>(b);
+}
+
+template<template<class VecT, class ComponentT, class ... Indexes> class OpHelper, class VecT, class ComponentT, int left, class B, class ... Indexes>
+std::enable_if_t<std::is_convertible_v<B, typename OpHelper<VecT, ComponentT, Indexes...>::T>, typename OpHelper<VecT, ComponentT, Indexes...>::T> operator-=(swizzleOp2<OpHelper, VecT, ComponentT, left, Indexes...>& a, const B& b)
+{
+    auto res = a - b;
+    a = res;
+    return res;
+}
+
+template<template<class VecT, class ComponentT, class ... Indexes> class OpHelper, class VecT, class ComponentT, int left, class B, class ... Indexes>
+std::enable_if_t<std::is_convertible_v<B, typename OpHelper<VecT, ComponentT, Indexes...>::T>, typename OpHelper<VecT, ComponentT, Indexes...>::T> operator*(const swizzleOp2<OpHelper, VecT, ComponentT, left, Indexes...>& a, const B& b)
+{
+    return static_cast<typename OpHelper<VecT, ComponentT, Indexes...>::T>(a) * static_cast<typename OpHelper<VecT, ComponentT, Indexes...>::T>(b);
+}
+
+template<template<class VecT, class ComponentT, class ... Indexes> class OpHelper, class VecT, class ComponentT, int left, class B, class ... Indexes>
+std::enable_if_t<std::is_convertible_v<B, typename OpHelper<VecT, ComponentT, Indexes...>::T>, typename OpHelper<VecT, ComponentT, Indexes...>::T> operator*=(swizzleOp2<OpHelper, VecT, ComponentT, left, Indexes...>& a, const B& b)
+{
+    auto res = a * b;
+    a = res;
+    return res;
+}
+
+template<template<class VecT, class ComponentT, class ... Indexes> class OpHelper, class VecT, class ComponentT, int left, class B, class ... Indexes>
+std::enable_if_t<std::is_convertible_v<B, typename OpHelper<VecT, ComponentT, Indexes...>::T>, typename OpHelper<VecT, ComponentT, Indexes...>::T> operator/(const swizzleOp2<OpHelper, VecT, ComponentT, left, Indexes...>& a, const B& b)
+{
+    return static_cast<typename OpHelper<VecT, ComponentT, Indexes...>::T>(a) / static_cast<typename OpHelper<VecT, ComponentT, Indexes...>::T>(b);
+}
+
+template<template<class VecT, class ComponentT, class ... Indexes> class OpHelper, class VecT, class ComponentT, int left, class B, class ... Indexes>
+std::enable_if_t<std::is_convertible_v<B, typename OpHelper<VecT, ComponentT, Indexes...>::T>, typename OpHelper<VecT, ComponentT, Indexes...>::T> operator/=(swizzleOp2<OpHelper, VecT, ComponentT, left, Indexes...>& a, const B& b)
+{
+    auto res = a / b;
+    a = res;
+    return res;
+}
+
+template<template<class VecT, class ComponentT, class ... Indexes> class OpHelper, class VecT, class ComponentT, int left, class ... Indexes>
+typename OpHelper<VecT, ComponentT, Indexes...>::T operator-(const swizzleOp2<OpHelper, VecT, ComponentT, left, Indexes...>& a)
+{
+    return -static_cast<typename OpHelper<VecT, ComponentT, Indexes...>::T>(a);
 }

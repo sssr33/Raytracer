@@ -31,10 +31,52 @@ struct vec2
         return res;
     }
 
-    template<class RightT>
-    friend RightT operator+=(RightT& a, const vec2& b)
+    friend vec2& operator+=(vec2& a, const vec2& b)
     {
         a = a + b;
+        return a;
+    }
+
+    friend vec2 operator-(const vec2& a, const vec2& b)
+    {
+        vec2 res = { a.x - b.x, a.y - b.y };
+        return res;
+    }
+
+    friend vec2& operator-=(vec2& a, const vec2& b)
+    {
+        a = a - b;
+        return a;
+    }
+
+    friend vec2 operator*(const vec2& a, const vec2& b)
+    {
+        vec2 res = { a.x * b.x, a.y * b.y };
+        return res;
+    }
+
+    friend vec2& operator*=(vec2& a, const vec2& b)
+    {
+        a = a * b;
+        return a;
+    }
+
+    friend vec2 operator/(const vec2& a, const vec2& b)
+    {
+        vec2 res = { a.x / b.x, a.y / b.y };
+        return res;
+    }
+
+    friend vec2& operator/=(vec2& a, const vec2& b)
+    {
+        a = a / b;
+        return a;
+    }
+
+    friend vec2 operator-(vec2 a)
+    {
+        a.x = -a.x;
+        a.y = -a.y;
         return a;
     }
 };

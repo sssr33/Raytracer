@@ -50,6 +50,12 @@ int main()
         v3.swizzle.z.x += v1 + v2;
         v3.swizzle.z.x = v1 + v2;
 
+        v3.swizzle.z.x = -v3.swizzle.x.z;
+
+        v1 += 2.f;
+        v3.swizzle.z.x += 2.f;
+
+        v2 = v3.swizzle.y.z + v3.swizzle.z.y;
         v3.swizzle.z.x += v3.swizzle.y.z + v3.swizzle.z.y;
 
         int stop = 243;

@@ -32,10 +32,53 @@ struct vec3
         return res;
     }
 
-    template<class RightT>
-    friend RightT operator+=(RightT& a, const vec3& b)
+    friend vec3& operator+=(vec3& a, const vec3& b)
     {
         a = a + b;
+        return a;
+    }
+
+    friend vec3 operator-(const vec3& a, const vec3& b)
+    {
+        vec3 res = { a.x - b.x, a.y - b.y, a.z - b.z };
+        return res;
+    }
+
+    friend vec3& operator-=(vec3& a, const vec3& b)
+    {
+        a = a - b;
+        return a;
+    }
+
+    friend vec3 operator*(const vec3& a, const vec3& b)
+    {
+        vec3 res = { a.x * b.x, a.y * b.y, a.z * b.z };
+        return res;
+    }
+
+    friend vec3& operator*=(vec3& a, const vec3& b)
+    {
+        a = a * b;
+        return a;
+    }
+
+    friend vec3 operator/(const vec3& a, const vec3& b)
+    {
+        vec3 res = { a.x / b.x, a.y / b.y, a.z / b.z };
+        return res;
+    }
+
+    friend vec3& operator/=(vec3& a, const vec3& b)
+    {
+        a = a / b;
+        return a;
+    }
+
+    friend vec3 operator-(vec3 a)
+    {
+        a.x = -a.x;
+        a.y = -a.y;
+        a.z = -a.z;
         return a;
     }
 };

@@ -51,3 +51,9 @@ struct swizzleOp4<OpHelper, VecT, ComponentT, 0, Indexes...>
         return OpHelp::Get(reinterpret_cast<const VecT*>(this));
     }
 };
+
+template<template<class VecT, class ComponentT, class ... Indexes> class OpHelper, class VecT, class ComponentT, int left, class ... Indexes, class ... Indexes2>
+typename OpHelper<VecT, ComponentT, Indexes...>::T operator+(const swizzleOp4<OpHelper, VecT, ComponentT, left, Indexes...>& a, const swizzleOp4<OpHelper, VecT, ComponentT, left, Indexes2...>& b)
+{
+    return static_cast<typename OpHelper<VecT, ComponentT, Indexes...>::T>(a) + static_cast<typename OpHelper<VecT, ComponentT, Indexes...>::T>(b);
+}

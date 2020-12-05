@@ -1,28 +1,15 @@
-// Raytracer.cpp : This file contains the 'main' function. Program execution begins and ends there.
+// GenVectorSwizzleFields.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include "Window.h"
-#include "GameWindow.h"
-#include "RayTraceWindowHandler.h"
-#include "Math/MathTest.h"
+#include "GenPermutations.h"
 
 #include <iostream>
-#include <Helpers/is.h>
-#include <MassiveCompute/MassiveComputeTest.h>
+#include <algorithm>
 
 int main()
 {
-    //MathTest();
-    //MassiveComputeTest();
-
-    RayTraceWindowHandler rayTraceHandler;
-    // https://devblogs.microsoft.com/oldnewthing/20050217-00/?p=36423
-    GameWindow wnd(rayTraceHandler, L"Raytracer");
-
-    while (!is<Window::Quit>(wnd.ProcessMessages()))
-    {
-
-    }
+    const std::vector<std::pair<char, size_t>> fieldToIndexMap = { { 'x', 0 }, { 'y', 1 }, { 'z', 2 }, { 'w', 3 } };
+    std::vector<std::string> perms = GenPermutations()("xyzw", 2);
 
     std::cout << "Hello World!\n";
 }

@@ -8,9 +8,9 @@
     <ClCompile Include="SystemBackBufferLock.cpp" />
     <ClCompile Include="RayTraceWindowHandler.cpp" />
     <ClCompile Include="Render\Functor\TestGradientFunctor.cpp" />
-    <ClCompile Include="Render\RayTraceRenderTask.cpp" />
-    <ClCompile Include="Render\RayTraceRenderTaskState.cpp" />
-    <ClCompile Include="Render\RayTraceRenderTaskParams.cpp" />
+    <ClCompile Include="Math\MathTest.cpp" />
+    <ClCompile Include="Render\Functor\RayTraceFunctor.cpp" />
+    <ClCompile Include="Render\Functor\RayTraceFunctorParams.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -24,10 +24,19 @@
     <ClInclude Include="Image\BGRA.h" />
     <ClInclude Include="Image\ImageView.h" />
     <ClInclude Include="Render\Functor\TestGradientFunctor.h" />
-    <ClInclude Include="Render\RayTraceRenderTask.h" />
     <ClInclude Include="Image\Image.h" />
-    <ClInclude Include="Render\RayTraceRenderTaskState.h" />
-    <ClInclude Include="Render\RayTraceRenderTaskParams.h" />
     <ClInclude Include="Render\Functor\CopyImageFunctor.h" />
+    <ClInclude Include="Math\vec2.h" />
+    <ClInclude Include="Math\vec3.h" />
+    <ClInclude Include="Meta\IndexPair.h" />
+    <ClInclude Include="Math\swizzleOp2.h" />
+    <ClInclude Include="Math\swizzleOp3.h" />
+    <ClInclude Include="Math\swizzleOp4.h" />
+    <ClInclude Include="Math\swizzleOpVecHelper.h" />
+    <ClInclude Include="Math\vec4.h" />
+    <ClInclude Include="Math\vec.h" />
+    <ClInclude Include="Math\MathTest.h" />
+    <ClInclude Include="Render\Functor\RayTraceFunctor.h" />
+    <ClInclude Include="Render\Functor\RayTraceFunctorParams.h" />
   </ItemGroup>
 </Project>

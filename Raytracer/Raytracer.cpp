@@ -50,6 +50,8 @@ int main()
         v3.swizzle.z.x += v1 + v2;
         v3.swizzle.z.x = v1 + v2;
 
+        v3 = v3.swizzle.g.b.r;
+
         v3.swizzle.z.x = -v3.swizzle.x.z;
 
         v1 += 2.f;

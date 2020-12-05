@@ -11,6 +11,11 @@ struct swizzleOp4
         swizzleOp4<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<1, sizeof...(Indexes)>> y;
         swizzleOp4<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<2, sizeof...(Indexes)>> z;
         swizzleOp4<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<3, sizeof...(Indexes)>> w;
+
+        swizzleOp4<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<0, sizeof...(Indexes)>> r;
+        swizzleOp4<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<1, sizeof...(Indexes)>> g;
+        swizzleOp4<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<2, sizeof...(Indexes)>> b;
+        swizzleOp4<OpHelper, VecT, ComponentT, left - 1, Indexes..., IndexPair<3, sizeof...(Indexes)>> a;
     };
 
     typedef OpHelper<VecT, ComponentT, Indexes...> OpHelp;

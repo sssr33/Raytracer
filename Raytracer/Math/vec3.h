@@ -10,6 +10,7 @@ struct vec3
 {
     union {
         struct { T x, y, z; };
+        struct { T r, g, b; };
         T data[3];
 
         union
@@ -17,6 +18,10 @@ struct vec3
             swizzleOp3<swizzleOpVecHelper, vec3, T, 3, IndexPair<0, 0>> x;
             swizzleOp3<swizzleOpVecHelper, vec3, T, 3, IndexPair<1, 0>> y;
             swizzleOp3<swizzleOpVecHelper, vec3, T, 3, IndexPair<2, 0>> z;
+
+            swizzleOp3<swizzleOpVecHelper, vec3, T, 3, IndexPair<0, 0>> r;
+            swizzleOp3<swizzleOpVecHelper, vec3, T, 3, IndexPair<1, 0>> g;
+            swizzleOp3<swizzleOpVecHelper, vec3, T, 3, IndexPair<2, 0>> b;
         } swizzle;
     };
 

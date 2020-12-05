@@ -1,6 +1,6 @@
 #pragma once
 
-class RayTraceRenderTaskParams
+class RayTraceFunctorParams
 {
 public:
 private:

@@ -171,11 +171,10 @@
     <ClCompile Include="HDCBackBuffer.cpp" />
     <ClCompile Include="Math\MathTest.cpp" />
     <ClCompile Include="Raytracer.cpp" />
-    <ClCompile Include="Render\RayTraceRenderTask.cpp" />
+    <ClCompile Include="Render\Functor\RayTraceFunctor.cpp" />
+    <ClCompile Include="Render\Functor\RayTraceFunctorParams.cpp" />
     <ClCompile Include="RayTraceWindowHandler.cpp" />
     <ClCompile Include="Render\Functor\TestGradientFunctor.cpp" />
-    <ClCompile Include="Render\RayTraceRenderTaskParams.cpp" />
-    <ClCompile Include="Render\RayTraceRenderTaskState.cpp" />
     <ClCompile Include="SystemBackBufferLock.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -207,11 +206,10 @@
     <ClInclude Include="Math\vec4.h" />
     <ClInclude Include="Meta\IndexPair.h" />
     <ClInclude Include="Render\Functor\CopyImageFunctor.h" />
-    <ClInclude Include="Render\RayTraceRenderTask.h" />
+    <ClInclude Include="Render\Functor\RayTraceFunctor.h" />
+    <ClInclude Include="Render\Functor\RayTraceFunctorParams.h" />
     <ClInclude Include="RayTraceWindowHandler.h" />
     <ClInclude Include="Render\Functor\TestGradientFunctor.h" />
-    <ClInclude Include="Render\RayTraceRenderTaskParams.h" />
-    <ClInclude Include="Render\RayTraceRenderTaskState.h" />
     <ClInclude Include="SystemBackBufferLock.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>

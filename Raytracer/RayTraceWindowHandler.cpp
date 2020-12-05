@@ -3,6 +3,7 @@
 #include "Image/ImageView.h"
 #include "Render/Functor/TestGradientFunctor.h"
 #include "Render/Functor/CopyImageFunctor.h"
+#include "Render/Functor/RayTraceFunctor.h"
 
 #include <Helpers/is_ready.h>
 #include <MassiveCompute/Schedulers/StealingBlockScheduler.h>
@@ -135,7 +136,9 @@ Image<BGRA<uint8_t>> RayTraceWindowHandler::RayTraceMain(Image<BGRA<uint8_t>> re
 	ImageView<BGRA<uint8_t>> imageView(resultImage.GetWidth(), resultImage.GetHeight(), resultImage.GetData());
 	MassiveCompute::StealingBlockScheduler stealingScheduler;
 
-	stealingScheduler(imageView, TestGradientFunctor(imageView), imageView.GetWidth(), 1);
+	RayTraceFunctorParams rayTraceParams;
+
+	stealingScheduler(imageView, RayTraceFunctor(imageView, rayTraceParams), imageView.GetWidth(), 1);
 
 	// single thread, for test
 	/*MassiveCompute::Block block;

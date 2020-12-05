@@ -38,5 +38,6 @@
     <ClInclude Include="Math\MathTest.h" />
     <ClInclude Include="Render\Functor\RayTraceFunctor.h" />
     <ClInclude Include="Render\Functor\RayTraceFunctorParams.h" />
+    <ClInclude Include="Math\ray.h" />
   </ItemGroup>
 </Project>

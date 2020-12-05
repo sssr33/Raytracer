@@ -196,6 +196,7 @@
     <ClInclude Include="ISystemBackBuffer.h" />
     <ClInclude Include="IWindowMessageHandler.h" />
     <ClInclude Include="Math\MathTest.h" />
+    <ClInclude Include="Math\ray.h" />
     <ClInclude Include="Math\swizzleOp2.h" />
     <ClInclude Include="Math\swizzleOp3.h" />
     <ClInclude Include="Math\swizzleOp4.h" />

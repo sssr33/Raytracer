@@ -26,17 +26,16 @@ struct vec3
     operator T* () { return data; };
     operator const T* () const { return static_cast<const T*>(data); };
 
-    vec3 operator+(const vec3& other) const
+    friend vec3 operator+(const vec3& a, const vec3& b)
     {
-        vec3 res = { this->x + other.x, this->y + other.y, this->z + other.z };
+        vec3 res = { a.x + b.x, a.y + b.y, a.z + b.z };
         return res;
     }
 
-    vec3& operator+=(const vec3& other)
+    template<class RightT>
+    friend RightT operator+=(RightT& a, const vec3& b)
     {
-        vec3 tmp = *this + other;
-        *this = tmp;
-
-        return *this;
+        a = a + b;
+        return a;
     }
 };

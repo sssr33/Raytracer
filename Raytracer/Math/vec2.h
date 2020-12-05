@@ -25,17 +25,16 @@ struct vec2
     operator T* () { return data; };
     operator const T* () const { return static_cast<const T*>(data); };
 
-    vec2 operator+(const vec2& other) const
+    friend vec2 operator+(const vec2& a, const vec2& b)
     {
-        vec2 res = { this->x + other.x, this->y + other.y };
+        vec2 res = { a.x + b.x, a.y + b.y };
         return res;
     }
 
-    vec2& operator+=(const vec2& other)
+    template<class RightT>
+    friend RightT operator+=(RightT& a, const vec2& b)
     {
-        vec2 tmp = *this + other;
-        *this = tmp;
-
-        return *this;
+        a = a + b;
+        return a;
     }
 };

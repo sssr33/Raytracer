@@ -11,6 +11,7 @@
     <ClCompile Include="Render\RayTraceRenderTask.cpp" />
     <ClCompile Include="Render\RayTraceRenderTaskState.cpp" />
     <ClCompile Include="Render\RayTraceRenderTaskParams.cpp" />
+    <ClCompile Include="Math\MathTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -38,5 +39,6 @@
     <ClInclude Include="Math\swizzleOpVecHelper.h" />
     <ClInclude Include="Math\vec4.h" />
     <ClInclude Include="Math\vec.h" />
+    <ClInclude Include="Math\MathTest.h" />
   </ItemGroup>
 </Project>

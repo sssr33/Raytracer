@@ -2,6 +2,8 @@
 
 #include "swizzleOp3.h"
 
+#include <cmath>
+
 template<class VecT, class ComponentT, class ... Indexes>
 struct swizzleOpVecHelper;
 
@@ -85,5 +87,53 @@ struct vec3
         a.y = -a.y;
         a.z = -a.z;
         return a;
+    }
+
+    T lengthSquared() const
+    {
+        T squaredlLength = this->dot(*this);
+        return squaredlLength;
+    }
+
+    T length() const
+    {
+        T length = std::sqrt(this->lengthSquared());
+        return length;
+    }
+
+    vec3 normalized() const
+    {
+        T lengthInv = T(1) / this->length();
+        vec3 res = *this * lengthInv;
+        return res;
+    }
+
+    void normalize()
+    {
+        *this = normalized();
+    }
+
+    T dot(const vec3& b) const
+    {
+        const vec3& a = *this;
+        float dotProduct =
+            a.x * b.x +
+            a.y * b.y +
+            a.z * b.z;
+
+        return dotProduct;
+    }
+
+    vec3 cross(const vec3& b) const
+    {
+        const vec3& a = *this;
+        vec3 res =
+        {
+            a.y * b.z - a.z * b.y,
+            a.z * b.x - a.x * b.z,
+            a.x * b.y - a.y * b.x
+        };
+
+        return res;
     }
 };

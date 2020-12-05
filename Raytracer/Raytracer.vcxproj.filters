@@ -11,8 +11,6 @@
     <ClCompile Include="Render\RayTraceRenderTask.cpp" />
     <ClCompile Include="Render\RayTraceRenderTaskState.cpp" />
     <ClCompile Include="Render\RayTraceRenderTaskParams.cpp" />
-    <ClCompile Include="Math\vec2.cpp" />
-    <ClCompile Include="Math\vec3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -31,10 +29,14 @@
     <ClInclude Include="Render\RayTraceRenderTaskState.h" />
     <ClInclude Include="Render\RayTraceRenderTaskParams.h" />
     <ClInclude Include="Render\Functor\CopyImageFunctor.h" />
-    <ClInclude Include="Math\GetSetVec.h" />
-    <ClInclude Include="Math\swizzle.h" />
     <ClInclude Include="Math\vec2.h" />
     <ClInclude Include="Math\vec3.h" />
-    <ClInclude Include="Math\VecRef.h" />
+    <ClInclude Include="Meta\IndexPair.h" />
+    <ClInclude Include="Math\swizzleOp2.h" />
+    <ClInclude Include="Math\swizzleOp3.h" />
+    <ClInclude Include="Math\swizzleOp4.h" />
+    <ClInclude Include="Math\swizzleOpVecHelper.h" />
+    <ClInclude Include="Math\vec4.h" />
+    <ClInclude Include="Math\vec.h" />
   </ItemGroup>
 </Project>

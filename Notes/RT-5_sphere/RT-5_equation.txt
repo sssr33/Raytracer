@@ -4,9 +4,17 @@ x*x + y*y + z*z = R*R
 sphere equation with center:
 (x-cx)*(x-cx) + (y-cy)*(y-cy) + (z-cz)*(z-cz) = R*R
 
+where x,y,z is p(point on sphere) and cx,cy,cz is c(sphere center)
+dot(p - c, p - c) = R*R
 
+with p = p(t) where p(t) is ray equation
+dot(p(t) - c, p(t) - c) = R*R
 
+with ray equation instead of p(t)
+where A - origin, B - ray direction, C - spehere center
+dot(A * t + B - c, A * t + B - c) = R*R
 
+Simplify:
 dot((A + t * B) - C, (A + t * B) - C) = R * R
 
 ((a + t * b) - c) * ((a + t * b) - c) = R * R
@@ -340,12 +348,28 @@ dot(a - c, a - c)
 
 t*t*dot(b, b)
 
-==================== FINAL
+==================== SIMPLIFICATION FINAL
 
 dot(a - c, a - c) + 2*t*dot(b, a - c) + t*t*dot(b, b) = R * R
 
 dot(a - c, a - c) + 2*t*dot(b, a - c) + t*t*dot(b, b) - R * R = 0
 
+quadratic equation
+t*t*dot(b, b) + t*2*dot(b, a - c) + dot(a - c, a - c) - R*R = 0
+
+A = dot(b, b)
+B = 2*dot(b, a - c)
+C = dot(a - c, a - c) - R*R
+
+D = B^2 - 4*A*C
+D = (2*dot(b, a - c))^2 - 4*dot(b, b)*(dot(a - c, a - c) - R*R)
+
+D > 0
+x1 = (-b + sqrt(d)) / 2*a
+x2 = (-b - sqrt(d)) / 2*a
+
+Faulty try to simplify
+Need to check what went wrong
 ====================
 
 a == a

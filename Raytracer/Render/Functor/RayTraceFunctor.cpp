@@ -40,9 +40,37 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
     }
 }
 
-vec3<float> RayTraceFunctor::Color(const ray<float>& r) const
+vec3<float> RayTraceFunctor::Color(const ray<float>& ray) const
 {
-    vec3<float> unitDirection = r.direction.normalized();
+    if (this->HitSphere({ 0.f, 0.f, -1.f }, 0.5f, ray))
+    {
+        return { 1.f, 0.f, 0.f };
+    }
+
+    vec3<float> unitDirection = ray.direction.normalized();
     float t = 0.5f * (unitDirection.y + 1.f);
     return (1.f - t) * vec3<float>(1.f) + t * vec3<float>(0.5f, 0.7f, 1.f);
+}
+
+bool RayTraceFunctor::HitSphere(const vec3<float>& center, float radius, const ray<float>& ray) const
+{
+    vec3<float> fromSphereToRayOrigin = ray.origin - center;
+
+    float a = ray.direction.dot(ray.direction);
+    float b = 2.f * ray.direction.dot(fromSphereToRayOrigin);
+    float c = fromSphereToRayOrigin.dot(fromSphereToRayOrigin) - radius * radius;
+
+    float discriminant = b * b - 4.f * a * c;
+
+    bool hits = false;
+
+    if (discriminant > 0.f)
+    {
+        float t1 = (-b + std::sqrt(discriminant)) / 2.f * a;
+        float t2 = (-b - std::sqrt(discriminant)) / 2.f * a;
+
+        hits = t1 > 0.f || t2 > 0.f;
+    }
+
+    return hits;
 }

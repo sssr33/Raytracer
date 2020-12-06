@@ -1,0 +1,441 @@
+sphere equation:
+x*x + y*y + z*z = R*R
+
+sphere equation with center:
+(x-cx)*(x-cx) + (y-cy)*(y-cy) + (z-cz)*(z-cz) = R*R
+
+
+
+
+dot((A + t * B) - C, (A + t * B) - C) = R * R
+
+((a + t * b) - c) * ((a + t * b) - c) = R * R
+
+(a + t * b - c) * (a + t * b - c) = R * R
+
+====================
+
+(ax + t * bx - cx) * (ax + t * bx - cx) + (ay + t * by - cy) * (ay + t * by - cy) + (az + t * bz - cz) * (az + t * bz - cz) = R * R
+
+====================
+
+(ax + t * bx - cx) * (ax + t * bx - cx) + (ay + t * by - cy) * (ay + t * by - cy) + (az + t * bz - cz) * (az + t * bz - cz) = R * R
+
+ax*ax + ax*t*bx + ax*(-cx) + t*bx*ax + t*bx*t*bx + t*bx*(-cx) + (-cx)*ax + (-cx)*t*bx + cx*cx +
+ay*ay + ay*t*by + ay*(-cy) + t*by*ay + t*by*t*by + t*by*(-cy) + (-cy)*ay + (-cy)*t*by + cy*cy +
+az*az + az*t*bz + az*(-cz) + t*bz*az + t*bz*t*bz + t*bz*(-cz) + (-cz)*az + (-cz)*t*bz + cz*cz
+
+====================
+
+ax*ax
+ay*ay
+az*az
+
+ax*t*bx
+ay*t*by
+az*t*bz
+
+ax*(-cx)
+ay*(-cy)
+az*(-cz)
+
+t*bx*ax
+t*by*ay
+t*bz*az
+
+t*bx*t*bx
+t*by*t*by
+t*bz*t*bz
+
+t*bx*(-cx)
+t*by*(-cy)
+t*bz*(-cz)
+
+(-cx)*ax
+(-cy)*ay
+(-cz)*az
+
+(-cx)*t*bx
+(-cy)*t*by
+(-cz)*t*bz
+
+cx*cx
+cy*cy
+cz*cz
+
+====================
+
+ax*ax
+ay*ay
+az*az
+
+t*ax*bx
+t*ay*by
+t*az*bz
+
+ax*(-cx)
+ay*(-cy)
+az*(-cz)
+
+t*ax*bx
+t*ay*by
+t*az*bz
+
+t*bx*t*bx
+t*by*t*by
+t*bz*t*bz
+
+t*bx*(-cx)
+t*by*(-cy)
+t*bz*(-cz)
+
+ax*(-cx)
+ay*(-cy)
+az*(-cz)
+
+t*bx*(-cx)
+t*by*(-cy)
+t*bz*(-cz)
+
+cx*cx
+cy*cy
+cz*cz
+
+====================
+
+ax*ax
+ay*ay
+az*az
+
+cx*cx
+cy*cy
+cz*cz
+
+ax*(-cx)
+ay*(-cy)
+az*(-cz)
+
+ax*(-cx)
+ay*(-cy)
+az*(-cz)
+
+t*ax*bx
+t*ay*by
+t*az*bz
+
+t*ax*bx
+t*ay*by
+t*az*bz
+
+t*bx*(-cx)
+t*by*(-cy)
+t*bz*(-cz)
+
+t*bx*(-cx)
+t*by*(-cy)
+t*bz*(-cz)
+
+t*t*bx*bx
+t*t*by*by
+t*t*bz*bz
+
+====================
+
+ax*ax
+ay*ay
+az*az
+
+cx*cx
+cy*cy
+cz*cz
+
+2*ax*(-cx)
+2*ay*(-cy)
+2*az*(-cz)
+
+2*t*ax*bx
+2*t*ay*by
+2*t*az*bz
+
+2*t*bx*(-cx)
+2*t*by*(-cy)
+2*t*bz*(-cz)
+
+t*t*bx*bx
+t*t*by*by
+t*t*bz*bz
+
+====================
+
+ax*ax
+ay*ay
+az*az
+
+cx*cx
+cy*cy
+cz*cz
+
+2*ax*(-cx)
+2*ay*(-cy)
+2*az*(-cz)
+
+2*t*(ax*bx + bx*(-cx))
+2*t*(ay*by + by*(-cy))
+2*t*(az*bz + bz*(-cz))
+
+t*t*bx*bx
+t*t*by*by
+t*t*bz*bz
+
+====================
+
+ax*ax
+ay*ay
+az*az
+
+cx*cx
+cy*cy
+cz*cz
+
+2*ax*(-cx)
+2*ay*(-cy)
+2*az*(-cz)
+
+2*t*bx*(ax - cx)
+2*t*by*(ay - cy)
+2*t*bz*(az - cz)
+
+t*t*bx*bx
+t*t*by*by
+t*t*bz*bz
+
+====================
+
+ax*ax
+ay*ay
+az*az
+
+cx*cx
+cy*cy
+cz*cz
+
+ax*(-cx)
+ay*(-cy)
+az*(-cz)
+
+ax*(-cx)
+ay*(-cy)
+az*(-cz)
+
+2*t*bx*(ax - cx)
+2*t*by*(ay - cy)
+2*t*bz*(az - cz)
+
+t*t*bx*bx
+t*t*by*by
+t*t*bz*bz
+
+====================
+
+ax*ax
+ay*ay
+az*az
+
+ax*(-cx)
+ay*(-cy)
+az*(-cz)
+
+ax*(-cx)
+ay*(-cy)
+az*(-cz)
+
+cx*cx
+cy*cy
+cz*cz
+
+2*t*bx*(ax - cx)
+2*t*by*(ay - cy)
+2*t*bz*(az - cz)
+
+t*t*bx*bx
+t*t*by*by
+t*t*bz*bz
+
+====================
+
+ax*ax
+ay*ay
+az*az
+
+-ax*cx
+-ay*cy
+-az*cz
+
+-ax*cx
+-ay*cy
+-az*cz
+
+cx*cx
+cy*cy
+cz*cz
+
+2*t*bx*(ax - cx)
+2*t*by*(ay - cy)
+2*t*bz*(az - cz)
+
+t*t*bx*bx
+t*t*by*by
+t*t*bz*bz
+
+====================
+
+ax*ax
+ay*ay
+az*az
+
+-ax*cx
+-ay*cy
+-az*cz
+
+-ax*cx
+-ay*cy
+-az*cz
+
+-cx*-cx
+-cy*-cy
+-cz*-cz
+
+2*t*bx*(ax - cx)
+2*t*by*(ay - cy)
+2*t*bz*(az - cz)
+
+t*t*bx*bx
+t*t*by*by
+t*t*bz*bz
+
+//
+ax*ax - ax*cx - ax*cx + -cx*-cx
+ax^2 - 2ax*cx + cx^2
+(ax - cx) * (ax - cx)
+
+====================
+(ax - cx) * (ax - cx)
+(ay - cy) * (ay - cy)
+(az - cz) * (az - cz)
+
+2*t*bx*(ax - cx)
+2*t*by*(ay - cy)
+2*t*bz*(az - cz)
+
+t*t*bx*bx
+t*t*by*by
+t*t*bz*bz
+
+====================
+dot(a, b) = ax * bx + ay * by + az * bz
+
+dot(a - c, a - c)
+
+2*t*dot(b, a - c)
+
+t*t*dot(b, b)
+
+==================== FINAL
+
+dot(a - c, a - c) + 2*t*dot(b, a - c) + t*t*dot(b, b) = R * R
+
+dot(a - c, a - c) + 2*t*dot(b, a - c) + t*t*dot(b, b) - R * R = 0
+
+====================
+
+a == a
+b == t * b
+-c == -c
+
+(a + b - c) * (a + b - c)
+
+a * (a + b - c) + b * (a + b - c) - c * (a + b - c)
+
+a*a + a*b - a*c + a*b + b*b - b*c - a*c + b*c - c*c
+
+a*a
+a*b
+-a*c
+a*b
+b*b
+-b*c
+-a*c
+b*c
+-c*c
+
+a*a
+b*b
+a*b
+a*b
+b*c  -- goes away
+-b*c -- goes away
+-a*c
+-a*c
+-c*c
+
+a*a
+b*b
+a*b
+a*b
+-a*c
+-a*c
+-c*c
+
+a*a
+b*b
+-c*c
+a*b
+a*b
+-a*c
+-a*c
+
+a*a + b*b - c*c + 2*a*b - 2*a*c
+
+====================
+
+(ax*ax + t*bx*t*bx - cx*cx + 2*ax*t*bx - 2*ax*cx) + (ay*ay + t*by*t*by - cy*cy + 2*ay*t*by - 2*ay*cy) + (az*az + t*bz*t*bz - cz*cz + 2*az*t*bz - 2*az*cz) = R * R
+
+ax*ax + t*bx*t*bx - cx*cx + 2*ax*t*bx - 2*ax*cx + ay*ay + t*by*t*by - cy*cy + 2*ay*t*by - 2*ay*cy + az*az + t*bz*t*bz - cz*cz + 2*az*t*bz - 2*az*cz = R * R
+
+ax*ax + ay*ay + az*az - cx*cx - cy*cy - cz*cz - 2*ax*cx - 2*ay*cy - 2*az*cz + t*bx*t*bx + t*by*t*by + t*bz*t*bz + 2*ax*t*bx + 2*ay*t*by + 2*az*t*bz = R * R
+
+ax*ax + ay*ay + az*az - cx*cx - cy*cy - cz*cz + 2(-ax*cx - ay*cy - az*cz) + t*bx*t*bx + t*by*t*by + t*bz*t*bz + 2*ax*t*bx + 2*ay*t*by + 2*az*t*bz = R * R
+
+ax*ax + ay*ay + az*az - cx*cx - cy*cy - cz*cz + 2(-ax*cx - ay*cy - az*cz) + t^2(bx*bx + by*by + bz*bz) + 2*t(ax*bx + ay*by + az*bz) = R * R
+
+ax*ax + ay*ay + az*az - cx*cx - cy*cy - cz*cz + 2*(-ax*cx - ay*cy - az*cz) + t*t*(bx*bx + by*by + bz*bz) + 2*t*(ax*bx + ay*by + az*bz) = R * R
+
+ax*ax + ay*ay + az*az - cx*cx - cy*cy - cz*cz + t*t*(bx*bx + by*by + bz*bz) + 2*(t*(ax*bx + ay*by + az*bz) + (-ax*cx - ay*cy - az*cz)) = R * R
+
+ax*ax + ay*ay + az*az - (cx*cx + cy*cy + cz*cz) + t*t*(bx*bx + by*by + bz*bz) + 2*(t*(ax*bx + ay*by + az*bz) - (ax*cx + ay*cy + az*cz)) = R * R
+
+====================
+
+a*a + t*b*t*b - c*c + 2*a*t*b - 2*a*c
+
+a*a - c*c - 2*a*c + 2*a*t*b + t*b*t*b
+
+a*a - c*c - 2*a*c + 2*t*(a*b) + t^2*(b * b)
+
+====================
+
+a*a + 2*a*t*b - 2*a*c + t*b*t*b - 2*t*b*c - c*c
+
+a*a - c*c - 2*a*c - 2*t*b*c + 2*a*t*b + t*b*t*b
+
+a*a - c*c - 2*a*c - 2*t*b*c + 2*t*a*b + t*t*b*b
+
+a*a - c*c - 2*a*c + 2*t(-b*c + a*b) + t^2*b*b
+
+a*a - c*c - 2*a*c + 2*t*b(-c + a) + t^2*b*b
+
+a*a - c*c - 2*a*c + 2*t*b(a - c) + t^2*b*b
+
+a^2 - c^2 - 2*a*c + 2*t*b(a - c) + t^2*b*b
+
+(a - c)*(a + c) - 2*a*c + 2*t*b(a - c) + t^2*b*b

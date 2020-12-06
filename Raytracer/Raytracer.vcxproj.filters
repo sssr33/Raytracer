@@ -11,6 +11,7 @@
     <ClCompile Include="Math\MathTest.cpp" />
     <ClCompile Include="Render\Functor\RayTraceFunctor.cpp" />
     <ClCompile Include="Render\Functor\RayTraceFunctorParams.cpp" />
+    <ClCompile Include="Render\Camera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -38,5 +39,7 @@
     <ClInclude Include="Math\MathTest.h" />
     <ClInclude Include="Render\Functor\RayTraceFunctor.h" />
     <ClInclude Include="Render\Functor\RayTraceFunctorParams.h" />
+    <ClInclude Include="Math\ray.h" />
+    <ClInclude Include="Render\Camera.h" />
   </ItemGroup>
 </Project>

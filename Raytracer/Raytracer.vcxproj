@@ -171,6 +171,7 @@
     <ClCompile Include="HDCBackBuffer.cpp" />
     <ClCompile Include="Math\MathTest.cpp" />
     <ClCompile Include="Raytracer.cpp" />
+    <ClCompile Include="Render\Camera.cpp" />
     <ClCompile Include="Render\Functor\RayTraceFunctor.cpp" />
     <ClCompile Include="Render\Functor\RayTraceFunctorParams.cpp" />
     <ClCompile Include="RayTraceWindowHandler.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="ISystemBackBuffer.h" />
     <ClInclude Include="IWindowMessageHandler.h" />
     <ClInclude Include="Math\MathTest.h" />
+    <ClInclude Include="Math\ray.h" />
     <ClInclude Include="Math\swizzleOp2.h" />
     <ClInclude Include="Math\swizzleOp3.h" />
     <ClInclude Include="Math\swizzleOp4.h" />
@@ -205,6 +207,7 @@
     <ClInclude Include="Math\vec3.h" />
     <ClInclude Include="Math\vec4.h" />
     <ClInclude Include="Meta\IndexPair.h" />
+    <ClInclude Include="Render\Camera.h" />
     <ClInclude Include="Render\Functor\CopyImageFunctor.h" />
     <ClInclude Include="Render\Functor\RayTraceFunctor.h" />
     <ClInclude Include="Render\Functor\RayTraceFunctorParams.h" />

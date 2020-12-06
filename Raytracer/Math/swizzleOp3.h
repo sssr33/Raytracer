@@ -2,6 +2,8 @@
 
 #include "Meta/IndexPair.h"
 
+#include <type_traits>
+
 template<template<class VecT, class ComponentT, class ... Indexes> class OpHelper, class VecT, class ComponentT, int left, class ... Indexes>
 struct swizzleOp3
 {

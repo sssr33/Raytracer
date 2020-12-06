@@ -16,6 +16,7 @@ public:
 
 private:
 	vec3<float> Color(const ray<float>& r) const;
+	bool HitSphere(const vec3<float>& center, float radius, const ray<float>& ray) const;
 
 	ImageView<BGRA<uint8_t>>& image;
 	const RayTraceFunctorParams& params;

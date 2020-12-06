@@ -11,8 +11,8 @@ with p = p(t) where p(t) is ray equation
 dot(p(t) - c, p(t) - c) = R*R
 
 with ray equation instead of p(t)
-where A - origin, B - ray direction, C - spehere center
-dot(A * t + B - c, A * t + B - c) = R*R
+where A - ray origin, B - ray direction, C - spehere center
+dot(A + t * B - c, A + t * B - c) = R*R
 
 Simplify:
 dot((A + t * B) - C, (A + t * B) - C) = R * R
@@ -360,6 +360,10 @@ t*t*dot(b, b) + t*2*dot(b, a - c) + dot(a - c, a - c) - R*R = 0
 A = dot(b, b)
 B = 2*dot(b, a - c)
 C = dot(a - c, a - c) - R*R
+
+A = dot(rayDir, rayDir)
+B = 2*dot(rayDir, rayOrigin - sphereCenter)
+C = dot(rayOrigin - sphereCenter, rayOrigin - sphereCenter) - R*R
 
 D = B^2 - 4*A*C
 D = (2*dot(b, a - c))^2 - 4*dot(b, b)*(dot(a - c, a - c) - R*R)

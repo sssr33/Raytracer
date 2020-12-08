@@ -3,11 +3,13 @@
 
 void MathTestSwizzle();
 void MathTestLinearAlgebra();
+void MathTestTriangle();
 
 void MathTest()
 {
     MathTestSwizzle();
     MathTestLinearAlgebra();
+    MathTestTriangle();
 }
 
 void MathTestSwizzle()
@@ -85,4 +87,62 @@ void MathTestLinearAlgebra()
     vec3<float> v22 = v3.cross(v1);
 
     int stop = 234;
+}
+
+void MathTestTriangle()
+{
+    vec3<float> v0 = { 0.f, 0.f, 0.f };
+    vec3<float> v1 = { 1.f, 0.f, 0.f };
+    vec3<float> v2 = { 0.f, 1.f, 0.f };
+
+    vec3<float> v0v1 = v1 - v0;
+    vec3<float> v0v2 = v2 - v0;
+
+    vec3<float> v1v2 = v2 - v1;
+    vec3<float> v2v0 = v0 - v2;
+
+    vec3<float> n = v0v1.cross(v0v2);
+
+    vec3<float> p = { 0.f, -1.f, 0.f };
+    //vec3<float> p = { 0.1f, 0.1f, 0.f };
+    //vec3<float> p = { 0.5f, 0.0f, 0.f };
+    //vec3<float> p = { 0.0f, 0.5f, 0.f };
+
+    // https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/ray-triangle-intersection-geometric-solution
+    {
+        vec3<float> v0p = p - v0;
+        vec3<float> v1p = p - v1;
+        vec3<float> v2p = p - v2;
+
+        vec3<float> c1 = v0v1.cross(v0p);
+        vec3<float> c2 = v1v2.cross(v1p);
+        vec3<float> c3 = v2v0.cross(v2p);
+
+        float d1 = n.dot(c1);
+        float d2 = n.dot(c2);
+        float d3 = n.dot(c3);
+
+        int stop = 324;
+    }
+
+    // https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/barycentric-coordinates
+    {
+        float area = n.length() / 2; // area of the triangle 
+
+        vec3<float> v0p = p - v0;
+        vec3<float> v1p = p - v1;
+        vec3<float> v2p = p - v2;
+
+        vec3<float> c1 = v0v1.cross(v0p);
+        vec3<float> c2 = v1v2.cross(v1p);
+        vec3<float> c3 = v2v0.cross(v2p);
+
+        float w = (c1.length() / 2.f) / area;
+        float u = (c2.length() / 2.f) / area;
+        float v = (c3.length() / 2.f) / area;
+
+        auto pp = u * v0 + v * v1 + w * v2;
+
+        int stop = 324;
+    }
 }

@@ -12,7 +12,7 @@
 
 int main()
 {
-    //MathTest();
+    MathTest();
     //MassiveComputeTest();
 
     RayTraceWindowHandler rayTraceHandler;

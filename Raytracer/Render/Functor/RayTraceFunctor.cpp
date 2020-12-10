@@ -15,6 +15,8 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
     const vec2<float> imageSize(static_cast<float>(block.imageWidth), static_cast<float>(block.imageHeight));
     Camera camera(imageSize.x / imageSize.y);
 
+    camera.SetOrigin({ this->params.cameraX, 0.f, 0.f });
+
     for (size_t yRow = block.top; yRow < block.bottom; yRow++)
     {
         BGRA<uint8_t>* row = image.GetRow(yRow);
@@ -42,9 +44,23 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
 
 vec3<float> RayTraceFunctor::Color(const ray<float>& ray) const
 {
-    if (this->HitSphere({ 0.f, 0.f, -1.f }, 0.5f, ray))
+    SphereHit sphereHit = this->HitSphere({ 0.f, 0.f, -1.f }, 0.5f, ray);
+    TriangleHit triangleHit = this->HitTriangle({ -1.f, 0.5f, -1.f }, { -0.5f, 0.f, -1.f }, { -1.f, -0.5f, -1.f }, ray);
+
+    if (sphereHit.hit && triangleHit.hit)
+    {
+        sphereHit.hit = sphereHit.t < triangleHit.t;
+        triangleHit.hit = triangleHit.t < sphereHit.t;
+    }
+
+    if (sphereHit.hit)
     {
         return { 1.f, 0.f, 0.f };
+    }
+
+    if (triangleHit.hit)
+    {
+        return { 0.f, 1.f, 0.f };
     }
 
     vec3<float> unitDirection = ray.direction.normalized();
@@ -52,7 +68,7 @@ vec3<float> RayTraceFunctor::Color(const ray<float>& ray) const
     return (1.f - t) * vec3<float>(1.f) + t * vec3<float>(0.5f, 0.7f, 1.f);
 }
 
-bool RayTraceFunctor::HitSphere(const vec3<float>& center, float radius, const ray<float>& ray) const
+RayTraceFunctor::SphereHit RayTraceFunctor::HitSphere(const vec3<float>& center, float radius, const ray<float>& ray) const
 {
     vec3<float> fromSphereToRayOrigin = ray.origin - center;
 
@@ -62,15 +78,65 @@ bool RayTraceFunctor::HitSphere(const vec3<float>& center, float radius, const r
 
     float discriminant = b * b - 4.f * a * c;
 
-    bool hits = false;
+    SphereHit hit;
 
     if (discriminant > 0.f)
     {
-        float t1 = (-b + std::sqrt(discriminant)) / 2.f * a;
-        float t2 = (-b - std::sqrt(discriminant)) / 2.f * a;
+        float t1 = (-b + std::sqrt(discriminant)) / (2.f * a);
+        float t2 = (-b - std::sqrt(discriminant)) / (2.f * a);
 
-        hits = t1 > 0.f || t2 > 0.f;
+        hit.t = std::numeric_limits<float>::max();
+
+        if (t1 > 0.f)
+        {
+            hit.hit = true;
+            hit.t = (std::min)(hit.t, t1);
+        }
+
+        if (t2 > 0.f)
+        {
+            hit.hit = true;
+            hit.t = (std::min)(hit.t, t2);
+        }
     }
 
-    return hits;
+    return hit;
+}
+
+RayTraceFunctor::TriangleHit RayTraceFunctor::HitTriangle(const vec3<float>& v0, const vec3<float>& v1, const vec3<float>& v2, const ray<float>& ray) const
+{
+    // https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
+
+    vec3<float> v0v1 = v1 - v0;
+    vec3<float> v0v2 = v2 - v0;
+    vec3<float> pvec = ray.direction.cross(v0v2);
+    float det = v0v1.dot(pvec);
+#ifdef CULLING 
+    // if the determinant is negative the triangle is backfacing
+    // if the determinant is close to 0, the ray misses the triangle
+    if (det < kEpsilon) return false;
+#else 
+    // ray and triangle are parallel if det is close to 0
+    if (fabs(det) < std::numeric_limits<float>::epsilon()) return TriangleHit();
+#endif 
+    float invDet = 1 / det;
+
+    vec3<float> tvec = ray.origin - v0;
+    float u = tvec.dot(pvec) * invDet;
+    if (u < 0.f || u > 1.f) return TriangleHit();
+
+    vec3<float> qvec = tvec.cross(v0v1);
+    float v = ray.direction.dot(qvec) * invDet;
+    if (v < 0.f || u + v > 1.f) return TriangleHit();
+
+    float t = v0v2.dot(qvec) * invDet;
+
+    TriangleHit hit;
+
+    hit.hit = true;
+    hit.t = t;
+    hit.u = u;
+    hit.v = v;
+
+    return hit;
 }

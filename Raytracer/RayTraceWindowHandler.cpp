@@ -64,7 +64,7 @@ void RayTraceWindowHandler::OnMouseLeftPress(const Helpers::Point2D<float>& pt)
 
 void RayTraceWindowHandler::OnMouseLeftRelease(const Helpers::Point2D<float>& pt)
 {
-
+	cameraX -= 0.01f;
 }
 
 void RayTraceWindowHandler::OnMouseRightPress(const Helpers::Point2D<float>& pt)
@@ -74,7 +74,7 @@ void RayTraceWindowHandler::OnMouseRightPress(const Helpers::Point2D<float>& pt)
 
 void RayTraceWindowHandler::OnMouseRightRelease(const Helpers::Point2D<float>& pt)
 {
-
+	cameraX += 0.01f;
 }
 
 void RayTraceWindowHandler::OnMouseMiddlePress(const Helpers::Point2D<float>& pt)
@@ -112,9 +112,14 @@ void RayTraceWindowHandler::TryStartRayTraceTask()
 		image = Image<BGRA<uint8_t>>::Resize(std::move(image), this->currentSize.width, this->currentSize.height);
 	}
 
+	RayTraceFunctorParams rayTraceParams;
+
+	rayTraceParams.cameraX = this->cameraX;
+
 	this->rayTraceTask = std::async(
 		std::launch::async,
 		&RayTraceWindowHandler::RayTraceMain,
+		rayTraceParams,
 		std::move(image),
 		std::ref(this->rayTraceTaskCancel)
 	);
@@ -131,12 +136,14 @@ void RayTraceWindowHandler::TryFinishRayTraceTask()
 	this->currentlyPresentingImage = this->rayTraceTask.get();
 }
 
-Image<BGRA<uint8_t>> RayTraceWindowHandler::RayTraceMain(Image<BGRA<uint8_t>> resultImage, std::atomic<bool>& /*cancel*/)
+Image<BGRA<uint8_t>> RayTraceWindowHandler::RayTraceMain(
+	RayTraceFunctorParams rayTraceParams,
+	Image<BGRA<uint8_t>> resultImage,
+	std::atomic<bool>& /*cancel*/
+)
 {
 	ImageView<BGRA<uint8_t>> imageView(resultImage.GetWidth(), resultImage.GetHeight(), resultImage.GetData());
 	MassiveCompute::StealingBlockScheduler stealingScheduler;
-
-	RayTraceFunctorParams rayTraceParams;
 
 	stealingScheduler(imageView, RayTraceFunctor(imageView, rayTraceParams), imageView.GetWidth(), 1);
 

@@ -19,6 +19,7 @@ private:
 	{
 		bool hit = false;
 		float t;
+		vec3<float> normal;
 	};
 
 	struct TriangleHit
@@ -27,6 +28,7 @@ private:
 		float t;
 		float u;
 		float v;
+		vec3<float> normal;
 	};
 
 	vec3<float> Color(const ray<float>& r) const;

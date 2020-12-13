@@ -10,22 +10,22 @@ std::optional<HitRecord> Sphere::Hit(const ray<float>& ray, float tMin, float tM
     vec3<float> fromSphereToRayOrigin = ray.origin - this->center;
 
     float a = ray.direction.dot(ray.direction);
-    float b = 2.f * ray.direction.dot(fromSphereToRayOrigin);
+    float b = ray.direction.dot(fromSphereToRayOrigin);
     float c = fromSphereToRayOrigin.dot(fromSphereToRayOrigin) - radius * radius;
 
-    float discriminant = b * b - 4.f * a * c;
+    float discriminant = b * b - a * c;
 
     if (discriminant >= 0.f)
     {
         const float discriminantSqRoot = std::sqrt(discriminant);
 
-        float tClosest = (-b - discriminantSqRoot) / (2.f * a);
+        float tClosest = (-b - discriminantSqRoot) / a;
         if (tClosest > tMin && tClosest < tMax)
         {
             return this->MakeHitRecord(ray, tClosest);
         }
 
-        float tFarthest = (-b + discriminantSqRoot) / (2.f * a);
+        float tFarthest = (-b + discriminantSqRoot) / a;
         if (tFarthest > tMin && tFarthest < tMax)
         {
             return this->MakeHitRecord(ray, tFarthest);

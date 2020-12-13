@@ -15,7 +15,7 @@ Camera::Camera(float viewWidth, float viewHeight)
 
 ray<float> Camera::GetRay(const vec2<float>& uv) const
 {
-    const ray<float> r(
+    ray<float> r(
         this->origin,
         this->lowerLeftCorner + uv.x * this->horizontal + uv.y * this->vertical
     );

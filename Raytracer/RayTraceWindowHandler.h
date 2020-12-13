@@ -2,6 +2,7 @@
 #include "IGameWindowHandler.h"
 #include "Image/Image.h"
 #include "Image/BGRA.h"
+#include "Render/Functor/RayTraceFunctorParams.h"
 
 #include <queue>
 #include <future>
@@ -34,7 +35,11 @@ private:
 	void TryStartRayTraceTask();
 	void TryFinishRayTraceTask();
 
-	static Image<BGRA<uint8_t>> RayTraceMain(Image<BGRA<uint8_t>> resultImage, std::atomic<bool>& cancel);
+	static Image<BGRA<uint8_t>> RayTraceMain(
+		RayTraceFunctorParams rayTraceParams,
+		Image<BGRA<uint8_t>> resultImage,
+		std::atomic<bool>& cancel
+	);
 
 	Helpers::Size2D<uint32_t> currentSize;
 
@@ -47,4 +52,6 @@ private:
 
 	std::atomic<bool> rayTraceTaskCancel = false;
 	std::future<Image<BGRA<uint8_t>>> rayTraceTask;
+
+	float cameraX = 0.f;
 };

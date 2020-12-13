@@ -45,7 +45,7 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
 vec3<float> RayTraceFunctor::Color(const ray<float>& ray) const
 {
     SphereHit sphereHit = this->HitSphere({ 0.f, 0.f, -1.f }, 0.5f, ray);
-    TriangleHit triangleHit = this->HitTriangle({ -1.f, 0.5f, -1.f }, { -0.5f, 0.f, -1.f }, { -1.f, -0.5f, -1.f }, ray);
+    TriangleHit triangleHit = this->HitTriangle({ -1.f, -0.5f, -1.f }, { -0.5f, 0.f, -1.f }, { -1.f, 0.5f, -1.f }, ray);
 
     if (sphereHit.hit && triangleHit.hit)
     {
@@ -55,12 +55,16 @@ vec3<float> RayTraceFunctor::Color(const ray<float>& ray) const
 
     if (sphereHit.hit)
     {
-        return { 1.f, 0.f, 0.f };
+        vec3<float> color = 0.5f * (sphereHit.normal + 1.f);
+        return color;
+        //return { 1.f, 0.f, 0.f };
     }
 
     if (triangleHit.hit)
     {
-        return { 0.f, 1.f, 0.f };
+        vec3<float> color = 0.5f * (triangleHit.normal + 1.f);
+        return color;
+        //return { 0.f, 1.f, 0.f };
     }
 
     vec3<float> unitDirection = ray.direction.normalized();
@@ -80,24 +84,16 @@ RayTraceFunctor::SphereHit RayTraceFunctor::HitSphere(const vec3<float>& center,
 
     SphereHit hit;
 
-    if (discriminant > 0.f)
+    if (discriminant >= 0.f)
     {
-        float t1 = (-b + std::sqrt(discriminant)) / (2.f * a);
-        float t2 = (-b - std::sqrt(discriminant)) / (2.f * a);
+        // farthest T
+        //float t1 = (-b + std::sqrt(discriminant)) / (2.f * a);
+        // closest T
+        float t = (-b - std::sqrt(discriminant)) / (2.f * a);
 
-        hit.t = std::numeric_limits<float>::max();
-
-        if (t1 > 0.f)
-        {
-            hit.hit = true;
-            hit.t = (std::min)(hit.t, t1);
-        }
-
-        if (t2 > 0.f)
-        {
-            hit.hit = true;
-            hit.t = (std::min)(hit.t, t2);
-        }
+        hit.t = t;
+        hit.normal = (ray.pointAtParameter(t) - center).normalized();
+        hit.hit = true;
     }
 
     return hit;
@@ -137,6 +133,7 @@ RayTraceFunctor::TriangleHit RayTraceFunctor::HitTriangle(const vec3<float>& v0,
     hit.t = t;
     hit.u = u;
     hit.v = v;
+    hit.normal = v0v1.cross(v0v2).normalized();
 
     return hit;
 }

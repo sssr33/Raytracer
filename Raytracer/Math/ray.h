@@ -12,6 +12,7 @@ struct ray
     vec3<T> pointAtParameter(float t) const
     {
         vec3<T> pt = this->origin + t * this->direction;
+        return pt;
     }
 
     vec3<T> origin;

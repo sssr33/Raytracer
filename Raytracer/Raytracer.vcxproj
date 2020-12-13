@@ -176,6 +176,9 @@
     <ClCompile Include="Render\Functor\RayTraceFunctorParams.cpp" />
     <ClCompile Include="RayTraceWindowHandler.cpp" />
     <ClCompile Include="Render\Functor\TestGradientFunctor.cpp" />
+    <ClCompile Include="Render\Hitable\HitableList.cpp" />
+    <ClCompile Include="Render\Hitable\Sphere.cpp" />
+    <ClCompile Include="Render\Hitable\Triangle.cpp" />
     <ClCompile Include="SystemBackBufferLock.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -213,6 +216,11 @@
     <ClInclude Include="Render\Functor\RayTraceFunctorParams.h" />
     <ClInclude Include="RayTraceWindowHandler.h" />
     <ClInclude Include="Render\Functor\TestGradientFunctor.h" />
+    <ClInclude Include="Render\Hitable\HitableList.h" />
+    <ClInclude Include="Render\Hitable\HitRecord.h" />
+    <ClInclude Include="Render\Hitable\IHitable.h" />
+    <ClInclude Include="Render\Hitable\Sphere.h" />
+    <ClInclude Include="Render\Hitable\Triangle.h" />
     <ClInclude Include="SystemBackBufferLock.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>

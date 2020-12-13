@@ -12,6 +12,9 @@
     <ClCompile Include="Render\Functor\RayTraceFunctor.cpp" />
     <ClCompile Include="Render\Functor\RayTraceFunctorParams.cpp" />
     <ClCompile Include="Render\Camera.cpp" />
+    <ClCompile Include="Render\Hitable\Sphere.cpp" />
+    <ClCompile Include="Render\Hitable\Triangle.cpp" />
+    <ClCompile Include="Render\Hitable\HitableList.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -41,5 +44,10 @@
     <ClInclude Include="Render\Functor\RayTraceFunctorParams.h" />
     <ClInclude Include="Math\ray.h" />
     <ClInclude Include="Render\Camera.h" />
+    <ClInclude Include="Render\Hitable\IHitable.h" />
+    <ClInclude Include="Render\Hitable\HitRecord.h" />
+    <ClInclude Include="Render\Hitable\Sphere.h" />
+    <ClInclude Include="Render\Hitable\Triangle.h" />
+    <ClInclude Include="Render\Hitable\HitableList.h" />
   </ItemGroup>
 </Project>

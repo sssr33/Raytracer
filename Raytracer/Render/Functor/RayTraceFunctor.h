@@ -17,7 +17,9 @@ public:
 
 private:
 	vec3<float> Color(const ray<float>& r, const IHitable& world) const;
+	static std::vector<vec2<float>> MakeAntialiasingOffsets(size_t width);
 
 	ImageView<BGRA<uint8_t>>& image;
 	const RayTraceFunctorParams& params;
+	const std::vector<vec2<float>> antialiasingOffsets;
 };

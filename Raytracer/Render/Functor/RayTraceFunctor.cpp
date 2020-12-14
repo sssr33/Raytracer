@@ -27,13 +27,6 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
     hitableList.objects.emplace_back(std::make_unique<Sphere>(vec3<float>{0.f, -100.5f, -1.f}, 100.f));
     hitableList.objects.emplace_back(std::make_unique<Triangle>(vec3<float>{ -1.f, -0.5f, -1.f }, vec3<float>{ -0.5f, 0.f, -1.f }, vec3<float>{ -1.f, 0.5f, -1.f }));
 
-    // 4x multisampling
-    const vec2<float> anialiasOffsets[] =
-    {
-        vec2<float>(0.25f, 0.25f), vec2<float>(0.75f, 0.25f),
-        vec2<float>(0.25f, 0.75f), vec2<float>(0.75f, 0.75f),
-    };
-
     for (size_t yRow = block.top; yRow < block.bottom; yRow++)
     {
         BGRA<uint8_t>* row = image.GetRow(yRow);

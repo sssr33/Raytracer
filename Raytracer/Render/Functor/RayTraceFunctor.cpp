@@ -70,14 +70,14 @@ vec3<float> RayTraceFunctor::Color(const ray<float>& ray, const IHitable& world)
 {
     if (std::optional<HitRecord> hitRec = world.Hit(ray, 0.f, std::numeric_limits<float>::max()))
     {
-        vec3<float> color = 0.f;// 0.5f * (hitRec->normal + 1.f);
+        vec3<float> color = 0.5f * (hitRec->normal + 1.f);
         return color;
     }
     else
     {
         vec3<float> unitDirection = ray.direction.normalized();
         float t = 0.5f * (unitDirection.y + 1.f);
-        return 1.f;// (1.f - t)* vec3<float>(1.f) + t * vec3<float>(0.5f, 0.7f, 1.f);
+        return (1.f - t)* vec3<float>(1.f) + t * vec3<float>(0.5f, 0.7f, 1.f);
     }
 }
 

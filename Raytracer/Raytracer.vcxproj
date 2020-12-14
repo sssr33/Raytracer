@@ -171,6 +171,8 @@
     <ClCompile Include="HDCBackBuffer.cpp" />
     <ClCompile Include="Math\MathTest.cpp" />
     <ClCompile Include="Raytracer.cpp" />
+    <ClCompile Include="Render\AntiAliasing\PixelMsaa.cpp" />
+    <ClCompile Include="Render\AntiAliasing\SubpixelMsaa.cpp" />
     <ClCompile Include="Render\Camera.cpp" />
     <ClCompile Include="Render\Functor\RayTraceFunctor.cpp" />
     <ClCompile Include="Render\Functor\RayTraceFunctorParams.cpp" />
@@ -210,6 +212,9 @@
     <ClInclude Include="Math\vec3.h" />
     <ClInclude Include="Math\vec4.h" />
     <ClInclude Include="Meta\IndexPair.h" />
+    <ClInclude Include="Render\AntiAliasing\IPixelAntiAliasing.h" />
+    <ClInclude Include="Render\AntiAliasing\PixelMsaa.h" />
+    <ClInclude Include="Render\AntiAliasing\SubpixelMsaa.h" />
     <ClInclude Include="Render\Camera.h" />
     <ClInclude Include="Render\Functor\CopyImageFunctor.h" />
     <ClInclude Include="Render\Functor\RayTraceFunctor.h" />
@@ -221,6 +226,7 @@
     <ClInclude Include="Render\Hitable\IHitable.h" />
     <ClInclude Include="Render\Hitable\Sphere.h" />
     <ClInclude Include="Render\Hitable\Triangle.h" />
+    <ClInclude Include="Render\Sampler\IPixelSampler.h" />
     <ClInclude Include="SystemBackBufferLock.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>

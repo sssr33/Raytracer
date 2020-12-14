@@ -3,7 +3,12 @@
 #include "Image/Image.h"
 #include "Image/BGRA.h"
 #include "Math/ray.h"
+#include "Render/Camera.h"
 #include "Render/Hitable/IHitable.h"
+#include "Render/Sampler/IPixelSampler.h"
+#include "Render/AntiAliasing/IPixelAntiAliasing.h"
+
+#include <memory>
 
 class RayTraceFunctor
 {
@@ -16,23 +21,27 @@ public:
 	void operator()(const MassiveCompute::Block& block);
 
 private:
-	struct AntiAliasingOffset
+	class PixelSampler : public IPixelSampler
 	{
-		vec2<float> offset;
-		vec3<float> colorMask;
-	};
+	public:
+		PixelSampler(
+			const vec2<float>& imageSize,
+			const Camera& camera,
+			const IHitable& world,
+			const RayTraceFunctor& parent);
 
-	struct AntiAliasing
-	{
-		std::vector<AntiAliasingOffset> offset;
-		vec3<float> colorNormalizeK;
+		vec3<float> Sample(const vec2<float>& pixCoords) const override;
+
+	private:
+		const vec2<float>& imageSize;
+		const Camera& camera;
+		const IHitable& world;
+		const RayTraceFunctor& parent;
 	};
 
 	vec3<float> Color(const ray<float>& r, const IHitable& world) const;
-	static AntiAliasing MakeAntiAliasing(size_t width);
-	static AntiAliasing MakeRGBAntiAliasing(size_t width);
 
 	ImageView<BGRA<uint8_t>>& image;
 	const RayTraceFunctorParams& params;
-	const AntiAliasing antialiasing;
+	std::shared_ptr<IPixelAntiAliasing> pixelAA;
 };

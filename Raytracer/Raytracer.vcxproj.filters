@@ -15,6 +15,8 @@
     <ClCompile Include="Render\Hitable\Sphere.cpp" />
     <ClCompile Include="Render\Hitable\Triangle.cpp" />
     <ClCompile Include="Render\Hitable\HitableList.cpp" />
+    <ClCompile Include="Render\AntiAliasing\SubpixelMsaa.cpp" />
+    <ClCompile Include="Render\AntiAliasing\PixelMsaa.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -49,5 +51,9 @@
     <ClInclude Include="Render\Hitable\Sphere.h" />
     <ClInclude Include="Render\Hitable\Triangle.h" />
     <ClInclude Include="Render\Hitable\HitableList.h" />
+    <ClInclude Include="Render\AntiAliasing\IPixelAntiAliasing.h" />
+    <ClInclude Include="Render\Sampler\IPixelSampler.h" />
+    <ClInclude Include="Render\AntiAliasing\PixelMsaa.h" />
+    <ClInclude Include="Render\AntiAliasing\SubpixelMsaa.h" />
   </ItemGroup>
 </Project>

@@ -4,6 +4,8 @@
 #include "Render/Hitable/HitableList.h"
 #include "Render/Hitable/Sphere.h"
 #include "Render/Hitable/Triangle.h"
+#include "Render/AntiAliasing/PixelMsaa.h"
+#include "Render/AntiAliasing/SubpixelMsaa.h"
 
 RayTraceFunctor::RayTraceFunctor(
 	ImageView<BGRA<uint8_t>>& image,
@@ -11,6 +13,8 @@ RayTraceFunctor::RayTraceFunctor(
 )
 	: image(image)
 	, params(params)
+    //, pixelAA(std::make_shared<PixelMsaa>(20))
+    , pixelAA(std::make_shared<SubpixelMsaa>(20, 0.9f)) // more coverage for green for smoother gradients
 {}
 
 void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
@@ -26,6 +30,8 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
     hitableList.objects.emplace_back(std::make_unique<Sphere>(vec3<float>{0.f, -100.5f, -1.f}, 100.f));
     hitableList.objects.emplace_back(std::make_unique<Triangle>(vec3<float>{ -1.f, -0.5f, -1.f }, vec3<float>{ -0.5f, 0.f, -1.f }, vec3<float>{ -1.f, 0.5f, -1.f }));
 
+    PixelSampler pixSampler(imageSize, camera, hitableList, *this);
+
     for (size_t yRow = block.top; yRow < block.bottom; yRow++)
     {
         BGRA<uint8_t>* row = image.GetRow(yRow);
@@ -33,12 +39,9 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
 
         for (size_t x = block.left; x < block.right; x++)
         {
-            const vec2<float> uv = vec2<float>(static_cast<float>(x), static_cast<float>(y)) / imageSize;
-
-            const ray<float> r = camera.GetRay(uv);
-            const vec3<float> col = this->Color(r, hitableList);
-
-            const vec3<float> col8Bit = col * 255.99f;
+            const vec2<float> pixCoord = vec2<float>(static_cast<float>(x), static_cast<float>(y));
+            const vec3<float> color = this->pixelAA->Resolve(pixCoord, pixSampler);
+            const vec3<float> col8Bit = color * 255.99f;
             BGRA<uint8_t> pixel = {};
 
             pixel.r = static_cast<uint8_t>(col8Bit.r);
@@ -62,6 +65,25 @@ vec3<float> RayTraceFunctor::Color(const ray<float>& ray, const IHitable& world)
     {
         vec3<float> unitDirection = ray.direction.normalized();
         float t = 0.5f * (unitDirection.y + 1.f);
-        return (1.f - t) * vec3<float>(1.f) + t * vec3<float>(0.5f, 0.7f, 1.f);
+        return (1.f - t)* vec3<float>(1.f) + t * vec3<float>(0.5f, 0.7f, 1.f);
     }
+}
+
+RayTraceFunctor::PixelSampler::PixelSampler(
+    const vec2<float>& imageSize,
+    const Camera& camera,
+    const IHitable& world,
+    const RayTraceFunctor& parent)
+    : imageSize(imageSize)
+    , camera(camera)
+    , world(world)
+    , parent(parent)
+{}
+
+vec3<float> RayTraceFunctor::PixelSampler::Sample(const vec2<float>& pixCoords) const
+{
+    const vec2<float> uv = pixCoords / this->imageSize;
+    const ray<float> ray = this->camera.GetRay(uv);
+
+    return this->parent.Color(ray, this->world);
 }

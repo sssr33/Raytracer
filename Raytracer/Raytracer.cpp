@@ -16,6 +16,14 @@
 #include <iostream>
 #include <vector>
 
+/*
+* Perlin noise links
+* https://rtouti.github.io/graphics/perlin-noise-algorithm#:~:text=Perlin%20noise%20is%20a%20popular,number%20of%20inputs%20it%20gets.
+* http://www.cplusplus.com/reference/algorithm/random_shuffle/
+* https://en.cppreference.com/w/cpp/algorithm/random_shuffle
+* https://www.youtube.com/watch?v=Or19ilef4wE
+*/
+
 int main()
 {
     //MathTest();

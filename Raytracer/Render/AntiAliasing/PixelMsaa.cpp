@@ -9,7 +9,7 @@ PixelMsaa::PixelMsaa(const vec2<size_t>& sampleCount)
 	, normalizeK(1.f / static_cast<float>(sampleCount.x * sampleCount.y))
 {}
 
-vec3<float> PixelMsaa::Resolve(const vec2<float>& pixCoord, const IPixelSampler& pixSampler) const
+vec3<float> PixelMsaa::Resolve(const vec2<float>& pixCoord, const IPixelSampler<vec3<float>>& pixSampler) const
 {
     vec3<float> color = { 0.f, 0.f, 0.f };
 

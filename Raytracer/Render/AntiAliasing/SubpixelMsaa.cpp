@@ -34,7 +34,7 @@ SubpixelMsaa::SubpixelMsaa(const vec2<size_t>& sampleCount, const vec3<float>& r
 	: SubpixelMsaa(SubpixelMsaa::MakeInitData(sampleCount, rgbCoverage))
 {}
 
-vec3<float> SubpixelMsaa::Resolve(const vec2<float>& pixCoord, const IPixelSampler& pixSampler) const
+vec3<float> SubpixelMsaa::Resolve(const vec2<float>& pixCoord, const IPixelSampler<vec3<float>>& pixSampler) const
 {
 	vec3<float> color = { 0.f, 0.f, 0.f };
 

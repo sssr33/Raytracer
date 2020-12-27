@@ -55,5 +55,6 @@
     <ClInclude Include="Render\Sampler\IPixelSampler.h" />
     <ClInclude Include="Render\AntiAliasing\PixelMsaa.h" />
     <ClInclude Include="Render\AntiAliasing\SubpixelMsaa.h" />
+    <ClInclude Include="Render\Sampler\ITextureSampler.h" />
   </ItemGroup>
 </Project>

@@ -21,7 +21,7 @@ public:
 	void operator()(const MassiveCompute::Block& block);
 
 private:
-	class PixelSampler : public IPixelSampler
+	class PixelSampler : public IPixelSampler<vec3<float>>
 	{
 	public:
 		PixelSampler(

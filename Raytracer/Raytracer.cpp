@@ -10,10 +10,23 @@
 #include <Helpers/is.h>
 #include <MassiveCompute/MassiveComputeTest.h>
 
+#include <random>
+#include <algorithm>
+#include <iterator>
+#include <iostream>
+#include <vector>
+
 int main()
 {
     //MathTest();
     //MassiveComputeTest();
+
+    std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+    std::random_device rd;
+    std::mt19937 g(rd());
+
+    std::shuffle(v.begin(), v.end(), g);
 
     RayTraceWindowHandler rayTraceHandler;
     // https://devblogs.microsoft.com/oldnewthing/20050217-00/?p=36423

@@ -14,7 +14,7 @@ RayTraceFunctor::RayTraceFunctor(
 	: image(image)
 	, params(params)
     , pixelAA(std::make_shared<PixelMsaa>(1))
-    //, pixelAA(std::make_shared<SubpixelMsaa>(20, 0.9f)) // more coverage for green for smoother gradients
+    //, pixelAA(std::make_shared<SubpixelMsaa>(4, 0.9f)) // more coverage for green for smoother gradients
 {}
 
 void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
@@ -40,7 +40,8 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
             center + vec3<float>(-width * 0.5f, height * 0.5f, 0.f),
             vec2<float>(0.f, 1.f),
             vec2<float>(1.f, 0.f),
-            vec2<float>(0.f, 0.f)
+            vec2<float>(0.f, 0.f),
+            this->params.texSampler.get()
             )
     );
 
@@ -51,7 +52,8 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
             center + vec3<float>(width * 0.5f, height * 0.5f, 0.f),
             vec2<float>(0.f, 1.f),
             vec2<float>(1.f, 1.f),
-            vec2<float>(1.f, 0.f)
+            vec2<float>(1.f, 0.f),
+            this->params.texSampler.get()
             )
     );
 

@@ -4,6 +4,7 @@
 #include "Render/Functor/TestGradientFunctor.h"
 #include "Render/Functor/CopyImageFunctor.h"
 #include "Render/Functor/RayTraceFunctor.h"
+#include "Render/PerlinNoise/PerlinNoiseTextureSampler.h"
 
 #include <Helpers/is_ready.h>
 #include <MassiveCompute/Schedulers/StealingBlockScheduler.h>
@@ -12,6 +13,8 @@ RayTraceWindowHandler::RayTraceWindowHandler()
 {
 	// 1 image for raytracing task
 	this->renderQueue.emplace();
+
+	this->perlinNoise = std::make_shared<PerlinNoiseTextureSampler>(256);
 }
 
 RayTraceWindowHandler::~RayTraceWindowHandler()
@@ -115,6 +118,7 @@ void RayTraceWindowHandler::TryStartRayTraceTask()
 	RayTraceFunctorParams rayTraceParams;
 
 	rayTraceParams.cameraX = this->cameraX;
+	rayTraceParams.texSampler = this->perlinNoise;
 
 	this->rayTraceTask = std::async(
 		std::launch::async,

@@ -4,18 +4,30 @@
 #include <vector>
 #include <Helpers/Size2D.h>
 
-// based on https://rtouti.github.io/graphics/perlin-noise-algorithm#:~:text=Perlin%20noise%20is%20a%20popular,number%20of%20inputs%20it%20gets.
-class PerlinNoiseTextureSampler : public ITextureSampler<vec3<float>>
+// based on https://rtouti.github.io/graphics/perlin-noise-algorithm
+class PerlinNoiseTextureSampler : public ITextureSampler<float>
 {
 public:
 	PerlinNoiseTextureSampler(size_t noiseTexSize);
-	PerlinNoiseTextureSampler(std::vector<size_t> permutationTable);
+	PerlinNoiseTextureSampler(
+		std::vector<uint32_t> permutationTable,
+		std::vector<vec2<float>> constantVectors);
 
-	vec3<float> Sample(const vec2<float>& texCoords) const override;
+	float Sample(const vec2<float>& texCoords) const override;
 
 private:
-	std::vector<size_t> permutationTable;
+	uint32_t GetPermutationTableValue(size_t x, size_t y) const;
+	const vec2<float>& GetConstantVector(uint32_t index) const;
 
-	static std::vector<size_t> GenPermutationTable(size_t noiseTexSize);
-	static std::vector<size_t> DoublePermutationTable(std::vector<size_t> permutationTable);
+	static float Fade(float t);
+	static float Lerp(float a, float b, float t);
+	static std::vector<uint32_t> GenPermutationTable(size_t noiseTexSize);
+	static std::vector<uint32_t> DoublePermutationTable(std::vector<uint32_t> permutationTable);
+	static std::vector<vec2<float>> GetDefaultConstantVectors();
+	static vec2<float> WrapTexCoords(const vec2<float>& texCoords);
+
+	std::vector<uint32_t> permutationTable;
+	std::vector<vec2<float>> constantVectors;
+	float noiseTexSizeF = 0.f;
+	size_t noiseTexSize = 0;
 };

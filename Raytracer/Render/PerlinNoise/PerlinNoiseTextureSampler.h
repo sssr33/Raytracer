@@ -8,7 +8,7 @@
 class PerlinNoiseTextureSampler : public ITextureSampler<float>
 {
 public:
-	PerlinNoiseTextureSampler(size_t noiseTexSize);
+	explicit PerlinNoiseTextureSampler(size_t noiseTexSize);
 	PerlinNoiseTextureSampler(
 		std::vector<uint32_t> permutationTable,
 		std::vector<vec2<float>> constantVectors);

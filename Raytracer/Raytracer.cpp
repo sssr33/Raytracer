@@ -24,6 +24,12 @@
 * https://www.youtube.com/watch?v=Or19ilef4wE
 */
 
+struct ss
+{
+    int a = 0;
+    std::vector<int> vv;
+};
+
 int main()
 {
     //MathTest();

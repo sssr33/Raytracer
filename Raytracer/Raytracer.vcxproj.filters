@@ -18,6 +18,7 @@
     <ClCompile Include="Render\AntiAliasing\SubpixelMsaa.cpp" />
     <ClCompile Include="Render\AntiAliasing\PixelMsaa.cpp" />
     <ClCompile Include="Render\PerlinNoise\PerlinNoiseTextureSampler.cpp" />
+    <ClCompile Include="Render\PerlinNoise\PerlinNoiseRandom.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -58,5 +59,8 @@
     <ClInclude Include="Render\AntiAliasing\SubpixelMsaa.h" />
     <ClInclude Include="Render\Sampler\ITextureSampler.h" />
     <ClInclude Include="Render\PerlinNoise\PerlinNoiseTextureSampler.h" />
+    <ClInclude Include="Random\IRandom.h" />
+    <ClInclude Include="Base\ICloneable.h" />
+    <ClInclude Include="Render\PerlinNoise\PerlinNoiseRandom.h" />
   </ItemGroup>
 </Project>

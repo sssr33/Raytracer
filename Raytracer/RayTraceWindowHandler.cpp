@@ -4,17 +4,19 @@
 #include "Render/Functor/TestGradientFunctor.h"
 #include "Render/Functor/CopyImageFunctor.h"
 #include "Render/Functor/RayTraceFunctor.h"
-#include "Render/PerlinNoise/PerlinNoiseTextureSampler.h"
+#include "Render/PerlinNoise/PerlinNoiseRandom.h"
 
 #include <Helpers/is_ready.h>
 #include <MassiveCompute/Schedulers/StealingBlockScheduler.h>
+#include <MassiveCompute/Schedulers/ConstantBlockScheduler.h>
+#include <MassiveCompute/Schedulers/EqualBlockScheduler.h>
 
 RayTraceWindowHandler::RayTraceWindowHandler()
 {
 	// 1 image for raytracing task
 	this->renderQueue.emplace();
 
-	this->perlinNoise = std::make_shared<PerlinNoiseTextureSampler>(256);
+	this->perlinNoise = std::make_shared<PerlinNoiseRandom>();
 }
 
 RayTraceWindowHandler::~RayTraceWindowHandler()
@@ -123,7 +125,7 @@ void RayTraceWindowHandler::TryStartRayTraceTask()
 	this->rayTraceTask = std::async(
 		std::launch::async,
 		&RayTraceWindowHandler::RayTraceMain,
-		rayTraceParams,
+		std::move(rayTraceParams),
 		std::move(image),
 		std::ref(this->rayTraceTaskCancel)
 	);
@@ -149,7 +151,15 @@ Image<BGRA<uint8_t>> RayTraceWindowHandler::RayTraceMain(
 	ImageView<BGRA<uint8_t>> imageView(resultImage.GetWidth(), resultImage.GetHeight(), resultImage.GetData());
 	MassiveCompute::StealingBlockScheduler stealingScheduler;
 
-	stealingScheduler(imageView, RayTraceFunctor(imageView, rayTraceParams), imageView.GetWidth(), 1);
+	MassiveCompute::ConstantBlockScheduler cbs;
+
+	MassiveCompute::EqualBlockScheduler ebs;
+
+	//ebs(imageView, RayTraceFunctor(imageView, std::move(rayTraceParams)));
+
+	//cbs(imageView, RayTraceFunctor(imageView, std::move(rayTraceParams)), imageView.GetWidth(), 1);
+
+	stealingScheduler(imageView, RayTraceFunctor(imageView, std::move(rayTraceParams)), imageView.GetWidth(), 1);
 
 	// single thread, for test
 	/*MassiveCompute::Block block;

@@ -195,6 +195,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Base\ClonePtr.h" />
     <ClInclude Include="Base\ICloneable.h" />
     <ClInclude Include="GameWindow.h" />
     <ClInclude Include="HDCBackBuffer.h" />

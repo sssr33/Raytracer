@@ -9,10 +9,10 @@
 
 RayTraceFunctor::RayTraceFunctor(
 	ImageView<BGRA<uint8_t>>& image,
-	const RayTraceFunctorParams& params
+	RayTraceFunctorParams params
 )
 	: image(image)
-	, params(params)
+	, params(std::move(params))
     , pixelAA(std::make_shared<PixelMsaa>(1))
     //, pixelAA(std::make_shared<SubpixelMsaa>(4, 0.9f)) // more coverage for green for smoother gradients
 {}

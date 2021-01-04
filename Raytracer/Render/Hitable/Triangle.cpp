@@ -3,7 +3,7 @@
 Triangle::Triangle(
     const vec3<float>& v0, const vec3<float>& v1, const vec3<float>& v2,
     const vec2<float>& t0, const vec2<float>& t1, const vec2<float>& t2,
-    ITextureSampler<float>* texSampler
+    IRandom<float>* texSampler
 )
 	: v0(v0), v1(v1), v2(v2)
     , t0(t0), t1(t1), t2(t2)
@@ -57,10 +57,10 @@ std::optional<HitRecord> Triangle::Hit(const ray<float>& ray, float tMin, float 
 
         vec2<float> pt = wt * t0 + ut * t1 + vt * t2;
 
-        float color = this->texSampler->Sample(pt);
+        float color = this->texSampler->Next();
 
-        color += 1.0;
-        color /= 2.0;
+        /*color += 1.0;
+        color /= 2.0;*/
 
         hit.color = color;
 

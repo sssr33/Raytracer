@@ -87,8 +87,8 @@ vec3<float> RayTraceFunctor::Color(const ray<float>& ray, const IHitable& world)
     {
         vec2<float> texCoords;
 
-        float u = ray.direction.y + ray.direction.z;// ray.direction.dot({ 0.f, 1.f, 1.f });
-        float v = ray.direction.x + ray.direction.z;// ray.direction.dot({ 1.f, 0.f, 1.f });
+        float u = ray.origin.x + ray.origin.z + ray.direction.y + ray.direction.z;// ray.direction.dot({ 0.f, 1.f, 1.f });
+        float v = ray.origin.y + ray.origin.z + ray.direction.x + ray.direction.z;// ray.direction.dot({ 1.f, 0.f, 1.f });
 
         /*
          ax + by + cz + d = 0
@@ -161,7 +161,7 @@ vec3<float> RayTraceFunctor::Color(const ray<float>& ray, const IHitable& world)
         }*/
 
 
-        float color = this->params.texSampler->Sample({u, v});
+        float color = this->params.texSampler->Sample(vec2<float>(u, v));
 
         color += 1.0;
         color /= 2.0;

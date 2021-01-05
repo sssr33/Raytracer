@@ -235,6 +235,7 @@
     <ClInclude Include="Render\PerlinNoise\PerlinNoiseTextureSampler.h" />
     <ClInclude Include="Render\Sampler\IPixelSampler.h" />
     <ClInclude Include="Render\Sampler\ITextureSampler.h" />
+    <ClInclude Include="Render\Sampler\TextureSamplerWithOffset.h" />
     <ClInclude Include="SystemBackBufferLock.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>

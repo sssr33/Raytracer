@@ -63,5 +63,6 @@
     <ClInclude Include="Base\ICloneable.h" />
     <ClInclude Include="Render\PerlinNoise\PerlinNoiseRandom.h" />
     <ClInclude Include="Base\ClonePtr.h" />
+    <ClInclude Include="Render\Sampler\TextureSamplerWithOffset.h" />
   </ItemGroup>
 </Project>

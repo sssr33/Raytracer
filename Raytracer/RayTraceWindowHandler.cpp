@@ -13,12 +13,14 @@
 #include <MassiveCompute/Schedulers/EqualBlockScheduler.h>
 
 RayTraceWindowHandler::RayTraceWindowHandler()
+	: random(std::random_device()())
+	, perlinNoise(std::make_unique<PerlinNoiseTextureSampler>(256))
 {
 	// 1 image for raytracing task
 	this->renderQueue.emplace();
 
 	//this->perlinNoise = std::make_shared<PerlinNoiseRandom>();
-	this->perlinNoise = std::make_shared<PerlinNoiseTextureSampler>(256);
+	//this->perlinNoise = std::make_shared<TextureSamplerWithOffset<float>>(std::make_unique<PerlinNoiseTextureSampler>(256));
 }
 
 RayTraceWindowHandler::~RayTraceWindowHandler()
@@ -121,8 +123,10 @@ void RayTraceWindowHandler::TryStartRayTraceTask()
 
 	RayTraceFunctorParams rayTraceParams;
 
+	this->perlinNoise.SetOffset({ this->GetRandomFloat(), this->GetRandomFloat() });
+
 	rayTraceParams.cameraX = this->cameraX;
-	rayTraceParams.texSampler = this->perlinNoise;
+	rayTraceParams.texSampler = this->perlinNoise.Clone();
 
 	this->rayTraceTask = std::async(
 		std::launch::async,
@@ -144,6 +148,14 @@ void RayTraceWindowHandler::TryFinishRayTraceTask()
 	this->currentlyPresentingImage = this->rayTraceTask.get();
 }
 
+float RayTraceWindowHandler::GetRandomFloat()
+{
+	constexpr uint32_t RandomResolution = 10000;
+	float rnd = static_cast<float>(this->random() % RandomResolution) / static_cast<float>(RandomResolution);
+
+	return rnd;
+}
+
 Image<BGRA<uint8_t>> RayTraceWindowHandler::RayTraceMain(
 	RayTraceFunctorParams rayTraceParams,
 	Image<BGRA<uint8_t>> resultImage,
@@ -153,9 +165,9 @@ Image<BGRA<uint8_t>> RayTraceWindowHandler::RayTraceMain(
 	ImageView<BGRA<uint8_t>> imageView(resultImage.GetWidth(), resultImage.GetHeight(), resultImage.GetData());
 	MassiveCompute::StealingBlockScheduler stealingScheduler;
 
-	MassiveCompute::ConstantBlockScheduler cbs;
+	//MassiveCompute::ConstantBlockScheduler cbs;
 
-	MassiveCompute::EqualBlockScheduler ebs;
+	//MassiveCompute::EqualBlockScheduler ebs;
 
 	//ebs(imageView, RayTraceFunctor(imageView, std::move(rayTraceParams)));
 

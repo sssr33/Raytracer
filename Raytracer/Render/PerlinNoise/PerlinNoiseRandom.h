@@ -7,6 +7,11 @@ class PerlinNoiseRandom : public IRandom<float>
 public:
     PerlinNoiseRandom();
     explicit PerlinNoiseRandom(PerlinNoiseTextureSampler sampler);
+    PerlinNoiseRandom(PerlinNoiseRandom&&) = default;
+    PerlinNoiseRandom(const PerlinNoiseRandom& other);
+
+    PerlinNoiseRandom& operator=(PerlinNoiseRandom&&) = default;
+    PerlinNoiseRandom& operator=(const PerlinNoiseRandom& other);
 
     float Next() override;
 

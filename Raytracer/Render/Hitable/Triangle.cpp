@@ -3,7 +3,7 @@
 Triangle::Triangle(
     const vec3<float>& v0, const vec3<float>& v1, const vec3<float>& v2,
     const vec2<float>& t0, const vec2<float>& t1, const vec2<float>& t2,
-    IRandom<float>* texSampler
+    ITextureSampler<float>* texSampler
 )
 	: v0(v0), v1(v1), v2(v2)
     , t0(t0), t1(t1), t2(t2)
@@ -57,10 +57,34 @@ std::optional<HitRecord> Triangle::Hit(const ray<float>& ray, float tMin, float 
 
         vec2<float> pt = wt * t0 + ut * t1 + vt * t2;
 
-        float color = this->texSampler->Next();
+        //float color = this->texSampler->Next();
 
-        /*color += 1.0;
-        color /= 2.0;*/
+
+        vec3<float> vAbs = { std::fabsf(ray.direction.x), std::fabsf(ray.direction.y), std::fabsf(ray.direction.z) };
+
+        vec2<float> texCoords;
+
+        if (vAbs.x > vAbs.y && vAbs.x > vAbs.z)
+        {
+            float t = -ray.origin.x / ray.direction.x;
+            texCoords = (ray.origin + t * ray.direction).swizzle.y.z;
+        }
+        else if (vAbs.y > vAbs.z)
+        {
+            float t = -ray.origin.y / ray.direction.y;
+            texCoords = (ray.origin + t * ray.direction).swizzle.x.z;
+        }
+        else
+        {
+            float t = -1.f / ray.direction.z;
+            texCoords = (ray.origin + t * ray.direction).swizzle.x.y;
+        }
+
+
+        float color = this->texSampler->Sample(texCoords);
+
+        color += 1.0;
+        color /= 2.0;
 
         hit.color = color;
 

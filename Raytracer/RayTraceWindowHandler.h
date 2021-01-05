@@ -4,6 +4,7 @@
 #include "Image/BGRA.h"
 #include "Render/Functor/RayTraceFunctorParams.h"
 #include "Random/IRandom.h"
+#include "Render/Sampler/ITextureSampler.h"
 
 #include <queue>
 #include <future>
@@ -54,7 +55,8 @@ private:
 	std::atomic<bool> rayTraceTaskCancel = false;
 	std::future<Image<BGRA<uint8_t>>> rayTraceTask;
 
-	std::shared_ptr<IRandom<float>> perlinNoise;
+	//std::shared_ptr<IRandom<float>> perlinNoise;
+	std::shared_ptr<ITextureSampler<float>> perlinNoise;
 
 	float cameraX = 0.f;
 };

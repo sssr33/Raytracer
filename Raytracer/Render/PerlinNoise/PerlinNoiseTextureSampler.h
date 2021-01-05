@@ -15,6 +15,8 @@ public:
 
 	float Sample(const vec2<float>& texCoords) const override;
 
+	std::unique_ptr<ITextureSampler<float>> Clone() const override;
+
 private:
 	uint32_t GetPermutationTableValue(size_t x, size_t y) const;
 	const vec2<float>& GetConstantVector(uint32_t index) const;

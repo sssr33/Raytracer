@@ -12,6 +12,26 @@ PerlinNoiseRandom::PerlinNoiseRandom(PerlinNoiseTextureSampler sampler)
     , sampler(std::move(sampler))
 {}
 
+PerlinNoiseRandom::PerlinNoiseRandom(const PerlinNoiseRandom& other)
+    : pos(other.pos + vec2<float>(0.1f, 0.01f))
+    , posIncrement(other.posIncrement * other.posIncrement)
+    , sampler(other.sampler)
+{}
+
+PerlinNoiseRandom& PerlinNoiseRandom::operator=(const PerlinNoiseRandom& other)
+{
+    if (this == &other)
+    {
+        return *this;
+    }
+
+    this->pos = other.pos + vec2<float>(0.1f, 0.01f);
+    this->posIncrement = other.posIncrement * other.posIncrement;
+    this->sampler = other.sampler;
+
+    return *this;
+}
+
 float PerlinNoiseRandom::Next()
 {
     float val = this->sampler.Sample(this->pos);

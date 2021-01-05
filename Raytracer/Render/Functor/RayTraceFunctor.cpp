@@ -26,8 +26,8 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
 
     HitableList hitableList;
 
-    //hitableList.objects.emplace_back(std::make_unique<Sphere>(vec3<float>{0.f, 0.f, -1.f}, 0.5f));
-    //hitableList.objects.emplace_back(std::make_unique<Sphere>(vec3<float>{0.f, -100.5f, -1.f}, 100.f));
+    hitableList.objects.emplace_back(std::make_unique<Sphere>(vec3<float>{0.f, 0.f, -1.f}, 0.5f));
+    hitableList.objects.emplace_back(std::make_unique<Sphere>(vec3<float>{0.f, -100.5f, -1.f}, 100.f));
 
     vec3<float> center = { 0.f, 0.f, -1.f };
     float width = 2.f;
@@ -85,13 +85,44 @@ vec3<float> RayTraceFunctor::Color(const ray<float>& ray, const IHitable& world)
 {
     if (std::optional<HitRecord> hitRec = world.Hit(ray, 0.f, std::numeric_limits<float>::max()))
     {
-        if (hitRec->color)
+        vec2<float> texCoords;
+
+        float u = ray.direction.dot({ 1.f, 0.f, 1.f });
+        float v = ray.direction.dot({0.f, 1.f, 0.f});
+
+        /*vec3<float> vAbs = { std::fabsf(ray.direction.x), std::fabsf(ray.direction.y), std::fabsf(ray.direction.z) };
+
+        if (vAbs.x > vAbs.y && vAbs.x > vAbs.z)
+        {
+            float t = 0.1f / ray.direction.x;
+            texCoords = (ray.origin + t * ray.direction).swizzle.y.z;
+        }
+        else if (vAbs.y > vAbs.z)
+        {
+            float t = 0.1f / ray.direction.y;
+            texCoords = (ray.origin + t * ray.direction).swizzle.x.z;
+        }
+        else
+        {
+            float t = 0.1f / ray.direction.z;
+            texCoords = (ray.origin + t * ray.direction).swizzle.x.y;
+        }*/
+
+
+        float color = this->params.texSampler->Sample({u, v});
+
+        color += 1.0;
+        color /= 2.0;
+
+        return color;
+
+        /*if (hitRec->color)
         {
             return *hitRec->color;
         }
 
         vec3<float> color = 0.5f * (hitRec->normal + 1.f);
-        return color;
+        return color;*/
     }
     else
     {

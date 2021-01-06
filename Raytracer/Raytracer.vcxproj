@@ -181,6 +181,8 @@
     <ClCompile Include="Render\Hitable\HitableList.cpp" />
     <ClCompile Include="Render\Hitable\Sphere.cpp" />
     <ClCompile Include="Render\Hitable\Triangle.cpp" />
+    <ClCompile Include="Render\PerlinNoise\PerlinNoiseNormalizedTextureSampler.cpp" />
+    <ClCompile Include="Render\PerlinNoise\PerlinNoiseTextureSampler.cpp" />
     <ClCompile Include="SystemBackBufferLock.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -226,7 +228,12 @@
     <ClInclude Include="Render\Hitable\IHitable.h" />
     <ClInclude Include="Render\Hitable\Sphere.h" />
     <ClInclude Include="Render\Hitable\Triangle.h" />
+    <ClInclude Include="Render\PerlinNoise\PerlinNoiseNormalizedTextureSampler.h" />
+    <ClInclude Include="Render\PerlinNoise\PerlinNoiseTextureSampler.h" />
     <ClInclude Include="Render\Sampler\IPixelSampler.h" />
+    <ClInclude Include="Render\Sampler\ITextureSampler.h" />
+    <ClInclude Include="Render\Sampler\TextureRaySampler.h" />
+    <ClInclude Include="Render\Sampler\TextureSamplerWithOffset.h" />
     <ClInclude Include="SystemBackBufferLock.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>

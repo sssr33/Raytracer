@@ -4,11 +4,18 @@
 #include "Render/Functor/TestGradientFunctor.h"
 #include "Render/Functor/CopyImageFunctor.h"
 #include "Render/Functor/RayTraceFunctor.h"
+#include "Render/PerlinNoise/PerlinNoiseTextureSampler.h"
+#include "Render/Sampler/TextureRaySampler.h"
+#include "Render/Sampler/TextureSamplerWithOffset.h"
 
 #include <Helpers/is_ready.h>
 #include <MassiveCompute/Schedulers/StealingBlockScheduler.h>
+#include <MassiveCompute/Schedulers/ConstantBlockScheduler.h>
+#include <MassiveCompute/Schedulers/EqualBlockScheduler.h>
 
 RayTraceWindowHandler::RayTraceWindowHandler()
+	: random(std::random_device()())
+	, perlinNoise(std::make_shared<PerlinNoiseTextureSampler>(256))
 {
 	// 1 image for raytracing task
 	this->renderQueue.emplace();
@@ -115,11 +122,18 @@ void RayTraceWindowHandler::TryStartRayTraceTask()
 	RayTraceFunctorParams rayTraceParams;
 
 	rayTraceParams.cameraX = this->cameraX;
+	// perlin noise + random offset + ray sampler
+	rayTraceParams.rayNoiseSampler =
+		std::make_shared<TextureRaySampler<float>>(
+			std::make_shared<TextureSamplerWithOffset<float>>(
+				this->perlinNoise, vec2<float>(this->GetRandomFloat(), this->GetRandomFloat())
+				)
+			);
 
 	this->rayTraceTask = std::async(
 		std::launch::async,
 		&RayTraceWindowHandler::RayTraceMain,
-		rayTraceParams,
+		std::move(rayTraceParams),
 		std::move(image),
 		std::ref(this->rayTraceTaskCancel)
 	);
@@ -136,6 +150,14 @@ void RayTraceWindowHandler::TryFinishRayTraceTask()
 	this->currentlyPresentingImage = this->rayTraceTask.get();
 }
 
+float RayTraceWindowHandler::GetRandomFloat()
+{
+	constexpr uint32_t RandomResolution = 10000;
+	float rnd = static_cast<float>(this->random() % RandomResolution) / static_cast<float>(RandomResolution);
+
+	return rnd;
+}
+
 Image<BGRA<uint8_t>> RayTraceWindowHandler::RayTraceMain(
 	RayTraceFunctorParams rayTraceParams,
 	Image<BGRA<uint8_t>> resultImage,
@@ -145,7 +167,15 @@ Image<BGRA<uint8_t>> RayTraceWindowHandler::RayTraceMain(
 	ImageView<BGRA<uint8_t>> imageView(resultImage.GetWidth(), resultImage.GetHeight(), resultImage.GetData());
 	MassiveCompute::StealingBlockScheduler stealingScheduler;
 
-	stealingScheduler(imageView, RayTraceFunctor(imageView, rayTraceParams), imageView.GetWidth(), 1);
+	//MassiveCompute::ConstantBlockScheduler cbs;
+
+	//MassiveCompute::EqualBlockScheduler ebs;
+
+	//ebs(imageView, RayTraceFunctor(imageView, std::move(rayTraceParams)));
+
+	//cbs(imageView, RayTraceFunctor(imageView, std::move(rayTraceParams)), imageView.GetWidth(), 1);
+
+	stealingScheduler(imageView, RayTraceFunctor(imageView, std::move(rayTraceParams)), imageView.GetWidth(), 1);
 
 	// single thread, for test
 	/*MassiveCompute::Block block;

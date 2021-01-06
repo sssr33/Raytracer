@@ -9,12 +9,12 @@
 
 RayTraceFunctor::RayTraceFunctor(
 	ImageView<BGRA<uint8_t>>& image,
-	const RayTraceFunctorParams& params
+	RayTraceFunctorParams params
 )
 	: image(image)
-	, params(params)
-    //, pixelAA(std::make_shared<PixelMsaa>(20))
-    , pixelAA(std::make_shared<SubpixelMsaa>(20, 0.9f)) // more coverage for green for smoother gradients
+	, params(std::move(params))
+    , pixelAA(std::make_shared<PixelMsaa>(1))
+    //, pixelAA(std::make_shared<SubpixelMsaa>(4, 0.9f)) // more coverage for green for smoother gradients
 {}
 
 void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
@@ -28,7 +28,32 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
 
     hitableList.objects.emplace_back(std::make_unique<Sphere>(vec3<float>{0.f, 0.f, -1.f}, 0.5f));
     hitableList.objects.emplace_back(std::make_unique<Sphere>(vec3<float>{0.f, -100.5f, -1.f}, 100.f));
-    hitableList.objects.emplace_back(std::make_unique<Triangle>(vec3<float>{ -1.f, -0.5f, -1.f }, vec3<float>{ -0.5f, 0.f, -1.f }, vec3<float>{ -1.f, 0.5f, -1.f }));
+
+    vec3<float> center = { 0.f, 0.f, -1.f };
+    float width = 2.f;
+    float height = 2.f;
+
+    hitableList.objects.emplace_back(
+        std::make_unique<Triangle>(
+            center + vec3<float>(-width * 0.5f, -height * 0.5f, 0.f),
+            center + vec3<float>(width * 0.5f, height * 0.5f, 0.f),
+            center + vec3<float>(-width * 0.5f, height * 0.5f, 0.f),
+            vec2<float>(0.f, 1.f),
+            vec2<float>(1.f, 0.f),
+            vec2<float>(0.f, 0.f)
+            )
+    );
+
+    hitableList.objects.emplace_back(
+        std::make_unique<Triangle>(
+            center + vec3<float>(-width * 0.5f, -height * 0.5f, 0.f),
+            center + vec3<float>(width * 0.5f, -height * 0.5f, 0.f),
+            center + vec3<float>(width * 0.5f, height * 0.5f, 0.f),
+            vec2<float>(0.f, 1.f),
+            vec2<float>(1.f, 1.f),
+            vec2<float>(1.f, 0.f)
+            )
+    );
 
     PixelSampler pixSampler(imageSize, camera, hitableList, *this);
 
@@ -58,8 +83,15 @@ vec3<float> RayTraceFunctor::Color(const ray<float>& ray, const IHitable& world)
 {
     if (std::optional<HitRecord> hitRec = world.Hit(ray, 0.f, std::numeric_limits<float>::max()))
     {
+        float rayNoise = this->params.rayNoiseSampler->Sample(ray);
+
+        if (hitRec->color)
+        {
+            return *hitRec->color * rayNoise;
+        }
+
         vec3<float> color = 0.5f * (hitRec->normal + 1.f);
-        return color;
+        return color;// *rayNoise;
     }
     else
     {

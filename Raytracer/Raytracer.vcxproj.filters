@@ -17,6 +17,8 @@
     <ClCompile Include="Render\Hitable\HitableList.cpp" />
     <ClCompile Include="Render\AntiAliasing\SubpixelMsaa.cpp" />
     <ClCompile Include="Render\AntiAliasing\PixelMsaa.cpp" />
+    <ClCompile Include="Render\PerlinNoise\PerlinNoiseTextureSampler.cpp" />
+    <ClCompile Include="Render\PerlinNoise\PerlinNoiseNormalizedTextureSampler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -55,5 +57,10 @@
     <ClInclude Include="Render\Sampler\IPixelSampler.h" />
     <ClInclude Include="Render\AntiAliasing\PixelMsaa.h" />
     <ClInclude Include="Render\AntiAliasing\SubpixelMsaa.h" />
+    <ClInclude Include="Render\Sampler\ITextureSampler.h" />
+    <ClInclude Include="Render\PerlinNoise\PerlinNoiseTextureSampler.h" />
+    <ClInclude Include="Render\Sampler\TextureSamplerWithOffset.h" />
+    <ClInclude Include="Render\Sampler\TextureRaySampler.h" />
+    <ClInclude Include="Render\PerlinNoise\PerlinNoiseNormalizedTextureSampler.h" />
   </ItemGroup>
 </Project>

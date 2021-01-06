@@ -15,13 +15,13 @@ class RayTraceFunctor
 public:
 	RayTraceFunctor(
 		ImageView<BGRA<uint8_t>>& image,
-		const RayTraceFunctorParams& params
+		RayTraceFunctorParams params
 	);
 
 	void operator()(const MassiveCompute::Block& block);
 
 private:
-	class PixelSampler : public IPixelSampler
+	class PixelSampler : public IPixelSampler<vec3<float>>
 	{
 	public:
 		PixelSampler(
@@ -42,6 +42,6 @@ private:
 	vec3<float> Color(const ray<float>& r, const IHitable& world) const;
 
 	ImageView<BGRA<uint8_t>>& image;
-	const RayTraceFunctorParams& params;
+	RayTraceFunctorParams params;
 	std::shared_ptr<IPixelAntiAliasing> pixelAA;
 };

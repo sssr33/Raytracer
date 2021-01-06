@@ -18,7 +18,7 @@ public:
 	SubpixelMsaa(const vec2<size_t>& sampleCount, float greenCoverage);
 	SubpixelMsaa(const vec2<size_t>& sampleCount, const vec3<float>& rgbCoverage);
 
-	vec3<float> Resolve(const vec2<float>& pixCoord, const IPixelSampler& pixSampler) const override;
+	vec3<float> Resolve(const vec2<float>& pixCoord, const IPixelSampler<vec3<float>>& pixSampler) const override;
 
 private:
 	static const vec3<float> RedMask;

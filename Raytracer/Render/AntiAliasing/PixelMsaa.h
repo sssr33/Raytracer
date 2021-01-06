@@ -9,7 +9,7 @@ public:
 	explicit PixelMsaa(size_t sampleCount);
 	explicit PixelMsaa(const vec2<size_t>& sampleCount);
 
-	vec3<float> Resolve(const vec2<float>& pixCoord, const IPixelSampler& pixSampler) const override;
+	vec3<float> Resolve(const vec2<float>& pixCoord, const IPixelSampler<vec3<float>>& pixSampler) const override;
 
 private:
 	static std::vector<vec2<float>> MakeOffsets(const vec2<size_t>& sampleCount);

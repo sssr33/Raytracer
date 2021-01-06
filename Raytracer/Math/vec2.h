@@ -79,4 +79,22 @@ struct vec2
         a.y = -a.y;
         return a;
     }
+
+    T dot(const vec2& b) const
+    {
+        const vec2& a = *this;
+        float dotProduct =
+            a.x * b.x +
+            a.y * b.y;
+
+        return dotProduct;
+    }
+
+    vec2 lerp(const vec2& b, T t) const
+    {
+        const vec2& a = *this;
+        vec2 res = a + t * (b - a);
+
+        return res;
+    }
 };

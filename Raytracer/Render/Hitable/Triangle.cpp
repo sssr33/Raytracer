@@ -1,7 +1,11 @@
 #include "Triangle.h"
 
-Triangle::Triangle(const vec3<float>& v0, const vec3<float>& v1, const vec3<float>& v2)
+Triangle::Triangle(
+    const vec3<float>& v0, const vec3<float>& v1, const vec3<float>& v2,
+    const vec2<float>& t0, const vec2<float>& t1, const vec2<float>& t2
+)
 	: v0(v0), v1(v1), v2(v2)
+    , t0(t0), t1(t1), t2(t2)
 {}
 
 std::optional<HitRecord> Triangle::Hit(const ray<float>& ray, float tMin, float tMax) const
@@ -44,6 +48,15 @@ std::optional<HitRecord> Triangle::Hit(const ray<float>& ray, float tMin, float 
         //hit.u = u; // for v0
         //hit.v = v; // for v1
         //hit.w = 1.f - u - v; // for v2
+
+        float ut = u; // for v0
+        float vt = v; // for v1
+        float wt = 1.f - u - v; // for v2
+
+        // tex coords at point
+        vec2<float> pt = wt * t0 + ut * t1 + vt * t2;
+
+        hit.color = pt.x;
 
         return hit;
     }

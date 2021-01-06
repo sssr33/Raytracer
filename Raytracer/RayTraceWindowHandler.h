@@ -3,10 +3,12 @@
 #include "Image/Image.h"
 #include "Image/BGRA.h"
 #include "Render/Functor/RayTraceFunctorParams.h"
+#include "Render/Sampler/ITextureSampler.h"
 
 #include <queue>
 #include <future>
 #include <atomic>
+#include <random>
 
 class RayTraceWindowHandler : public IGameWindowHandler
 {
@@ -34,12 +36,15 @@ public:
 private:
 	void TryStartRayTraceTask();
 	void TryFinishRayTraceTask();
+	float GetRandomFloat();
 
 	static Image<BGRA<uint8_t>> RayTraceMain(
 		RayTraceFunctorParams rayTraceParams,
 		Image<BGRA<uint8_t>> resultImage,
 		std::atomic<bool>& cancel
 	);
+
+	std::mt19937 random;
 
 	Helpers::Size2D<uint32_t> currentSize;
 
@@ -52,6 +57,8 @@ private:
 
 	std::atomic<bool> rayTraceTaskCancel = false;
 	std::future<Image<BGRA<uint8_t>>> rayTraceTask;
+
+	std::shared_ptr<ITextureSampler<float>> perlinNoise;
 
 	float cameraX = 0.f;
 };

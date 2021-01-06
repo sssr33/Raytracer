@@ -136,4 +136,12 @@ struct vec3
 
         return res;
     }
+
+    vec3 lerp(const vec3& b, T t) const
+    {
+        const vec3& a = *this;
+        vec3 res = a + t * (b - a);
+
+        return res;
+    }
 };

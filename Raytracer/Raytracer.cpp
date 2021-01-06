@@ -5,7 +5,6 @@
 #include "GameWindow.h"
 #include "RayTraceWindowHandler.h"
 #include "Math/MathTest.h"
-#include "Math/vec.h"
 
 #include <iostream>
 #include <Helpers/is.h>

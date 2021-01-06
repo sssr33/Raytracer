@@ -7,6 +7,8 @@
 #include "Render/AntiAliasing/PixelMsaa.h"
 #include "Render/AntiAliasing/SubpixelMsaa.h"
 
+#include <algorithm>
+
 RayTraceFunctor::RayTraceFunctor(
 	ImageView<BGRA<uint8_t>>& image,
 	RayTraceFunctorParams params
@@ -64,15 +66,17 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
 
         for (size_t x = block.left; x < block.right; x++)
         {
+            constexpr float rgbMax = 255.99f;
+
             const vec2<float> pixCoord = vec2<float>(static_cast<float>(x), static_cast<float>(y));
             const vec3<float> color = this->pixelAA->Resolve(pixCoord, pixSampler);
             const vec3<float> gammaCorrectColor = vec3<float>(std::sqrtf(color.r), std::sqrtf(color.g), std::sqrtf(color.b));
-            const vec3<float> col8Bit = gammaCorrectColor * 255.99f;
+            const vec3<float> col8Bit = gammaCorrectColor * rgbMax;
             BGRA<uint8_t> pixel = {};
 
-            pixel.r = static_cast<uint8_t>(col8Bit.r);
-            pixel.g = static_cast<uint8_t>(col8Bit.g);
-            pixel.b = static_cast<uint8_t>(col8Bit.b);
+            pixel.r = static_cast<uint8_t>(std::clamp(col8Bit.r, 0.f, rgbMax));
+            pixel.g = static_cast<uint8_t>(std::clamp(col8Bit.g, 0.f, rgbMax));
+            pixel.b = static_cast<uint8_t>(std::clamp(col8Bit.b, 0.f, rgbMax));
             pixel.a = 255;
 
             row[x] = pixel;
@@ -96,7 +100,7 @@ vec3<float> RayTraceFunctor::Color(const ray<float>& r, const IHitable& world, u
     {
         vec3<float> unitDirection = r.direction.normalized();
         float t = 0.5f * (unitDirection.y + 1.f);
-        return (1.f - t)* vec3<float>(1.f) + t * vec3<float>(0.5f, 0.7f, 1.f);
+        return (1.f - t) * vec3<float>(1.f) + t * vec3<float>(0.5f, 0.7f, 1.f);
     }
 }
 

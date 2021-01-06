@@ -4,7 +4,7 @@
 #include "Render/Functor/TestGradientFunctor.h"
 #include "Render/Functor/CopyImageFunctor.h"
 #include "Render/Functor/RayTraceFunctor.h"
-#include "Render/PerlinNoise/PerlinNoiseNormalizedTextureSampler.h"
+#include "Render/PerlinNoise/PerlinNoiseTextureSampler.h"
 #include "Render/Sampler/TextureRaySampler.h"
 #include "Render/Sampler/TextureSamplerWithOffset.h"
 
@@ -15,7 +15,7 @@
 
 RayTraceWindowHandler::RayTraceWindowHandler()
 	: random(std::random_device()())
-	, perlinNoise(std::make_shared<PerlinNoiseNormalizedTextureSampler>(256))
+	, perlinNoise(std::make_shared<PerlinNoiseTextureSampler>(256))
 {
 	// 1 image for raytracing task
 	this->renderQueue.emplace();

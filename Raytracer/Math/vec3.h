@@ -144,4 +144,11 @@ struct vec3
 
         return res;
     }
+
+    vec3 reflect(const vec3& normal) const
+    {
+        const vec3& a = *this;
+
+        return a - 2.f * a.dot(normal) * normal;
+    }
 };

@@ -40,7 +40,6 @@ private:
 	};
 
 	vec3<float> Color(const ray<float>& r, const IHitable& world, uint32_t depth = 10) const;
-	vec3<float> RandomInUnitSphere(const ray<float>& r) const;
 
 	ImageView<BGRA<uint8_t>>& image;
 	RayTraceFunctorParams params;

@@ -1,7 +1,9 @@
 #pragma once
 #include "HitRecord.h"
+#include "Render/Material/IMaterial.h"
 
 #include <optional>
+#include <memory>
 
 class IHitable
 {

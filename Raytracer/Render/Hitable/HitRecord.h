@@ -3,10 +3,12 @@
 
 #include <optional>
 
+class IMaterial;
+
 struct HitRecord
 {
-	float rayT;
-	vec3<float> point;
-	vec3<float> normal;
-	std::optional<vec3<float>> color;
+	float rayT = 0.f;
+	vec3<float> point = { 0.f, 0.f, 0.f };
+	vec3<float> normal = { 0.f, 0.f, 0.f };
+	IMaterial* material = nullptr;
 };

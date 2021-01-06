@@ -1,8 +1,9 @@
 #include "Sphere.h"
 
-Sphere::Sphere(const vec3<float>& center, float radius)
+Sphere::Sphere(const vec3<float>& center, float radius, std::unique_ptr<IMaterial> material)
 	: center(center)
 	, radius(radius)
+    , material(std::move(material))
 {}
 
 std::optional<HitRecord> Sphere::Hit(const ray<float>& ray, float tMin, float tMax) const
@@ -61,6 +62,7 @@ HitRecord Sphere::MakeHitRecord(const ray<float>& ray, float t) const
     hitRec.rayT = t;
     hitRec.point = ray.pointAtParameter(hitRec.rayT);
     hitRec.normal = (hitRec.point - this->center) / this->radius;
+    hitRec.material = this->material.get();
 
     return hitRec;
 }

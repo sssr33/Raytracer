@@ -6,6 +6,8 @@
 #include "Render/Hitable/Triangle.h"
 #include "Render/AntiAliasing/PixelMsaa.h"
 #include "Render/AntiAliasing/SubpixelMsaa.h"
+#include "Render/Material/Lambertian.h"
+#include "Render/Material/Metal.h"
 
 #include <algorithm>
 
@@ -28,21 +30,38 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
 
     HitableList hitableList;
 
-    hitableList.objects.emplace_back(std::make_unique<Sphere>(vec3<float>{0.f, 0.f, -1.f}, 0.5f));
-    hitableList.objects.emplace_back(std::make_unique<Sphere>(vec3<float>{0.f, -100.5f, -1.f}, 100.f));
+    hitableList.objects.emplace_back(std::make_unique<Sphere>(
+        vec3<float>{0.f, 0.f, -1.f},
+        0.5f,
+        //std::make_unique<Lambertian>(vec3<float>(0.5f, 0.5f, 0.5f), this->params.rayNoiseSampler)
+        std::make_unique<Metal>(vec3<float>(0.5f, 0.5f, 0.5f))
+        )
+    );
+
+    hitableList.objects.emplace_back(std::make_unique<Sphere>(
+        vec3<float>{0.f, -100.5f, -1.f},
+        100.f,
+        std::make_unique<Lambertian>(vec3<float>(0.5f, 0.5f, 0.5f), this->params.rayNoiseSampler)
+        //std::make_unique<Metal>(vec3<float>(0.5f, 0.5f, 0.5f))
+        )
+    );
 
     vec3<float> center = { 0.f, 0.f, -1.f };
     float width = 2.f;
     float height = 2.f;
 
+    float emission = 4.f;
+
     hitableList.objects.emplace_back(
         std::make_unique<Triangle>(
             center + vec3<float>(-width * 0.5f, -height * 0.5f, 0.f),
-            center + vec3<float>(width * 0.5f, height * 0.5f, 0.f),
+            center + vec3<float>(width * 0.1f, height * 0.5f, 0.f),
             center + vec3<float>(-width * 0.5f, height * 0.5f, 0.f),
             vec2<float>(0.f, 1.f),
             vec2<float>(1.f, 0.f),
-            vec2<float>(0.f, 0.f)
+            vec2<float>(0.f, 0.f),
+            std::make_unique<Lambertian>(vec3<float>(0.0f, emission * (38.f / 255.f), emission * 1.0f), this->params.rayNoiseSampler)
+            //std::make_unique<Metal>(vec3<float>(0.0f, emission * 1.0f, emission * 1.0f))
             )
     );
 
@@ -53,7 +72,9 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
             center + vec3<float>(width * 0.5f, height * 0.5f, 0.f),
             vec2<float>(0.f, 1.f),
             vec2<float>(1.f, 1.f),
-            vec2<float>(1.f, 0.f)
+            vec2<float>(1.f, 0.f),
+            std::make_unique<Lambertian>(vec3<float>(emission * 1.0f, emission * (30.f / 255.f), 0.0f), this->params.rayNoiseSampler)
+            //std::make_unique<Metal>(vec3<float>(emission * 1.0f, emission * (30.f / 255.f), 0.0f))
             )
     );
 
@@ -93,8 +114,19 @@ vec3<float> RayTraceFunctor::Color(const ray<float>& r, const IHitable& world, u
 
     if (std::optional<HitRecord> hitRec = world.Hit(r, 0.001f, std::numeric_limits<float>::max()))
     {
-        vec3<float> target = hitRec->point + hitRec->normal + this->RandomInUnitSphere(r);
-        return 0.5f * this->Color(ray<float>(hitRec->point, target - hitRec->point), world, depth - 1);
+        if (!hitRec->material)
+        {
+            return 0.f;
+        }
+
+        if (std::optional<ScatterRecord> scatter = hitRec->material->Scatter(r, *hitRec))
+        {
+            return scatter->attenuation * this->Color(scatter->scattered, world, depth - 1);
+        }
+        else
+        {
+            return 0.f;
+        }
     }
     else
     {
@@ -102,18 +134,6 @@ vec3<float> RayTraceFunctor::Color(const ray<float>& r, const IHitable& world, u
         float t = 0.5f * (unitDirection.y + 1.f);
         return (1.f - t) * vec3<float>(1.f) + t * vec3<float>(0.5f, 0.7f, 1.f);
     }
-}
-
-vec3<float> RayTraceFunctor::RandomInUnitSphere(const ray<float>& r) const
-{
-    vec3<float> rndVec =
-    {
-        this->params.rayNoiseSampler->Sample(r),
-        this->params.rayNoiseSampler->Sample(ray<float>(r.origin + vec3<float>(0.1f, 0.1f, 0.f), r.direction)),
-        this->params.rayNoiseSampler->Sample(ray<float>(r.origin + vec3<float>(0.0f, 0.1f, 0.1f), r.direction))
-    };
-
-    return rndVec.normalized();
 }
 
 RayTraceFunctor::PixelSampler::PixelSampler(

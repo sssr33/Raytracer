@@ -2,10 +2,12 @@
 
 Triangle::Triangle(
     const vec3<float>& v0, const vec3<float>& v1, const vec3<float>& v2,
-    const vec2<float>& t0, const vec2<float>& t1, const vec2<float>& t2
+    const vec2<float>& t0, const vec2<float>& t1, const vec2<float>& t2,
+    std::unique_ptr<IMaterial> material
 )
 	: v0(v0), v1(v1), v2(v2)
     , t0(t0), t1(t1), t2(t2)
+    , material(std::move(material))
 {}
 
 std::optional<HitRecord> Triangle::Hit(const ray<float>& ray, float tMin, float tMax) const
@@ -54,9 +56,11 @@ std::optional<HitRecord> Triangle::Hit(const ray<float>& ray, float tMin, float 
         float wt = 1.f - u - v; // for v2
 
         // tex coords at point
-        vec2<float> pt = wt * t0 + ut * t1 + vt * t2;
+        //vec2<float> pt = wt * t0 + ut * t1 + vt * t2;
 
-        hit.color = pt.x;
+        //hit.color = pt.x;
+
+        hit.material = this->material.get();
 
         return hit;
     }

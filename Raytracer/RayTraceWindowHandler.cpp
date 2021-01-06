@@ -15,7 +15,7 @@
 
 RayTraceWindowHandler::RayTraceWindowHandler()
 	: random(std::random_device()())
-	, perlinNoise(std::make_shared<PerlinNoiseTextureSampler>(256))
+	, perlinNoise(std::make_shared<PerlinNoiseTextureSampler>(4096))
 {
 	// 1 image for raytracing task
 	this->renderQueue.emplace();

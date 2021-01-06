@@ -13,8 +13,8 @@ RayTraceFunctor::RayTraceFunctor(
 )
 	: image(image)
 	, params(std::move(params))
-    , pixelAA(std::make_shared<PixelMsaa>(1))
-    //, pixelAA(std::make_shared<SubpixelMsaa>(4, 0.9f)) // more coverage for green for smoother gradients
+    , pixelAA(std::make_shared<PixelMsaa>(10))
+    //, pixelAA(std::make_shared<SubpixelMsaa>(10, 0.9f)) // more coverage for green for smoother gradients
 {}
 
 void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
@@ -66,7 +66,8 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
         {
             const vec2<float> pixCoord = vec2<float>(static_cast<float>(x), static_cast<float>(y));
             const vec3<float> color = this->pixelAA->Resolve(pixCoord, pixSampler);
-            const vec3<float> col8Bit = color * 255.99f;
+            const vec3<float> gammaCorrectColor = vec3<float>(std::sqrtf(color.r), std::sqrtf(color.g), std::sqrtf(color.b));
+            const vec3<float> col8Bit = gammaCorrectColor * 255.99f;
             BGRA<uint8_t> pixel = {};
 
             pixel.r = static_cast<uint8_t>(col8Bit.r);
@@ -79,26 +80,36 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
     }
 }
 
-vec3<float> RayTraceFunctor::Color(const ray<float>& ray, const IHitable& world) const
+vec3<float> RayTraceFunctor::Color(const ray<float>& r, const IHitable& world, uint32_t depth) const
 {
-    if (std::optional<HitRecord> hitRec = world.Hit(ray, 0.f, std::numeric_limits<float>::max()))
+    if (!depth)
     {
-        float rayNoise = this->params.rayNoiseSampler->Sample(ray);
+        return 0.f;
+    }
 
-        if (hitRec->color)
-        {
-            return *hitRec->color * rayNoise;
-        }
-
-        vec3<float> color = 0.5f * (hitRec->normal + 1.f);
-        return color;// *rayNoise;
+    if (std::optional<HitRecord> hitRec = world.Hit(r, 0.001f, std::numeric_limits<float>::max()))
+    {
+        vec3<float> target = hitRec->point + hitRec->normal + this->RandomInUnitSphere(r);
+        return 0.5f * this->Color(ray<float>(hitRec->point, target - hitRec->point), world, depth - 1);
     }
     else
     {
-        vec3<float> unitDirection = ray.direction.normalized();
+        vec3<float> unitDirection = r.direction.normalized();
         float t = 0.5f * (unitDirection.y + 1.f);
         return (1.f - t)* vec3<float>(1.f) + t * vec3<float>(0.5f, 0.7f, 1.f);
     }
+}
+
+vec3<float> RayTraceFunctor::RandomInUnitSphere(const ray<float>& r) const
+{
+    vec3<float> rndVec =
+    {
+        this->params.rayNoiseSampler->Sample(r),
+        this->params.rayNoiseSampler->Sample(ray<float>(r.origin + vec3<float>(0.1f, 0.1f, 0.f), r.direction)),
+        this->params.rayNoiseSampler->Sample(ray<float>(r.origin + vec3<float>(0.0f, 0.1f, 0.1f), r.direction))
+    };
+
+    return rndVec.normalized();
 }
 
 RayTraceFunctor::PixelSampler::PixelSampler(

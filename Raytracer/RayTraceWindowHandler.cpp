@@ -4,8 +4,9 @@
 #include "Render/Functor/TestGradientFunctor.h"
 #include "Render/Functor/CopyImageFunctor.h"
 #include "Render/Functor/RayTraceFunctor.h"
-#include "Render/PerlinNoise/PerlinNoiseRandom.h"
-#include "Render/PerlinNoise/PerlinNoiseTextureSampler.h"
+#include "Render/PerlinNoise/PerlinNoiseNormalizedTextureSampler.h"
+#include "Render/Sampler/TextureRaySampler.h"
+#include "Render/Sampler/TextureSamplerWithOffset.h"
 
 #include <Helpers/is_ready.h>
 #include <MassiveCompute/Schedulers/StealingBlockScheduler.h>
@@ -14,13 +15,10 @@
 
 RayTraceWindowHandler::RayTraceWindowHandler()
 	: random(std::random_device()())
-	, perlinNoise(std::make_unique<PerlinNoiseTextureSampler>(256))
+	, perlinNoise(std::make_shared<PerlinNoiseNormalizedTextureSampler>(256))
 {
 	// 1 image for raytracing task
 	this->renderQueue.emplace();
-
-	//this->perlinNoise = std::make_shared<PerlinNoiseRandom>();
-	//this->perlinNoise = std::make_shared<TextureSamplerWithOffset<float>>(std::make_unique<PerlinNoiseTextureSampler>(256));
 }
 
 RayTraceWindowHandler::~RayTraceWindowHandler()
@@ -123,10 +121,14 @@ void RayTraceWindowHandler::TryStartRayTraceTask()
 
 	RayTraceFunctorParams rayTraceParams;
 
-	this->perlinNoise.SetOffset({ this->GetRandomFloat(), this->GetRandomFloat() });
-
 	rayTraceParams.cameraX = this->cameraX;
-	rayTraceParams.texSampler = this->perlinNoise.Clone();
+	// perlin noise + random offset + ray sampler
+	rayTraceParams.rayNoiseSampler =
+		std::make_shared<TextureRaySampler<float>>(
+			std::make_shared<TextureSamplerWithOffset<float>>(
+				this->perlinNoise, vec2<float>(this->GetRandomFloat(), this->GetRandomFloat())
+				)
+			);
 
 	this->rayTraceTask = std::async(
 		std::launch::async,

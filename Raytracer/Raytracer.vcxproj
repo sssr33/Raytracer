@@ -181,7 +181,7 @@
     <ClCompile Include="Render\Hitable\HitableList.cpp" />
     <ClCompile Include="Render\Hitable\Sphere.cpp" />
     <ClCompile Include="Render\Hitable\Triangle.cpp" />
-    <ClCompile Include="Render\PerlinNoise\PerlinNoiseRandom.cpp" />
+    <ClCompile Include="Render\PerlinNoise\PerlinNoiseNormalizedTextureSampler.cpp" />
     <ClCompile Include="Render\PerlinNoise\PerlinNoiseTextureSampler.cpp" />
     <ClCompile Include="SystemBackBufferLock.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -195,8 +195,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Base\ClonePtr.h" />
-    <ClInclude Include="Base\ICloneable.h" />
     <ClInclude Include="GameWindow.h" />
     <ClInclude Include="HDCBackBuffer.h" />
     <ClInclude Include="IGameWindowHandler.h" />
@@ -216,7 +214,6 @@
     <ClInclude Include="Math\vec3.h" />
     <ClInclude Include="Math\vec4.h" />
     <ClInclude Include="Meta\IndexPair.h" />
-    <ClInclude Include="Random\IRandom.h" />
     <ClInclude Include="Render\AntiAliasing\IPixelAntiAliasing.h" />
     <ClInclude Include="Render\AntiAliasing\PixelMsaa.h" />
     <ClInclude Include="Render\AntiAliasing\SubpixelMsaa.h" />
@@ -231,10 +228,11 @@
     <ClInclude Include="Render\Hitable\IHitable.h" />
     <ClInclude Include="Render\Hitable\Sphere.h" />
     <ClInclude Include="Render\Hitable\Triangle.h" />
-    <ClInclude Include="Render\PerlinNoise\PerlinNoiseRandom.h" />
+    <ClInclude Include="Render\PerlinNoise\PerlinNoiseNormalizedTextureSampler.h" />
     <ClInclude Include="Render\PerlinNoise\PerlinNoiseTextureSampler.h" />
     <ClInclude Include="Render\Sampler\IPixelSampler.h" />
     <ClInclude Include="Render\Sampler\ITextureSampler.h" />
+    <ClInclude Include="Render\Sampler\TextureRaySampler.h" />
     <ClInclude Include="Render\Sampler\TextureSamplerWithOffset.h" />
     <ClInclude Include="SystemBackBufferLock.h" />
     <ClInclude Include="Window.h" />

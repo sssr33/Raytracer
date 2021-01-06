@@ -1,12 +1,15 @@
 #pragma once
 #include "ITextureSampler.h"
 
+#include <memory>
+
 template<class PixelT>
 class TextureSamplerWithOffset : public ITextureSampler<PixelT>
 {
 public:
-    explicit TextureSamplerWithOffset(std::unique_ptr<ITextureSampler<PixelT>> sampler)
+    explicit TextureSamplerWithOffset(std::shared_ptr<ITextureSampler<PixelT>> sampler, const vec2<float>& offset)
         : sampler(std::move(sampler))
+        , offset(offset)
     {}
 
     PixelT Sample(const vec2<float>& texCoords) const override
@@ -14,26 +17,7 @@ public:
         return this->sampler->Sample(texCoords + this->offset);
     }
 
-    std::unique_ptr<ITextureSampler<PixelT>> Clone() const
-    {
-        std::unique_ptr<TextureSamplerWithOffset> clone = std::make_unique<TextureSamplerWithOffset>(this->sampler->Clone());
-
-        clone->SetOffset(this->GetOffset());
-
-        return clone;
-    }
-
-    const vec2<float>& GetOffset() const
-    {
-        return this->offset;
-    }
-
-    void SetOffset(const vec2<float>& offset)
-    {
-        this->offset = offset;
-    }
-
 private:
-    std::unique_ptr<ITextureSampler<PixelT>> sampler;
+    std::shared_ptr<ITextureSampler<PixelT>> sampler;
     vec2<float> offset = { 0.f, 0.f };
 };

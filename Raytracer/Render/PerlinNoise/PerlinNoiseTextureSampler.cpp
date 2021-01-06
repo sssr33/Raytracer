@@ -56,11 +56,6 @@ float PerlinNoiseTextureSampler::Sample(const vec2<float>& texCoords) const
 	return result;
 }
 
-std::unique_ptr<ITextureSampler<float>> PerlinNoiseTextureSampler::Clone() const
-{
-	return std::make_unique<PerlinNoiseTextureSampler>(*this);
-}
-
 uint32_t PerlinNoiseTextureSampler::GetPermutationTableValue(size_t x, size_t y) const
 {
 	assert(x < this->noiseTexSize);

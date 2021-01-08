@@ -78,6 +78,18 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
             )
     );
 
+    hitableList.objects.emplace_back(
+        std::make_unique<Triangle>(
+            vec3<float>(-width, -height, 1.f),
+            vec3<float>(width, -height, 1.f),
+            vec3<float>(0.f, height, 1.f),
+            vec2<float>(0.f, 1.f),
+            vec2<float>(1.f, 1.f),
+            vec2<float>(1.f, 0.f),
+            std::make_unique<Lambertian>(vec3<float>(emission * (100.f / 255.f), emission * 1.0f, 0.f), this->params.rayNoiseSampler)
+            )
+    );
+
     PixelSampler pixSampler(imageSize, camera, hitableList, *this);
 
     for (size_t yRow = block.top; yRow < block.bottom; yRow++)

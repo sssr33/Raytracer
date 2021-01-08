@@ -1,13 +1,13 @@
 #include "Lambertian.h"
 
-Lambertian::Lambertian(const vec3<float>& albedo, std::shared_ptr<TextureRaySampler<float>> rayNoiseSampler)
+Lambertian::Lambertian(const vec3<float>& albedo, std::shared_ptr<IRandomInUnitSphere> randomInUnitSphere)
     : albedo(albedo)
-    , rayNoiseSampler(std::move(rayNoiseSampler))
+    , randomInUnitSphere(std::move(randomInUnitSphere))
 {}
 
 std::optional<ScatterRecord> Lambertian::Scatter(const ray<float>& r, const HitRecord& hitRecord) const
 {
-    vec3<float> target = hitRecord.point + hitRecord.normal + this->RandomInUnitSphere(r);
+    vec3<float> target = hitRecord.point + hitRecord.normal + this->randomInUnitSphere->RandomInUnitSphere(r);
 
     ScatterRecord rec;
 
@@ -15,16 +15,4 @@ std::optional<ScatterRecord> Lambertian::Scatter(const ray<float>& r, const HitR
     rec.attenuation = this->albedo;
 
     return rec;
-}
-
-vec3<float> Lambertian::RandomInUnitSphere(const ray<float>& r) const
-{
-    vec3<float> rndVec =
-    {
-        this->rayNoiseSampler->Sample(r),
-        this->rayNoiseSampler->Sample(ray<float>(r.origin + vec3<float>(0.1f, 0.1f, 0.f), r.direction)),
-        this->rayNoiseSampler->Sample(ray<float>(r.origin + vec3<float>(0.0f, 0.1f, 0.1f), r.direction))
-    };
-
-    return rndVec.normalized();
 }

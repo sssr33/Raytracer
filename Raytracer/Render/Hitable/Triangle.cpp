@@ -46,6 +46,11 @@ std::optional<HitRecord> Triangle::Hit(const ray<float>& ray, float tMin, float 
         hit.point = ray.pointAtParameter(hit.rayT);
         hit.normal = v0v1.cross(v0v2).normalized();
 
+        if (ray.direction.normalized().dot(hit.normal) > 0.f)
+        {
+            hit.normal = -hit.normal;
+        }
+
         // triangle interpolation
         //hit.u = u; // for v0
         //hit.v = v; // for v1

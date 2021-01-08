@@ -21,6 +21,7 @@
     <ClCompile Include="Render\PerlinNoise\PerlinNoiseNormalizedTextureSampler.cpp" />
     <ClCompile Include="Render\Material\Lambertian.cpp" />
     <ClCompile Include="Render\Material\Metal.cpp" />
+    <ClCompile Include="Render\Random\TextureRaySamplerRandomInUnitSphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -68,5 +69,7 @@
     <ClInclude Include="Render\Material\ScatterRecord.h" />
     <ClInclude Include="Render\Material\Lambertian.h" />
     <ClInclude Include="Render\Material\Metal.h" />
+    <ClInclude Include="Render\Random\IRandomInUnitSphere.h" />
+    <ClInclude Include="Render\Random\TextureRaySamplerRandomInUnitSphere.h" />
   </ItemGroup>
 </Project>

@@ -33,16 +33,28 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
     hitableList.objects.emplace_back(std::make_unique<Sphere>(
         vec3<float>{0.f, 0.f, -1.f},
         0.5f,
-        //std::make_unique<Lambertian>(vec3<float>(0.5f, 0.5f, 0.5f), this->params.rayNoiseSampler)
-        std::make_unique<Metal>(vec3<float>(0.5f, 0.5f, 0.5f))
+        std::make_unique<Lambertian>(vec3<float>(0.8f, 0.3f, 0.3f), this->params.randomInUnitSphere)
         )
     );
 
     hitableList.objects.emplace_back(std::make_unique<Sphere>(
         vec3<float>{0.f, -100.5f, -1.f},
         100.f,
-        std::make_unique<Lambertian>(vec3<float>(0.5f, 0.5f, 0.5f), this->params.rayNoiseSampler)
-        //std::make_unique<Metal>(vec3<float>(0.5f, 0.5f, 0.5f))
+        std::make_unique<Lambertian>(vec3<float>(0.8f, 0.8f, 0.8f), this->params.randomInUnitSphere)
+        )
+    );
+
+    hitableList.objects.emplace_back(std::make_unique<Sphere>(
+        vec3<float>{1.f, 0.f, -1.f},
+        0.5f,
+        std::make_unique<Metal>(vec3<float>(0.8f, 0.6f, 0.2f), 0.025f, this->params.randomInUnitSphere)
+        )
+    );
+
+    hitableList.objects.emplace_back(std::make_unique<Sphere>(
+        vec3<float>{-1.f, 0.f, -1.f},
+        0.5f,
+        std::make_unique<Metal>(vec3<float>(0.8f, 0.8f, 0.8f), 0.1f, this->params.randomInUnitSphere)
         )
     );
 
@@ -50,7 +62,7 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
     float width = 2.f;
     float height = 2.f;
 
-    float emission = 4.f;
+    float emission = 2.f;
 
     hitableList.objects.emplace_back(
         std::make_unique<Triangle>(
@@ -60,8 +72,7 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
             vec2<float>(0.f, 1.f),
             vec2<float>(1.f, 0.f),
             vec2<float>(0.f, 0.f),
-            std::make_unique<Lambertian>(vec3<float>(0.0f, emission * (38.f / 255.f), emission * 1.0f), this->params.rayNoiseSampler)
-            //std::make_unique<Metal>(vec3<float>(0.0f, emission * 1.0f, emission * 1.0f))
+            std::make_unique<Lambertian>(vec3<float>(0.0f, emission * (38.f / 255.f), emission * 1.0f), this->params.randomInUnitSphere)
             )
     );
 
@@ -73,8 +84,7 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
             vec2<float>(0.f, 1.f),
             vec2<float>(1.f, 1.f),
             vec2<float>(1.f, 0.f),
-            std::make_unique<Lambertian>(vec3<float>(emission * 1.0f, emission * (30.f / 255.f), 0.0f), this->params.rayNoiseSampler)
-            //std::make_unique<Metal>(vec3<float>(emission * 1.0f, emission * (30.f / 255.f), 0.0f))
+            std::make_unique<Lambertian>(vec3<float>(emission * 1.0f, emission * (30.f / 255.f), 0.0f), this->params.randomInUnitSphere)
             )
     );
 
@@ -86,7 +96,7 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
             vec2<float>(0.f, 1.f),
             vec2<float>(1.f, 1.f),
             vec2<float>(1.f, 0.f),
-            std::make_unique<Lambertian>(vec3<float>(emission * (100.f / 255.f), emission * 1.0f, 0.f), this->params.rayNoiseSampler)
+            std::make_unique<Metal>(vec3<float>(emission * (100.f / 255.f), emission * 1.0f, 0.f), 0.f, this->params.randomInUnitSphere)
             )
     );
 

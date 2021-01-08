@@ -7,6 +7,7 @@
 #include "Render/PerlinNoise/PerlinNoiseTextureSampler.h"
 #include "Render/Sampler/TextureRaySampler.h"
 #include "Render/Sampler/TextureSamplerWithOffset.h"
+#include "Render/Random/TextureRaySamplerRandomInUnitSphere.h"
 
 #include <Helpers/is_ready.h>
 #include <MassiveCompute/Schedulers/StealingBlockScheduler.h>
@@ -123,10 +124,12 @@ void RayTraceWindowHandler::TryStartRayTraceTask()
 
 	rayTraceParams.cameraX = this->cameraX;
 	// perlin noise + random offset + ray sampler
-	rayTraceParams.rayNoiseSampler =
-		std::make_shared<TextureRaySampler<float>>(
-			std::make_shared<TextureSamplerWithOffset<float>>(
-				this->perlinNoise, vec2<float>(this->GetRandomFloat(), this->GetRandomFloat())
+	rayTraceParams.randomInUnitSphere =
+		std::make_shared<TextureRaySamplerRandomInUnitSphere>(
+			std::make_shared<TextureRaySampler<float>>(
+				std::make_shared<TextureSamplerWithOffset<float>>(
+					this->perlinNoise, vec2<float>(this->GetRandomFloat(), this->GetRandomFloat())
+					)
 				)
 			);
 

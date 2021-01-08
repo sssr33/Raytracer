@@ -185,6 +185,7 @@
     <ClCompile Include="Render\Material\Metal.cpp" />
     <ClCompile Include="Render\PerlinNoise\PerlinNoiseNormalizedTextureSampler.cpp" />
     <ClCompile Include="Render\PerlinNoise\PerlinNoiseTextureSampler.cpp" />
+    <ClCompile Include="Render\Random\TextureRaySamplerRandomInUnitSphere.cpp" />
     <ClCompile Include="SystemBackBufferLock.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -236,6 +237,8 @@
     <ClInclude Include="Render\Material\ScatterRecord.h" />
     <ClInclude Include="Render\PerlinNoise\PerlinNoiseNormalizedTextureSampler.h" />
     <ClInclude Include="Render\PerlinNoise\PerlinNoiseTextureSampler.h" />
+    <ClInclude Include="Render\Random\IRandomInUnitSphere.h" />
+    <ClInclude Include="Render\Random\TextureRaySamplerRandomInUnitSphere.h" />
     <ClInclude Include="Render\Sampler\IPixelSampler.h" />
     <ClInclude Include="Render\Sampler\ITextureSampler.h" />
     <ClInclude Include="Render\Sampler\TextureRaySampler.h" />

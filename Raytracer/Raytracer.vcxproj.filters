@@ -19,6 +19,9 @@
     <ClCompile Include="Render\AntiAliasing\PixelMsaa.cpp" />
     <ClCompile Include="Render\PerlinNoise\PerlinNoiseTextureSampler.cpp" />
     <ClCompile Include="Render\PerlinNoise\PerlinNoiseNormalizedTextureSampler.cpp" />
+    <ClCompile Include="Render\Material\Lambertian.cpp" />
+    <ClCompile Include="Render\Material\Metal.cpp" />
+    <ClCompile Include="Render\Random\TextureRaySamplerRandomInUnitSphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -62,5 +65,11 @@
     <ClInclude Include="Render\Sampler\TextureSamplerWithOffset.h" />
     <ClInclude Include="Render\Sampler\TextureRaySampler.h" />
     <ClInclude Include="Render\PerlinNoise\PerlinNoiseNormalizedTextureSampler.h" />
+    <ClInclude Include="Render\Material\IMaterial.h" />
+    <ClInclude Include="Render\Material\ScatterRecord.h" />
+    <ClInclude Include="Render\Material\Lambertian.h" />
+    <ClInclude Include="Render\Material\Metal.h" />
+    <ClInclude Include="Render\Random\IRandomInUnitSphere.h" />
+    <ClInclude Include="Render\Random\TextureRaySamplerRandomInUnitSphere.h" />
   </ItemGroup>
 </Project>

@@ -181,8 +181,11 @@
     <ClCompile Include="Render\Hitable\HitableList.cpp" />
     <ClCompile Include="Render\Hitable\Sphere.cpp" />
     <ClCompile Include="Render\Hitable\Triangle.cpp" />
+    <ClCompile Include="Render\Material\Lambertian.cpp" />
+    <ClCompile Include="Render\Material\Metal.cpp" />
     <ClCompile Include="Render\PerlinNoise\PerlinNoiseNormalizedTextureSampler.cpp" />
     <ClCompile Include="Render\PerlinNoise\PerlinNoiseTextureSampler.cpp" />
+    <ClCompile Include="Render\Random\TextureRaySamplerRandomInUnitSphere.cpp" />
     <ClCompile Include="SystemBackBufferLock.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -228,8 +231,14 @@
     <ClInclude Include="Render\Hitable\IHitable.h" />
     <ClInclude Include="Render\Hitable\Sphere.h" />
     <ClInclude Include="Render\Hitable\Triangle.h" />
+    <ClInclude Include="Render\Material\IMaterial.h" />
+    <ClInclude Include="Render\Material\Lambertian.h" />
+    <ClInclude Include="Render\Material\Metal.h" />
+    <ClInclude Include="Render\Material\ScatterRecord.h" />
     <ClInclude Include="Render\PerlinNoise\PerlinNoiseNormalizedTextureSampler.h" />
     <ClInclude Include="Render\PerlinNoise\PerlinNoiseTextureSampler.h" />
+    <ClInclude Include="Render\Random\IRandomInUnitSphere.h" />
+    <ClInclude Include="Render\Random\TextureRaySamplerRandomInUnitSphere.h" />
     <ClInclude Include="Render\Sampler\IPixelSampler.h" />
     <ClInclude Include="Render\Sampler\ITextureSampler.h" />
     <ClInclude Include="Render\Sampler\TextureRaySampler.h" />

@@ -55,7 +55,7 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
     hitableList.objects.emplace_back(std::make_unique<Sphere>(
         vec3<float>{-1.f, 0.f, -1.f},
         0.5f,
-        std::make_unique<Dielectric>(1.5f)
+        std::make_unique<Dielectric>(1.5f, this->params.randomInUnitSphere)
         )
     );
 

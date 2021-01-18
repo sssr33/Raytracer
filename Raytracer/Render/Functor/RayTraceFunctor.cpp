@@ -8,6 +8,7 @@
 #include "Render/AntiAliasing/SubpixelMsaa.h"
 #include "Render/Material/Lambertian.h"
 #include "Render/Material/Metal.h"
+#include "Render/Material/Dielectric.h"
 
 #include <algorithm>
 
@@ -54,7 +55,7 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
     hitableList.objects.emplace_back(std::make_unique<Sphere>(
         vec3<float>{-1.f, 0.f, -1.f},
         0.5f,
-        std::make_unique<Metal>(vec3<float>(0.8f, 0.8f, 0.8f), 0.1f, this->params.randomInUnitSphere)
+        std::make_unique<Dielectric>(1.5f, this->params.randomInUnitSphere)
         )
     );
 

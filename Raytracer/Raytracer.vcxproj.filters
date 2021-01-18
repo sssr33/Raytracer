@@ -22,6 +22,7 @@
     <ClCompile Include="Render\Material\Lambertian.cpp" />
     <ClCompile Include="Render\Material\Metal.cpp" />
     <ClCompile Include="Render\Random\TextureRaySamplerRandomInUnitSphere.cpp" />
+    <ClCompile Include="Render\Material\Dielectric.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -71,5 +72,6 @@
     <ClInclude Include="Render\Material\Metal.h" />
     <ClInclude Include="Render\Random\IRandomInUnitSphere.h" />
     <ClInclude Include="Render\Random\TextureRaySamplerRandomInUnitSphere.h" />
+    <ClInclude Include="Render\Material\Dielectric.h" />
   </ItemGroup>
 </Project>

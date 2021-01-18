@@ -181,6 +181,7 @@
     <ClCompile Include="Render\Hitable\HitableList.cpp" />
     <ClCompile Include="Render\Hitable\Sphere.cpp" />
     <ClCompile Include="Render\Hitable\Triangle.cpp" />
+    <ClCompile Include="Render\Material\Dielectric.cpp" />
     <ClCompile Include="Render\Material\Lambertian.cpp" />
     <ClCompile Include="Render\Material\Metal.cpp" />
     <ClCompile Include="Render\PerlinNoise\PerlinNoiseNormalizedTextureSampler.cpp" />
@@ -231,6 +232,7 @@
     <ClInclude Include="Render\Hitable\IHitable.h" />
     <ClInclude Include="Render\Hitable\Sphere.h" />
     <ClInclude Include="Render\Hitable\Triangle.h" />
+    <ClInclude Include="Render\Material\Dielectric.h" />
     <ClInclude Include="Render\Material\IMaterial.h" />
     <ClInclude Include="Render\Material\Lambertian.h" />
     <ClInclude Include="Render\Material\Metal.h" />

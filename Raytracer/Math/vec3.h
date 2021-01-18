@@ -3,6 +3,7 @@
 #include "swizzleOp3.h"
 
 #include <cmath>
+#include <optional>
 
 template<class VecT, class ComponentT, class ... Indexes>
 struct swizzleOpVecHelper;
@@ -150,5 +151,20 @@ struct vec3
         const vec3& a = *this;
 
         return a - 2.f * a.dot(normal) * normal;
+    }
+
+    std::optional<vec3> refract(const vec3& normal, T niOverNt) const
+    {
+        vec3 uv = this->normalized();
+        T dp = uv.dot(normal);
+        T discriminant = T(1) - niOverNt * niOverNt * (T(1) - dp * dp);
+
+        if (discriminant > T(0))
+        {
+            vec3 refracted = niOverNt * (uv - normal * dp) - normal * std::sqrt(discriminant);
+            return refracted;
+        }
+
+        return std::nullopt;
     }
 };

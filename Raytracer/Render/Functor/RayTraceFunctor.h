@@ -3,7 +3,7 @@
 #include "Image/Image.h"
 #include "Image/BGRA.h"
 #include "Math/ray.h"
-#include "Render/Camera.h"
+#include "Render/Camera/Camera.h"
 #include "Render/Hitable/IHitable.h"
 #include "Render/Sampler/IPixelSampler.h"
 #include "Render/AntiAliasing/IPixelAntiAliasing.h"

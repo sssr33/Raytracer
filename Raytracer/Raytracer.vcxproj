@@ -173,7 +173,8 @@
     <ClCompile Include="Raytracer.cpp" />
     <ClCompile Include="Render\AntiAliasing\PixelMsaa.cpp" />
     <ClCompile Include="Render\AntiAliasing\SubpixelMsaa.cpp" />
-    <ClCompile Include="Render\Camera.cpp" />
+    <ClCompile Include="Render\Camera\Camera.cpp" />
+    <ClCompile Include="Render\Camera\CameraSettings.cpp" />
     <ClCompile Include="Render\Functor\RayTraceFunctor.cpp" />
     <ClCompile Include="Render\Functor\RayTraceFunctorParams.cpp" />
     <ClCompile Include="RayTraceWindowHandler.cpp" />
@@ -221,7 +222,8 @@
     <ClInclude Include="Render\AntiAliasing\IPixelAntiAliasing.h" />
     <ClInclude Include="Render\AntiAliasing\PixelMsaa.h" />
     <ClInclude Include="Render\AntiAliasing\SubpixelMsaa.h" />
-    <ClInclude Include="Render\Camera.h" />
+    <ClInclude Include="Render\Camera\Camera.h" />
+    <ClInclude Include="Render\Camera\CameraSettings.h" />
     <ClInclude Include="Render\Functor\CopyImageFunctor.h" />
     <ClInclude Include="Render\Functor\RayTraceFunctor.h" />
     <ClInclude Include="Render\Functor\RayTraceFunctorParams.h" />

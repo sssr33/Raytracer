@@ -1,6 +1,6 @@
 #include "RayTraceFunctor.h"
 #include "Math/vec.h"
-#include "Render/Camera.h"
+#include "Render/Camera/Camera.h"
 #include "Render/Hitable/HitableList.h"
 #include "Render/Hitable/Sphere.h"
 #include "Render/Hitable/Triangle.h"
@@ -25,9 +25,15 @@ RayTraceFunctor::RayTraceFunctor(
 void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
 {
     const vec2<float> imageSize(static_cast<float>(block.imageWidth), static_cast<float>(block.imageHeight));
-    Camera camera(imageSize.x / imageSize.y);
 
-    camera.SetOrigin({ this->params.cameraX, 0.f, 0.f });
+    CameraFovSettings camSettings;
+
+    camSettings.lookFrom = { -2.f + this->params.cameraX, 2.f, 1.f };
+    camSettings.lookAt = { 0.f, 0.f, -1.f };
+    camSettings.fov = 45.f;
+    camSettings.aspectRatio = imageSize.x / imageSize.y;
+
+    Camera camera(camSettings);
 
     HitableList hitableList;
 

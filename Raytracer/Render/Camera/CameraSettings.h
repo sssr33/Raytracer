@@ -1,6 +1,8 @@
 #pragma once
 #include "Math/vec.h"
+#include "Render/Random/IRandomInUnitSphere.h"
 
+#include <memory>
 #include <Helpers/Size2D.h>
 
 struct CameraTransformSettings
@@ -8,6 +10,9 @@ struct CameraTransformSettings
     vec3<float> lookFrom = { 0.f, 0.f, 0.f };
     vec3<float> lookAt = { 0.f, 0.f, -1.f};
     vec3<float> vecUp = { 0.f, 1.f, 0.f };
+    float aperture = 0.f;
+    float focusDist = 1.f;
+    std::shared_ptr<IRandomInUnitSphere> randomInUnitSphere;
 };
 
 struct CameraFovSettings : public CameraTransformSettings

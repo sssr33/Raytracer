@@ -24,6 +24,7 @@
     <ClCompile Include="Render\Material\Dielectric.cpp" />
     <ClCompile Include="Render\Camera\Camera.cpp" />
     <ClCompile Include="Render\Camera\CameraSettings.cpp" />
+    <ClCompile Include="Render\Scenes\Book1Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -75,5 +76,7 @@
     <ClInclude Include="Render\Material\Dielectric.h" />
     <ClInclude Include="Render\Camera\Camera.h" />
     <ClInclude Include="Render\Camera\CameraSettings.h" />
+    <ClInclude Include="Render\Scenes\Book1Scene.h" />
+    <ClInclude Include="Render\Camera\ICamera.h" />
   </ItemGroup>
 </Project>

@@ -8,6 +8,14 @@
 #include "Render/Sampler/TextureRaySampler.h"
 #include "Render/Sampler/TextureSamplerWithOffset.h"
 #include "Render/Random/TextureRaySamplerRandomInUnitSphere.h"
+#include "Render/Camera/Camera.h"
+#include "Render/Hitable/HitableList.h"
+#include "Render/Hitable/Sphere.h"
+#include "Render/Hitable/Triangle.h"
+#include "Render/Material/Lambertian.h"
+#include "Render/Material/Metal.h"
+#include "Render/Material/Dielectric.h"
+#include "Render/Scenes/Book1Scene.h"
 
 #include <Helpers/is_ready.h>
 #include <MassiveCompute/Schedulers/StealingBlockScheduler.h>
@@ -120,18 +128,8 @@ void RayTraceWindowHandler::TryStartRayTraceTask()
 		image = Image<BGRA<uint8_t>>::Resize(std::move(image), this->currentSize.width, this->currentSize.height);
 	}
 
-	RayTraceFunctorParams rayTraceParams;
-
-	rayTraceParams.cameraX = this->cameraX;
-	// perlin noise + random offset + ray sampler
-	rayTraceParams.randomInUnitSphere =
-		std::make_shared<TextureRaySamplerRandomInUnitSphere>(
-			std::make_shared<TextureRaySampler<float>>(
-				std::make_shared<TextureSamplerWithOffset<float>>(
-					this->perlinNoise, vec2<float>(this->GetRandomFloat(), this->GetRandomFloat())
-					)
-				)
-			);
+	//RayTraceFunctorParams rayTraceParams = this->MakeDefaultScene();
+	RayTraceFunctorParams rayTraceParams = this->MakeBook1Scene();
 
 	this->rayTraceTask = std::async(
 		std::launch::async,
@@ -159,6 +157,152 @@ float RayTraceWindowHandler::GetRandomFloat()
 	float rnd = static_cast<float>(this->random() % RandomResolution) / static_cast<float>(RandomResolution);
 
 	return rnd;
+}
+
+RayTraceFunctorParams RayTraceWindowHandler::MakeDefaultScene()
+{
+	auto randomInUnitSphere =
+		std::make_shared<TextureRaySamplerRandomInUnitSphere>(
+			std::make_shared<TextureRaySampler<float>>(
+				std::make_shared<TextureSamplerWithOffset<float>>(
+					this->perlinNoise, vec2<float>(this->GetRandomFloat(), this->GetRandomFloat())
+					)
+				)
+			);
+	const vec2<float> imageSize(static_cast<float>(this->currentSize.width), static_cast<float>(this->currentSize.height));
+
+	CameraFovSettings camSettings;
+
+	/*camSettings.lookFrom = { -2.f + this->cameraX, 2.f, 1.f };
+	camSettings.lookAt = { 0.f, 0.f, -1.f };
+	camSettings.fov = 45.f;*/
+	camSettings.lookFrom = { 3.f, 3.f, 2.f };
+	camSettings.lookAt = { 0.f, 0.f, -1.f };
+	camSettings.fov = 20.f;
+	camSettings.aspectRatio = imageSize.x / imageSize.y;
+	camSettings.aperture = 0.5f;
+	camSettings.focusDist = (camSettings.lookFrom - camSettings.lookAt).length();
+	camSettings.randomInUnitSphere = randomInUnitSphere;
+
+	std::shared_ptr<Camera> camera = std::make_shared<Camera>(camSettings);
+
+	std::shared_ptr<HitableList> hitableList = std::make_shared<HitableList>();
+
+	hitableList->objects.emplace_back(std::make_unique<Sphere>(
+	    vec3<float>{0.f, 0.f, -1.f},
+	    0.5f,
+	    std::make_unique<Lambertian>(vec3<float>(0.8f, 0.3f, 0.3f), randomInUnitSphere)
+	    )
+	);
+
+	hitableList->objects.emplace_back(std::make_unique<Sphere>(
+	    vec3<float>{0.f, -100.5f, -1.f},
+	    100.f,
+	    std::make_unique<Lambertian>(vec3<float>(0.8f, 0.8f, 0.8f), randomInUnitSphere)
+	    )
+	);
+
+	hitableList->objects.emplace_back(std::make_unique<Sphere>(
+	    vec3<float>{1.f, 0.f, -1.f},
+	    0.5f,
+	    std::make_unique<Metal>(vec3<float>(0.8f, 0.6f, 0.2f), 0.025f, randomInUnitSphere)
+	    )
+	);
+
+	hitableList->objects.emplace_back(std::make_unique<Sphere>(
+	    vec3<float>{-1.f, 0.f, -1.f},
+	    0.5f,
+	    std::make_unique<Dielectric>(1.5f, randomInUnitSphere)
+	    )
+	);
+
+	vec3<float> center = { 0.f, 0.f, -1.f };
+	float width = 2.f;
+	float height = 2.f;
+
+	float emission = 2.f;
+
+	hitableList->objects.emplace_back(
+	    std::make_unique<Triangle>(
+	        center + vec3<float>(-width * 0.5f, -height * 0.5f, 0.f),
+	        center + vec3<float>(width * 0.1f, height * 0.5f, 0.f),
+	        center + vec3<float>(-width * 0.5f, height * 0.5f, 0.f),
+	        vec2<float>(0.f, 1.f),
+	        vec2<float>(1.f, 0.f),
+	        vec2<float>(0.f, 0.f),
+	        std::make_unique<Lambertian>(vec3<float>(0.0f, emission * (38.f / 255.f), emission * 1.0f), randomInUnitSphere)
+	        )
+	);
+
+	hitableList->objects.emplace_back(
+	    std::make_unique<Triangle>(
+	        center + vec3<float>(-width * 0.5f, -height * 0.5f, 0.f),
+	        center + vec3<float>(width * 0.5f, -height * 0.5f, 0.f),
+	        center + vec3<float>(width * 0.5f, height * 0.5f, 0.f),
+	        vec2<float>(0.f, 1.f),
+	        vec2<float>(1.f, 1.f),
+	        vec2<float>(1.f, 0.f),
+	        std::make_unique<Lambertian>(vec3<float>(emission * 1.0f, emission * (30.f / 255.f), 0.0f), randomInUnitSphere)
+	        )
+	);
+
+	hitableList->objects.emplace_back(
+	    std::make_unique<Triangle>(
+	        vec3<float>(-width, -height, 1.f),
+	        vec3<float>(width, -height, 1.f),
+	        vec3<float>(0.f, height, 1.f),
+	        vec2<float>(0.f, 1.f),
+	        vec2<float>(1.f, 1.f),
+	        vec2<float>(1.f, 0.f),
+	        std::make_unique<Metal>(vec3<float>(emission * (100.f / 255.f), emission * 1.0f, 0.f), 0.f, randomInUnitSphere)
+	        )
+	);
+
+	RayTraceFunctorParams params;
+
+	params.camera = std::move(camera);
+	params.scene = std::move(hitableList);
+
+	return params;
+}
+
+RayTraceFunctorParams RayTraceWindowHandler::MakeBook1Scene()
+{
+	auto randomInUnitSphere =
+		std::make_shared<TextureRaySamplerRandomInUnitSphere>(
+			std::make_shared<TextureRaySampler<float>>(
+				std::make_shared<TextureSamplerWithOffset<float>>(
+					this->perlinNoise, vec2<float>(this->GetRandomFloat(), this->GetRandomFloat())
+					)
+				)
+			);
+
+	if (!this->book1Scene)
+	{
+		// scene is generated randomly so create it 1 time to have constant object position between frames
+		this->book1Scene = Book1Scene()(randomInUnitSphere);
+	}
+
+	const vec2<float> imageSize(static_cast<float>(this->currentSize.width), static_cast<float>(this->currentSize.height));
+
+	CameraFovSettings camSettings;
+
+	camSettings.lookFrom = { 17.f, 2.5f, 4.f };
+	camSettings.lookAt = { 0.f, 1.f, 0.f };
+	camSettings.fov = 20.f;
+	camSettings.aspectRatio = imageSize.x / imageSize.y;
+	camSettings.aperture = 0.3f;
+	camSettings.focusDist = (camSettings.lookFrom - camSettings.lookAt).length();
+	camSettings.randomInUnitSphere = randomInUnitSphere;
+
+	std::shared_ptr<Camera> camera = std::make_shared<Camera>(camSettings);
+
+	RayTraceFunctorParams params;
+
+	params.camera = std::move(camera);
+	params.scene = this->book1Scene;
+
+	return params;
 }
 
 Image<BGRA<uint8_t>> RayTraceWindowHandler::RayTraceMain(

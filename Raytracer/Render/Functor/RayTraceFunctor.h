@@ -3,7 +3,7 @@
 #include "Image/Image.h"
 #include "Image/BGRA.h"
 #include "Math/ray.h"
-#include "Render/Camera/Camera.h"
+#include "Render/Camera/ICamera.h"
 #include "Render/Hitable/IHitable.h"
 #include "Render/Sampler/IPixelSampler.h"
 #include "Render/AntiAliasing/IPixelAntiAliasing.h"
@@ -26,7 +26,7 @@ private:
 	public:
 		PixelSampler(
 			const vec2<float>& imageSize,
-			const Camera& camera,
+			const ICamera& camera,
 			const IHitable& world,
 			const RayTraceFunctor& parent);
 
@@ -34,7 +34,7 @@ private:
 
 	private:
 		const vec2<float>& imageSize;
-		const Camera& camera;
+		const ICamera& camera;
 		const IHitable& world;
 		const RayTraceFunctor& parent;
 	};

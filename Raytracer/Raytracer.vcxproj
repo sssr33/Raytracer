@@ -188,6 +188,7 @@
     <ClCompile Include="Render\PerlinNoise\PerlinNoiseNormalizedTextureSampler.cpp" />
     <ClCompile Include="Render\PerlinNoise\PerlinNoiseTextureSampler.cpp" />
     <ClCompile Include="Render\Random\TextureRaySamplerRandomInUnitSphere.cpp" />
+    <ClCompile Include="Render\Scenes\Book1Scene.cpp" />
     <ClCompile Include="SystemBackBufferLock.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -224,6 +225,7 @@
     <ClInclude Include="Render\AntiAliasing\SubpixelMsaa.h" />
     <ClInclude Include="Render\Camera\Camera.h" />
     <ClInclude Include="Render\Camera\CameraSettings.h" />
+    <ClInclude Include="Render\Camera\ICamera.h" />
     <ClInclude Include="Render\Functor\CopyImageFunctor.h" />
     <ClInclude Include="Render\Functor\RayTraceFunctor.h" />
     <ClInclude Include="Render\Functor\RayTraceFunctorParams.h" />
@@ -247,6 +249,7 @@
     <ClInclude Include="Render\Sampler\ITextureSampler.h" />
     <ClInclude Include="Render\Sampler\TextureRaySampler.h" />
     <ClInclude Include="Render\Sampler\TextureSamplerWithOffset.h" />
+    <ClInclude Include="Render\Scenes\Book1Scene.h" />
     <ClInclude Include="SystemBackBufferLock.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>

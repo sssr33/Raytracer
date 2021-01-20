@@ -4,6 +4,7 @@
 #include "Image/BGRA.h"
 #include "Render/Functor/RayTraceFunctorParams.h"
 #include "Render/Sampler/ITextureSampler.h"
+#include "Render/Hitable/IHitable.h"
 
 #include <queue>
 #include <future>
@@ -38,6 +39,9 @@ private:
 	void TryFinishRayTraceTask();
 	float GetRandomFloat();
 
+	RayTraceFunctorParams MakeDefaultScene();
+	RayTraceFunctorParams MakeBook1Scene();
+
 	static Image<BGRA<uint8_t>> RayTraceMain(
 		RayTraceFunctorParams rayTraceParams,
 		Image<BGRA<uint8_t>> resultImage,
@@ -61,4 +65,6 @@ private:
 	std::shared_ptr<ITextureSampler<float>> perlinNoise;
 
 	float cameraX = 0.f;
+
+	std::shared_ptr<IHitable> book1Scene;
 };

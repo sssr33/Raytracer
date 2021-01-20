@@ -28,10 +28,16 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
 
     CameraFovSettings camSettings;
 
-    camSettings.lookFrom = { -2.f + this->params.cameraX, 2.f, 1.f };
+    /*camSettings.lookFrom = { -2.f + this->params.cameraX, 2.f, 1.f };
     camSettings.lookAt = { 0.f, 0.f, -1.f };
-    camSettings.fov = 45.f;
+    camSettings.fov = 45.f;*/
+    camSettings.lookFrom = { 3.f, 3.f, 2.f };
+    camSettings.lookAt = { 0.f, 0.f, -1.f };
+    camSettings.fov = 20.f;
     camSettings.aspectRatio = imageSize.x / imageSize.y;
+    camSettings.aperture = 0.5f;
+    camSettings.focusDist = (camSettings.lookFrom - camSettings.lookAt).length();
+    camSettings.randomInUnitSphere = this->params.randomInUnitSphere;
 
     Camera camera(camSettings);
 

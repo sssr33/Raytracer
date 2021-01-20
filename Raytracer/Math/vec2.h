@@ -2,6 +2,8 @@
 
 #include "swizzleOp2.h"
 
+#include <cmath>
+
 template<class VecT, class ComponentT, class ... Indexes>
 struct swizzleOpVecHelper;
 
@@ -96,5 +98,29 @@ struct vec2
         vec2 res = a + t * (b - a);
 
         return res;
+    }
+
+    T lengthSquared() const
+    {
+        T squaredlLength = this->dot(*this);
+        return squaredlLength;
+    }
+
+    T length() const
+    {
+        T length = std::sqrt(this->lengthSquared());
+        return length;
+    }
+
+    vec2 normalized() const
+    {
+        T lengthInv = T(1) / this->length();
+        vec2 res = *this * lengthInv;
+        return res;
+    }
+
+    void normalize()
+    {
+        *this = normalized();
     }
 };

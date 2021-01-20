@@ -22,7 +22,7 @@ std::unique_ptr<IHitable> Book1Scene::operator()(const std::shared_ptr<IRandomIn
 		)
 	);
 
-	constexpr float GridSize = 11.f;
+	constexpr float GridSize = 0.f;
 
 	for (float a = -GridSize; a < GridSize; a++)
 	{

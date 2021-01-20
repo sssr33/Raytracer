@@ -29,12 +29,13 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
     CameraFovSettings camSettings;
 
     /*camSettings.lookFrom = { -2.f + this->params.cameraX, 2.f, 1.f };
-    camSettings.lookAt = { 0.f, 0.f, -1.f };*/
+    camSettings.lookAt = { 0.f, 0.f, -1.f };
+    camSettings.fov = 45.f;*/
     camSettings.lookFrom = { 3.f, 3.f, 2.f };
     camSettings.lookAt = { 0.f, 0.f, -1.f };
     camSettings.fov = 20.f;
     camSettings.aspectRatio = imageSize.x / imageSize.y;
-    camSettings.aperture = 2.f;
+    camSettings.aperture = 0.5f;
     camSettings.focusDist = (camSettings.lookFrom - camSettings.lookAt).length();
     camSettings.randomInUnitSphere = this->params.randomInUnitSphere;
 
@@ -42,7 +43,7 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
 
     HitableList hitableList;
 
-    /*hitableList.objects.emplace_back(std::make_unique<Sphere>(
+    hitableList.objects.emplace_back(std::make_unique<Sphere>(
         vec3<float>{0.f, 0.f, -1.f},
         0.5f,
         std::make_unique<Lambertian>(vec3<float>(0.8f, 0.3f, 0.3f), this->params.randomInUnitSphere)
@@ -68,41 +69,6 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
         0.5f,
         std::make_unique<Dielectric>(1.5f, this->params.randomInUnitSphere)
         )
-    );*/
-
-    hitableList.objects.emplace_back(std::make_unique<Sphere>(
-        vec3<float>{0.f, 0.f, -1.f},
-        0.5f,
-        std::make_unique<Lambertian>(vec3<float>(0.1f, 0.2f, 0.5f), this->params.randomInUnitSphere)
-        )
-    );
-
-    hitableList.objects.emplace_back(std::make_unique<Sphere>(
-        vec3<float>{0.f, -100.5f, -1.f},
-        100.f,
-        std::make_unique<Lambertian>(vec3<float>(0.8f, 0.8f, 0.0f), this->params.randomInUnitSphere)
-        )
-    );
-
-    hitableList.objects.emplace_back(std::make_unique<Sphere>(
-        vec3<float>{1.f, 0.f, -1.f},
-        0.5f,
-        std::make_unique<Metal>(vec3<float>(0.8f, 0.6f, 0.2f), 0.f, this->params.randomInUnitSphere)
-        )
-    );
-
-    hitableList.objects.emplace_back(std::make_unique<Sphere>(
-        vec3<float>{-1.f, 0.f, -1.f},
-        0.5f,
-        std::make_unique<Dielectric>(1.5f, this->params.randomInUnitSphere)
-        )
-    );
-
-    hitableList.objects.emplace_back(std::make_unique<Sphere>(
-        vec3<float>{-1.f, 0.f, -1.f},
-        -0.45f,
-        std::make_unique<Dielectric>(1.5f, this->params.randomInUnitSphere)
-        )
     );
 
     vec3<float> center = { 0.f, 0.f, -1.f };
@@ -111,7 +77,7 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
 
     float emission = 2.f;
 
-    /*hitableList.objects.emplace_back(
+    hitableList.objects.emplace_back(
         std::make_unique<Triangle>(
             center + vec3<float>(-width * 0.5f, -height * 0.5f, 0.f),
             center + vec3<float>(width * 0.1f, height * 0.5f, 0.f),
@@ -145,7 +111,7 @@ void RayTraceFunctor::operator()(const MassiveCompute::Block& block)
             vec2<float>(1.f, 0.f),
             std::make_unique<Metal>(vec3<float>(emission * (100.f / 255.f), emission * 1.0f, 0.f), 0.f, this->params.randomInUnitSphere)
             )
-    );*/
+    );
 
     PixelSampler pixSampler(imageSize, camera, hitableList, *this);
 

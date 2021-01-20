@@ -16,7 +16,7 @@ public:
     const vec3<float>& GetOrigin() const;
 
 private:
-    vec3<float> RandomInUnitDisk(const vec2<float>& uv) const;
+    vec2<float> RandomInUnitDisk(const vec2<float>& uv) const;
 
     vec3<float> origin = { 0.f, 0.f, 0.f };
     vec3<float> lowerLeftCorner = { 0.f, 0.f, 0.f };

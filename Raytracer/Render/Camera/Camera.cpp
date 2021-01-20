@@ -25,7 +25,7 @@ Camera::Camera(const CameraViewSizeSettings& viewSizeSettings)
 
 ray<float> Camera::GetRay(const vec2<float>& uv) const
 {
-    vec3<float> rnd = this->lensRadius * this->RandomInUnitDisk(uv);
+    vec2<float> rnd = this->lensRadius * this->RandomInUnitDisk(uv);
     vec3<float> offset = rnd.x * this->vecRight + rnd.y * this->vecUp;
 
     ray<float> r(
@@ -41,39 +41,17 @@ const vec3<float>& Camera::GetOrigin() const
     return this->origin;
 }
 
-vec3<float> Camera::RandomInUnitDisk(const vec2<float>& uv) const
+vec2<float> Camera::RandomInUnitDisk(const vec2<float>& uv) const
 {
-    /*if (!this->randomInUnitSphere)
-    {
-        return { 0.f, 0.f };
-    }
-
-    ray<float> ray;
-
-    ray.origin = { uv.x, uv.y, 0.f };
-    ray.direction = { 0.f, 0.f, 1.f };
-
-    vec3<float> rndInSphere = this->randomInUnitSphere->RandomInUnitSphere(ray);*/
-    //vec2<float> rndInDisk = { rndInSphere.x + rndInSphere.z, rndInSphere.y + rndInSphere.z };
-
-    
-
-
-
-    vec3<float> rndInDisk;
+    vec2<float> rndInDisk;
 
     do
     {
         float x = std::fmod(static_cast<float>(rand() % 10000) / 10000.f, 1.f);
         float y = std::fmod(static_cast<float>(rand() % 10000) / 10000.f, 1.f);
 
-        rndInDisk = 2.f * vec3<float>(x, y, 0.f) - vec3<float>(1.f, 1.f, 0.f);
+        rndInDisk = 2.f * vec2<float>(x, y) - 1.f;
     } while (rndInDisk.dot(rndInDisk) >= 1.f);
 
     return rndInDisk;
-
-    /*rndInDisk *= 2.f;
-    rndInDisk -= 1.f;
-
-    return rndInDisk.normalized();*/
 }

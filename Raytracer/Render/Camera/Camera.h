@@ -17,8 +17,6 @@ public:
     const vec3<float>& GetOrigin() const;
 
 private:
-    vec2<float> RandomInUnitDisk(const vec2<float>& uv) const;
-
     vec3<float> origin = { 0.f, 0.f, 0.f };
     vec3<float> lowerLeftCorner = { 0.f, 0.f, 0.f };
     vec3<float> horizontal = { 0.f, 0.f, 0.f };
@@ -29,5 +27,4 @@ private:
     vec3<float> vecUp;
 
     float lensRadius = 0.f;
-    std::shared_ptr<IRandomInUnitSphere> randomInUnitSphere;
 };

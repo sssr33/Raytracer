@@ -182,7 +182,6 @@ RayTraceFunctorParams RayTraceWindowHandler::MakeDefaultScene()
 	camSettings.aspectRatio = imageSize.x / imageSize.y;
 	camSettings.aperture = 0.5f;
 	camSettings.focusDist = (camSettings.lookFrom - camSettings.lookAt).length();
-	camSettings.randomInUnitSphere = randomInUnitSphere;
 
 	std::shared_ptr<Camera> camera = std::make_shared<Camera>(camSettings);
 
@@ -293,7 +292,6 @@ RayTraceFunctorParams RayTraceWindowHandler::MakeBook1Scene()
 	camSettings.aspectRatio = imageSize.x / imageSize.y;
 	camSettings.aperture = 0.3f;
 	camSettings.focusDist = (camSettings.lookFrom - camSettings.lookAt).length();
-	camSettings.randomInUnitSphere = randomInUnitSphere;
 
 	std::shared_ptr<Camera> camera = std::make_shared<Camera>(camSettings);
 

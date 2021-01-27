@@ -6,7 +6,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved
 
 
-#include "Direct2DHelloWorld.h"
+#include "ResearchRandomDistribution.h"
 
 #include <functional>
 #include <DirectXMath.h>
@@ -55,7 +55,8 @@ DemoApp::DemoApp() :
     m_pDWriteFactory(NULL),
     m_pRenderTarget(NULL),
     m_pTextFormat(NULL),
-    m_pBlackBrush(NULL)
+    m_pBlackBrush(NULL),
+    prevTime(std::chrono::high_resolution_clock::now())
 {
 }
 
@@ -247,15 +248,30 @@ void DemoApp::RunMessageLoop()
 {
     MSG msg;
 
-    while (GetMessage(&msg, NULL, 0, 0))
+    // Enter the infinite message loop
+    while (TRUE)
     {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+        // Check to see if any messages are waiting in the queue
+        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+        {
+            // Translate the message and dispatch it to WindowProc()
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+
+        // If the message is WM_QUIT, exit the while loop
+        if (msg.message == WM_QUIT)
+            break;
+
+        // Run game code here
+        this->OnRender();
     }
 }
 
 std::vector<D2D1_POINT_2F> vectors;
 std::vector<D2D1_POINT_2F> points;
+std::vector<DirectX::XMVECTOR> points3d;
+std::vector<std::vector<DirectX::XMVECTOR>> sphereSilhouette3d;
 
 std::random_device rd;  //Will be used to obtain a seed for the random number engine
 std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
@@ -389,7 +405,7 @@ thread_local unsigned z1 = 0, z2 = 0, z3 = 0, z4 = 0;
 float HybridTaus()
 {
     // Combined period is lcm(p1,p2,p3,p4)~ 2^121
-    return 2.3283064365387e-10 * (
+    return 2.3283064365387e-10f * static_cast<float>(
         // Periods
         TausStep(z1, 13, 19, 12, 4294967294UL) ^
         // p1=2^31-1
@@ -467,6 +483,75 @@ float cerp(float a, float b, float c, float d, float t)
     return res;*/
 }
 
+DirectX::XMVECTOR RandOnSpherePolar()
+{
+    //float theta = RndFloat() * DirectX::XM_2PI;// random(0, TWO_PI);
+    //float phi = RndFloat() * DirectX::XM_PI;// random(0, PI);
+    //float r = RndFloat();// random(0, 1);
+    //float x = r * sin(phi) * cos(theta);
+    //float y = r * sin(phi) * sin(theta);
+    //float z = r * cos(phi);
+
+    //return { x, y };
+
+    float theta = RndFloat() * DirectX::XM_2PI;// random(0, TWO_PI);
+    float v = RndFloat();// random(0, 1);
+    float phi = acos((2 * v) - 1);
+    float r = pow(RndFloat(), 1.f / 3.f);
+    float x = r * sin(phi) * cos(theta);
+    float y = r * sin(phi) * sin(theta);
+    float z = r * cos(phi);
+
+    return DirectX::XMVectorSet(x, y, z, 1.f);
+}
+
+DirectX::XMVECTOR RandOnSpherePolar2()
+{
+    //float theta = RndFloat() * DirectX::XM_2PI;// random(0, TWO_PI);
+    //float phi = RndFloat() * DirectX::XM_PI;// random(0, PI);
+    //float r = RndFloat();// random(0, 1);
+    //float x = r * sin(phi) * cos(theta);
+    //float y = r * sin(phi) * sin(theta);
+    //float z = r * cos(phi);
+
+    //return { x, y };
+
+    float theta = HybridTaus() * DirectX::XM_2PI;// random(0, TWO_PI);
+    float v = HybridTaus();// random(0, 1);
+    float phi = acos((2 * v) - 1);
+    float r = pow(HybridTaus(), 1.f / 3.f);
+    float x = r * sin(phi) * cos(theta);
+    float y = r * sin(phi) * sin(theta);
+    float z = r * cos(phi);
+
+    return DirectX::XMVectorSet(x, y, z, 1.f);
+}
+
+DirectX::XMVECTOR RandOnSpherePolar3()
+{
+    //float theta = RndFloat() * DirectX::XM_2PI;// random(0, TWO_PI);
+    //float phi = RndFloat() * DirectX::XM_PI;// random(0, PI);
+    //float r = RndFloat();// random(0, 1);
+    //float x = r * sin(phi) * cos(theta);
+    //float y = r * sin(phi) * sin(theta);
+    //float z = r * cos(phi);
+
+    //return { x, y };
+
+    float u0 = HybridTaus();
+    float u1 = HybridTaus();
+    float u2 = HybridTaus();
+    float r = pow(-2.f * log(u0), 1.f / 3.f);
+    //float r = pow(u0, 1.f / 3.f);
+    float theta = DirectX::XM_2PI * u1;
+    float phi = acos((2.f * u2) - 1.f);
+    float x = r * sin(phi) * cos(theta);
+    float y = r * sin(phi) * sin(theta);
+    float z = r * cos(phi);
+
+    return DirectX::XMVectorSet(x, y, z, 1.f);
+}
+
 //
 //  Called whenever the application needs to display the client
 //  window. This method writes "Hello, World"
@@ -482,14 +567,106 @@ HRESULT DemoApp::OnRender()
 {
     HRESULT hr;
 
+    auto curTime = std::chrono::high_resolution_clock::now();
+    auto deltaTime = curTime - this->prevTime;
+    this->prevTime = curTime;
+    float dt = std::chrono::duration_cast<std::chrono::duration<float>>(deltaTime).count();
+    dt = (std::min)(dt, 0.5f);
+
     hr = CreateDeviceResources();
 
     const float VecLength = 0.9f;
 
-    if (vectors.empty())
-    //if(false)
+    if (points3d.empty())
     {
-        for (size_t i = 0; i < 100000; i++)
+        for (size_t i = 0; i < 10000; i++)
+        {
+            //D2D1_POINT_2F rndVec = RandOnDisk();
+            //D2D1_POINT_2F rndVec = RandOnDiskNoIter();
+            //D2D1_POINT_2F rndVec = RandOnDiskNoIter2();
+            //D2D1_POINT_2F rndVec = RandOnDiskPolar();
+            //D2D1_POINT_2F rndVec = RandOnDiskCircular();
+            //D2D1_POINT_2F rndVec = RandOnDiskCustom();
+            DirectX::XMVECTOR rndVec = RandOnSpherePolar2();
+
+            rndVec = DirectX::XMVectorScale(rndVec, VecLength);
+
+            points3d.push_back(rndVec);
+        }
+
+        const size_t max = 50;
+        std::vector<DirectX::XMVECTOR> section;
+        section.reserve(max + 1);
+
+        for (float i = 0; i <= max; i++)
+        {
+            float t = static_cast<float>(i) / static_cast<float>(max);
+            float x = cos(DirectX::XM_2PI * t);
+            float y = sin(DirectX::XM_2PI * t);
+
+            DirectX::XMVECTOR rndVec = DirectX::XMVectorSet(x, y, 0.f, 1.f);
+
+            rndVec = DirectX::XMVectorScale(rndVec, VecLength);
+
+            section.push_back(rndVec);
+        }
+
+        const size_t sections = 4;
+        for (size_t s = 1; s < sections; s++)
+        {
+            float ts = static_cast<float>(s) / static_cast<float>(sections);
+            float rotationAngle = ts * DirectX::XM_PI;
+            auto transform = DirectX::XMMatrixRotationY(rotationAngle);
+
+            std::vector<DirectX::XMVECTOR> section2;
+            section2.reserve(section.size());
+
+            for (auto pt3d : section)
+            {
+                section2.push_back(DirectX::XMVector3Transform(pt3d, transform));
+            }
+
+            sphereSilhouette3d.push_back(std::move(section2));
+        }
+
+        sphereSilhouette3d.push_back(std::move(section));
+
+        //const size_t sections = 20;
+        //for (size_t s = 0; s < sections; s++)
+        //{
+        //    float ts = static_cast<float>(s) / static_cast<float>(sections);
+        //    float rotationAngle = ts * DirectX::XM_PI;
+
+        //    const size_t max = 30;
+        //    std::vector<DirectX::XMVECTOR> section;
+        //    section.reserve(max + 1);
+
+        //    for (float i = 0; i <= max; i++)
+        //    {
+        //        float t = static_cast<float>(i) / static_cast<float>(max);
+
+        //        //float x = t;
+        //        //float y = sqrt(1.f - pow(t - 1.f, 2.f));
+
+        //        float x = sin(rotationAngle) * cos(DirectX::XM_2PI * t);
+        //        float y = sin(rotationAngle) * sin(DirectX::XM_2PI * t);
+        //        float z = cos(rotationAngle);
+
+        //        DirectX::XMVECTOR rndVec = DirectX::XMVectorSet(x, y, z, 1.f);
+
+        //        rndVec = DirectX::XMVectorScale(rndVec, VecLength);
+
+        //        section.push_back(rndVec);
+        //    }
+
+        //    sphereSilhouette3d.push_back(std::move(section));
+        //}
+    }
+
+    //if (vectors.empty())
+    if(false)
+    {
+        for (size_t i = 0; i < 100; i++)
         {
             //D2D1_POINT_2F rndVec = RandOnDisk();
             //D2D1_POINT_2F rndVec = RandOnDiskNoIter();
@@ -571,6 +748,8 @@ HRESULT DemoApp::OnRender()
                 vectors.clear();
 
                 m_pRenderTarget->DrawEllipse(D2D1::Ellipse(TransformedPt(0.f, 0.f), TransformedSize(VecLength), TransformedSize(VecLength)), redBrush.Get());
+
+                m_pRenderTarget->FillEllipse(D2D1::Ellipse(TransformedPt(0.f, 0.f), Radius, Radius), redBrush.Get());
             }
 
             if (!points.empty())
@@ -582,21 +761,63 @@ HRESULT DemoApp::OnRender()
 
                     m_pRenderTarget->DrawLine(TransformedPt(pt1.x, pt1.y), TransformedPt(pt2.x, pt2.y), redBrush.Get());
                 }
+
+                m_pRenderTarget->FillEllipse(D2D1::Ellipse(TransformedPt(0.f, 0.f), Radius, Radius), redBrush.Get());
             }
 
-            m_pRenderTarget->FillEllipse(D2D1::Ellipse(TransformedPt(0.f, 0.f), Radius, Radius), redBrush.Get());
+            if (!points3d.empty())
+            {
+                this->angleRotation3D += 0.1f * dt;
 
-            /*m_pRenderTarget->FillEllipse(D2D1::Ellipse(TransformedPt(-1.f, -1.f), Radius, Radius), redBrush.Get());
-            m_pRenderTarget->FillEllipse(D2D1::Ellipse(TransformedPt(0.f, -1.f), Radius, Radius), redBrush.Get());
-            m_pRenderTarget->FillEllipse(D2D1::Ellipse(TransformedPt(1.f, -1.f), Radius, Radius), redBrush.Get());
+                DirectX::XMMATRIX model = DirectX::XMMatrixIdentity();
+                model = DirectX::XMMatrixMultiply(model, DirectX::XMMatrixRotationY(this->angleRotation3D));
+                model = DirectX::XMMatrixMultiply(model, DirectX::XMMatrixTranslation(0.f, 0.f, 4.f));
 
-            m_pRenderTarget->FillEllipse(D2D1::Ellipse(TransformedPt(-1.f, 0.f), Radius, Radius), redBrush.Get());
-            m_pRenderTarget->FillEllipse(D2D1::Ellipse(TransformedPt(0.f, 0.f), Radius, Radius), redBrush.Get());
-            m_pRenderTarget->FillEllipse(D2D1::Ellipse(TransformedPt(1.f, 0.f), Radius, Radius), redBrush.Get());
+                DirectX::XMMATRIX view = DirectX::XMMatrixIdentity();
 
-            m_pRenderTarget->FillEllipse(D2D1::Ellipse(TransformedPt(-1.f, 1.f), Radius, Radius), redBrush.Get());
-            m_pRenderTarget->FillEllipse(D2D1::Ellipse(TransformedPt(0.f, 1.f), Radius, Radius), redBrush.Get());
-            m_pRenderTarget->FillEllipse(D2D1::Ellipse(TransformedPt(1.f, 1.f), Radius, Radius), redBrush.Get());*/
+                DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(90.f), aspectRatio, 0.001f, 100.f);
+
+                DirectX::XMMATRIX mvp = DirectX::XMMatrixMultiply(model, view);
+                mvp = DirectX::XMMatrixMultiply(mvp, proj);
+
+                const float ViewportX = 0.f;
+                const float ViewportY = 0.f;
+                const float ViewportWidth = renderTargetSize.width;
+                const float ViewportHeight = renderTargetSize.height;
+                const float ViewportMinZ = 0.f;
+                const float ViewportMaxZ = 1.f;
+
+                const float HalfViewportWidth = ViewportWidth * 0.5f;
+                const float HalfViewportHeight = ViewportHeight * 0.5f;
+
+                DirectX::XMVECTOR Scale = DirectX::XMVectorSet(HalfViewportWidth, -HalfViewportHeight, ViewportMaxZ - ViewportMinZ, 0.0f);
+                DirectX::XMVECTOR Offset = DirectX::XMVectorSet(ViewportX + HalfViewportWidth, ViewportY + HalfViewportHeight, ViewportMinZ, 0.0f);
+
+                auto Transform3DTo2D = [&mvp, &Scale, &Offset](DirectX::XMVECTOR pt3d)
+                {
+                    DirectX::XMVECTOR Result = DirectX::XMVector3TransformCoord(pt3d, mvp);
+                    Result = DirectX::XMVectorMultiplyAdd(Result, Scale, Offset);
+
+                    D2D1_POINT_2F pt2d = { DirectX::XMVectorGetX(Result), DirectX::XMVectorGetY(Result) };
+                    return pt2d;
+                };
+
+                for (auto pt3d : points3d)
+                {
+                    m_pRenderTarget->FillEllipse(D2D1::Ellipse(Transform3DTo2D(pt3d), 1.f, 1.f), redBrush.Get());
+                }
+
+                for (const auto& section : sphereSilhouette3d)
+                {
+                    for (size_t i = 1; i < section.size(); i++)
+                    {
+                        auto pt1 = Transform3DTo2D(section[i - 1]);
+                        auto pt2 = Transform3DTo2D(section[i]);
+
+                        m_pRenderTarget->DrawLine(pt1, pt2, redBrush.Get());
+                    }
+                }
+            }
         }
 
         /*m_pRenderTarget->DrawText(

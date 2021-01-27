@@ -32,6 +32,7 @@
 #include <memory.h>
 #include <wchar.h>
 #include <math.h>
+#include <chrono>
 
 #include <d2d1.h>
 #include <d2d1helper.h>
@@ -115,6 +116,9 @@ private:
     ID2D1HwndRenderTarget *m_pRenderTarget;
     IDWriteTextFormat *m_pTextFormat;
     ID2D1SolidColorBrush *m_pBlackBrush;
+
+    float angleRotation3D = 0.f;
+    std::chrono::high_resolution_clock::time_point prevTime;
 };
 
 

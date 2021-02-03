@@ -483,7 +483,7 @@ float cerp(float a, float b, float c, float d, float t)
     return res;*/
 }
 
-DirectX::XMVECTOR RandOnSpherePolar()
+DirectX::XMVECTOR RandOnSpherePolarStdRnd()
 {
     //float theta = RndFloat() * DirectX::XM_2PI;// random(0, TWO_PI);
     //float phi = RndFloat() * DirectX::XM_PI;// random(0, PI);
@@ -505,7 +505,7 @@ DirectX::XMVECTOR RandOnSpherePolar()
     return DirectX::XMVectorSet(x, y, z, 1.f);
 }
 
-DirectX::XMVECTOR RandOnSpherePolar2()
+DirectX::XMVECTOR RandOnSpherePolarHybridTaus()
 {
     //float theta = RndFloat() * DirectX::XM_2PI;// random(0, TWO_PI);
     //float phi = RndFloat() * DirectX::XM_PI;// random(0, PI);
@@ -527,7 +527,7 @@ DirectX::XMVECTOR RandOnSpherePolar2()
     return DirectX::XMVectorSet(x, y, z, 1.f);
 }
 
-DirectX::XMVECTOR RandOnSpherePolar3()
+DirectX::XMVECTOR RandOnSpherePolarNvidiaTaus()
 {
     //float theta = RndFloat() * DirectX::XM_2PI;// random(0, TWO_PI);
     //float phi = RndFloat() * DirectX::XM_PI;// random(0, PI);
@@ -581,13 +581,9 @@ HRESULT DemoApp::OnRender()
     {
         for (size_t i = 0; i < 10000; i++)
         {
-            //D2D1_POINT_2F rndVec = RandOnDisk();
-            //D2D1_POINT_2F rndVec = RandOnDiskNoIter();
-            //D2D1_POINT_2F rndVec = RandOnDiskNoIter2();
-            //D2D1_POINT_2F rndVec = RandOnDiskPolar();
-            //D2D1_POINT_2F rndVec = RandOnDiskCircular();
-            //D2D1_POINT_2F rndVec = RandOnDiskCustom();
-            DirectX::XMVECTOR rndVec = RandOnSpherePolar2();
+            //DirectX::XMVECTOR rndVec = RandOnSpherePolarStdRnd();
+            //DirectX::XMVECTOR rndVec = RandOnSpherePolarHybridTaus();
+            DirectX::XMVECTOR rndVec = RandOnSpherePolarNvidiaTaus();
 
             rndVec = DirectX::XMVectorScale(rndVec, VecLength);
 

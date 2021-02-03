@@ -25,8 +25,8 @@
     <ClCompile Include="Render\Camera\Camera.cpp" />
     <ClCompile Include="Render\Camera\CameraSettings.cpp" />
     <ClCompile Include="Render\Scenes\Book1Scene.cpp" />
-    <ClCompile Include="Render\Random\HybridTaus.cpp" />
     <ClCompile Include="Render\Random\RandomFunctions.cpp" />
+    <ClCompile Include="Render\Random\HybridTausFn.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -80,7 +80,7 @@
     <ClInclude Include="Render\Camera\CameraSettings.h" />
     <ClInclude Include="Render\Scenes\Book1Scene.h" />
     <ClInclude Include="Render\Camera\ICamera.h" />
-    <ClInclude Include="Render\Random\HybridTaus.h" />
     <ClInclude Include="Render\Random\RandomFunctions.h" />
+    <ClInclude Include="Render\Random\HybridTausFn.h" />
   </ItemGroup>
 </Project>

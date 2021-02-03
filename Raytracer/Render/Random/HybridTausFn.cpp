@@ -1,19 +1,19 @@
-#include "HybridTaus.h"
+#include "HybridTausFn.h"
 
 #include <random>
 
-HybridTaus::HybridTaus()
-    : HybridTaus(std::random_device()(), std::random_device()(), std::random_device()(), std::random_device()())
+HybridTausFn::HybridTausFn()
+    : HybridTausFn(std::random_device()(), std::random_device()(), std::random_device()(), std::random_device()())
 {}
 
-HybridTaus::HybridTaus(uint32_t z1, uint32_t z2, uint32_t z3, uint32_t z4)
+HybridTausFn::HybridTausFn(uint32_t z1, uint32_t z2, uint32_t z3, uint32_t z4)
     : z1(z1)
     , z2(z2)
     , z3(z3)
     , z4(z4)
 {}
 
-float HybridTaus::operator()()
+float HybridTausFn::operator()()
 {
     // Periods
 
@@ -33,13 +33,13 @@ float HybridTaus::operator()()
     return res;
 }
 
-uint32_t HybridTaus::TausStep(uint32_t z, int S1, int S2, int S3, uint32_t M)
+uint32_t HybridTausFn::TausStep(uint32_t z, int S1, int S2, int S3, uint32_t M)
 {
 	uint32_t b = (((z << S1) ^ z) >> S2);
 	return (((z & M) << S3) ^ b);
 }
 
-uint32_t HybridTaus::LCGStep(uint32_t z, uint32_t A, uint32_t C)
+uint32_t HybridTausFn::LCGStep(uint32_t z, uint32_t A, uint32_t C)
 {
 	return (A * z + C);
 }

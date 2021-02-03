@@ -187,7 +187,7 @@
     <ClCompile Include="Render\Material\Metal.cpp" />
     <ClCompile Include="Render\PerlinNoise\PerlinNoiseNormalizedTextureSampler.cpp" />
     <ClCompile Include="Render\PerlinNoise\PerlinNoiseTextureSampler.cpp" />
-    <ClCompile Include="Render\Random\HybridTaus.cpp" />
+    <ClCompile Include="Render\Random\HybridTausFn.cpp" />
     <ClCompile Include="Render\Random\RandomFunctions.cpp" />
     <ClCompile Include="Render\Random\TextureRaySamplerRandomInUnitSphere.cpp" />
     <ClCompile Include="Render\Scenes\Book1Scene.cpp" />
@@ -245,7 +245,7 @@
     <ClInclude Include="Render\Material\ScatterRecord.h" />
     <ClInclude Include="Render\PerlinNoise\PerlinNoiseNormalizedTextureSampler.h" />
     <ClInclude Include="Render\PerlinNoise\PerlinNoiseTextureSampler.h" />
-    <ClInclude Include="Render\Random\HybridTaus.h" />
+    <ClInclude Include="Render\Random\HybridTausFn.h" />
     <ClInclude Include="Render\Random\IRandomInUnitSphere.h" />
     <ClInclude Include="Render\Random\RandomFunctions.h" />
     <ClInclude Include="Render\Random\TextureRaySamplerRandomInUnitSphere.h" />

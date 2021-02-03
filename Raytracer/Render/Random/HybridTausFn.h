@@ -4,11 +4,11 @@
 
 // https://developer.nvidia.com/gpugems/gpugems3/part-vi-gpu-computing/chapter-37-efficient-random-number-generation-and-application
 // returns random from 0.f to 1.f
-class HybridTaus
+class HybridTausFn
 {
 public:
-	HybridTaus();
-	HybridTaus(uint32_t z1, uint32_t z2, uint32_t z3, uint32_t z4);
+	HybridTausFn();
+	HybridTausFn(uint32_t z1, uint32_t z2, uint32_t z3, uint32_t z4);
 
 	float operator()();
 

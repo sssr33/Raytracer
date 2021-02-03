@@ -1,33 +1,75 @@
 #include "RandomFunctions.h"
-#include "HybridTaus.h"
+#include "HybridTausFn.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-float HybridTausFn()
+float HybridTaus()
 {
-	thread_local HybridTaus fn;
+	thread_local HybridTausFn fn;
 	return fn();
+}
+
+vec2<float> RandomInDisk(float radius)
+{
+    float u1 = HybridTaus();
+    float theta = static_cast<float>(M_PI) * 2.f * u1;
+
+    vec2<float> res =
+    {
+        radius * std::sin(theta),
+        radius * std::cos(theta)
+    };
+
+    return res;
 }
 
 vec2<float> RandomInDisk()
 {
-    float u0 = HybridTausFn();
-    float u1 = HybridTausFn();
-    float r = std::sqrt(-2.f * std::log(u0)); // exceeds 0 ... 1 interval
-    float theta = static_cast<float>(M_PI) * 2.f * u1;
-    vec2<float> res = { r * std::sin(theta), r * std::cos(theta) };
+    float u0 = HybridTaus();
+    float radius = std::sqrt(-2.f * std::log(u0)); // exceeds 0 ... 1 interval
 
-    return res;
+    return RandomInDisk(radius);
 }
 
 vec2<float> RandomInUnitDisk()
 {
-    float u0 = HybridTausFn();
-    float u1 = HybridTausFn();
-    float r = std::sqrt(u0); // inside 0 ... 1 interval
-    float theta = static_cast<float>(M_PI) * 2.f * u1;
-    vec2<float> res = { r * std::sin(theta), r * std::cos(theta) };
+    float u0 = HybridTaus();
+    float radius = std::sqrt(u0); // inside 0 ... 1 interval
+
+    return RandomInDisk(radius);
+}
+
+vec3<float> RandomInSphere(float radius)
+{
+    float u1 = HybridTaus();
+    float u2 = HybridTaus();
+
+    float theta = u1 * static_cast<float>(M_PI);
+    float phi = std::acos((2.f * u2) - 1.f);
+
+    vec3<float> res =
+    {
+        radius * std::sin(phi) * std::cos(theta),
+        radius * std::sin(phi) * std::sin(theta),
+        radius * std::cos(phi)
+    };
 
     return res;
+}
+
+vec3<float> RandomInSphere()
+{
+    float u0 = HybridTaus();
+    float radius = std::pow(-2.f * std::log(u0), 1.f / 3.f); // exceeds 0 ... 1 interval
+
+    return RandomInSphere(radius);
+}
+
+vec3<float> RandomInUnitSphere()
+{
+    float u0 = HybridTaus();
+    float radius = std::pow(u0, 1.f / 3.f); // inside 0 ... 1 interval
+
+    return RandomInSphere(radius);
 }

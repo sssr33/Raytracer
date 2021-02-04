@@ -5,7 +5,6 @@
 #include "GameWindow.h"
 #include "RayTraceWindowHandler.h"
 #include "Math/MathTest.h"
-#include "Render/Random/RandomFunctions.h"
 
 #include <iostream>
 #include <Helpers/is.h>
@@ -19,13 +18,6 @@
 
 int main()
 {
-    std::vector<float> htv;
-
-    for (int i = 0; i < 100; i++)
-    {
-        htv.push_back(HybridTausFn());
-    }
-
     //MathTest();
     //MassiveComputeTest();
 

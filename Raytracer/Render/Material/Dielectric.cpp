@@ -33,7 +33,7 @@ std::optional<ScatterRecord> Dielectric::Scatter(const ray<float>& r, const HitR
 	if (std::optional<vec3<float>> refracted = r.direction.refract(outwardNormal, niOverNt))
 	{
 		float reflectProbability = Dielectric::Schlick(cosine, this->refractionIndex);
-		float rndVal = HybridTaus();
+		float rndVal = RandomFloat();
 
 		if (rndVal <= reflectProbability)
 		{

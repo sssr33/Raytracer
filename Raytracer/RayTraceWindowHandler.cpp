@@ -176,10 +176,10 @@ RayTraceFunctorParams RayTraceWindowHandler::MakeDefaultScene()
 	/*camSettings.lookFrom = { -2.f + this->cameraX, 2.f, 1.f };
 	camSettings.lookAt = { 0.f, 0.f, -1.f };
 	camSettings.fov = 45.f;*/
-	/*camSettings.lookFrom = { 3.f, 3.f, 2.f };
+	camSettings.lookFrom = { 3.f, 3.f, 2.f };
 	camSettings.lookAt = { 0.f, 0.f, -1.f };
 	camSettings.fov = 20.f;
-	camSettings.aperture = 0.5f;*/
+	camSettings.aperture = 0.5f;
 	camSettings.aspectRatio = imageSize.x / imageSize.y;
 	camSettings.focusDist = (camSettings.lookFrom - camSettings.lookAt).length();
 

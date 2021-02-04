@@ -5,8 +5,8 @@
 * thread safe random functions
 */
 
-// returns random from 0.f to 1.f
-float HybridTaus();
+// Returns random from 0.f to 1.f
+float RandomFloat();
 
 vec2<float> RandomInDisk(float radius);
 vec2<float> RandomInDisk();

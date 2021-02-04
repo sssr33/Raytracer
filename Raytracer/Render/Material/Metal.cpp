@@ -15,16 +15,7 @@ std::optional<ScatterRecord> Metal::Scatter(const ray<float>& r, const HitRecord
 
     ScatterRecord rec;
 
-#if USE_IRandomInUnitSphere
-    rec.scattered = ray<float>(hitRecord.point, reflected + this->fuzziness * this->randomInUnitSphere->RandomInUnitSphere(r));
-#else
-#if USE_RND_UNIT_SPHERE
-    rec.scattered = ray<float>(hitRecord.point, reflected + this->fuzziness * RandomInUnitSphere());
-#else
     rec.scattered = ray<float>(hitRecord.point, reflected + this->fuzziness * RandomInSphere());
-#endif
-#endif
-
     rec.attenuation = this->albedo;
 
     if (rec.scattered.direction.dot(hitRecord.normal) >= 0)

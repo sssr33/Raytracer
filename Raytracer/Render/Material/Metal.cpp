@@ -3,10 +3,9 @@
 
 #include <algorithm>
 
-Metal::Metal(const vec3<float>& albedo, float fuzziness, std::shared_ptr<IRandomInUnitSphere> randomInUnitSphere)
+Metal::Metal(const vec3<float>& albedo, float fuzziness)
     : albedo(albedo)
     , fuzziness(std::clamp(fuzziness, 0.f, 1.f))
-    , randomInUnitSphere(std::move(randomInUnitSphere))
 {}
 
 std::optional<ScatterRecord> Metal::Scatter(const ray<float>& r, const HitRecord& hitRecord) const

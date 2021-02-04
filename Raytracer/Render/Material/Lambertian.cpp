@@ -1,9 +1,8 @@
 #include "Lambertian.h"
 #include "Render/Random/RandomFunctions.h"
 
-Lambertian::Lambertian(const vec3<float>& albedo, std::shared_ptr<IRandomInUnitSphere> randomInUnitSphere)
+Lambertian::Lambertian(const vec3<float>& albedo)
     : albedo(albedo)
-    , randomInUnitSphere(std::move(randomInUnitSphere))
 {}
 
 std::optional<ScatterRecord> Lambertian::Scatter(const ray<float>& r, const HitRecord& hitRecord) const

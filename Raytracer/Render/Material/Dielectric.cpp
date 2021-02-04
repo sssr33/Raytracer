@@ -1,9 +1,8 @@
 #include "Dielectric.h"
 #include "Render/Random/RandomFunctions.h"
 
-Dielectric::Dielectric(float refractionIndex, std::shared_ptr<IRandomInUnitSphere> randomInUnitSphere)
+Dielectric::Dielectric(float refractionIndex)
 	: refractionIndex(refractionIndex)
-	, randomInUnitSphere(std::move(randomInUnitSphere))
 {}
 
 std::optional<ScatterRecord> Dielectric::Scatter(const ray<float>& r, const HitRecord& hitRecord) const

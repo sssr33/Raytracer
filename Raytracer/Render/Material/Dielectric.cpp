@@ -1,8 +1,8 @@
 #include "Dielectric.h"
+#include "Render/Random/RandomFunctions.h"
 
-Dielectric::Dielectric(float refractionIndex, std::shared_ptr<IRandomInUnitSphere> randomInUnitSphere)
+Dielectric::Dielectric(float refractionIndex)
 	: refractionIndex(refractionIndex)
-	, randomInUnitSphere(std::move(randomInUnitSphere))
 {}
 
 std::optional<ScatterRecord> Dielectric::Scatter(const ray<float>& r, const HitRecord& hitRecord) const
@@ -29,25 +29,19 @@ std::optional<ScatterRecord> Dielectric::Scatter(const ray<float>& r, const HitR
 		cosine = -r.direction.dot(hitRecord.normal) / r.direction.length();
 	}
 
-	float reflectProbability;
-	std::optional<vec3<float>> refracted = r.direction.refract(outwardNormal, niOverNt);
-
-	if (refracted)
+	if (std::optional<vec3<float>> refracted = r.direction.refract(outwardNormal, niOverNt))
 	{
-		reflectProbability = Dielectric::Schlick(cosine, this->refractionIndex);
-		scattered.scattered = ray<float>(hitRecord.point, *refracted);
-	}
-	else
-	{
-		reflectProbability = 1.f;
-	}
+		float reflectProbability = Dielectric::Schlick(cosine, this->refractionIndex);
+		float rndVal = RandomFloat();
 
-	vec3<float> rndVec = this->randomInUnitSphere->RandomInUnitSphere(r);
-	float rndVal = rndVec.x * rndVec.y * rndVec.z;
-
-	if (refracted && rndVal < reflectProbability)
-	{
-		scattered.scattered = ray<float>(hitRecord.point, *refracted);
+		if (rndVal <= reflectProbability)
+		{
+			scattered.scattered = ray<float>(hitRecord.point, reflected);
+		}
+		else
+		{
+			scattered.scattered = ray<float>(hitRecord.point, *refracted);
+		}
 	}
 	else
 	{

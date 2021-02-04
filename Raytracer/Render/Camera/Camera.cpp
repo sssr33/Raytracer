@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Render/Random/RandomFunctions.h"
 
 Camera::Camera(const CameraFovSettings& fovSettings)
     : Camera(static_cast<CameraViewSizeSettings>(fovSettings))
@@ -7,7 +8,6 @@ Camera::Camera(const CameraFovSettings& fovSettings)
 Camera::Camera(const CameraViewSizeSettings& viewSizeSettings)
     : origin(viewSizeSettings.lookFrom)
     , lensRadius(viewSizeSettings.aperture / 2.f)
-    , randomInUnitSphere(viewSizeSettings.randomInUnitSphere)
     , vecForward((viewSizeSettings.lookFrom - viewSizeSettings.lookAt).normalized())
     , vecRight(viewSizeSettings.vecUp.cross(this->vecForward).normalized())
     , vecUp(this->vecForward.cross(this->vecRight).normalized())
@@ -25,7 +25,7 @@ Camera::Camera(const CameraViewSizeSettings& viewSizeSettings)
 
 ray<float> Camera::GetRay(const vec2<float>& uv) const
 {
-    vec2<float> rnd = this->lensRadius * this->RandomInUnitDisk(uv);
+    vec2<float> rnd = this->lensRadius * RandomInDisk();
     vec3<float> offset = rnd.x * this->vecRight + rnd.y * this->vecUp;
 
     ray<float> r(
@@ -39,19 +39,4 @@ ray<float> Camera::GetRay(const vec2<float>& uv) const
 const vec3<float>& Camera::GetOrigin() const
 {
     return this->origin;
-}
-
-vec2<float> Camera::RandomInUnitDisk(const vec2<float>& uv) const
-{
-    vec2<float> rndInDisk;
-
-    do
-    {
-        float x = std::fmod(static_cast<float>(rand() % 10000) / 10000.f, 1.f);
-        float y = std::fmod(static_cast<float>(rand() % 10000) / 10000.f, 1.f);
-
-        rndInDisk = 2.f * vec2<float>(x, y) - 1.f;
-    } while (rndInDisk.dot(rndInDisk) >= 1.f);
-
-    return rndInDisk;
 }

@@ -1,11 +1,11 @@
 #include "Metal.h"
+#include "Render/Random/RandomFunctions.h"
 
 #include <algorithm>
 
-Metal::Metal(const vec3<float>& albedo, float fuzziness, std::shared_ptr<IRandomInUnitSphere> randomInUnitSphere)
+Metal::Metal(const vec3<float>& albedo, float fuzziness)
     : albedo(albedo)
     , fuzziness(std::clamp(fuzziness, 0.f, 1.f))
-    , randomInUnitSphere(std::move(randomInUnitSphere))
 {}
 
 std::optional<ScatterRecord> Metal::Scatter(const ray<float>& r, const HitRecord& hitRecord) const
@@ -14,7 +14,7 @@ std::optional<ScatterRecord> Metal::Scatter(const ray<float>& r, const HitRecord
 
     ScatterRecord rec;
 
-    rec.scattered = ray<float>(hitRecord.point, reflected + this->fuzziness * this->randomInUnitSphere->RandomInUnitSphere(r));
+    rec.scattered = ray<float>(hitRecord.point, reflected + this->fuzziness * RandomInSphere());
     rec.attenuation = this->albedo;
 
     if (rec.scattered.direction.dot(hitRecord.normal) >= 0)

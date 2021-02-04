@@ -10,12 +10,6 @@
 #include <Helpers/is.h>
 #include <MassiveCompute/MassiveComputeTest.h>
 
-/*
-* Revision Of Random
-* 
-* To not use while to create random vector in unit sphere we can create random vector, normalize, and then apply random length that must be -1 <= length <= 1
-*/
-
 int main()
 {
     //MathTest();

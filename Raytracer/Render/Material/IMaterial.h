@@ -5,6 +5,9 @@
 
 #include <optional>
 
+#define USE_IRandomInUnitSphere 0
+#define USE_RND_UNIT_SPHERE 0
+
 class IMaterial
 {
 public:

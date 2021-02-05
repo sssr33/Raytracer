@@ -82,5 +82,6 @@
     <ClInclude Include="Render\Camera\ICamera.h" />
     <ClInclude Include="Render\Random\RandomFunctions.h" />
     <ClInclude Include="Render\Random\HybridTausFn.h" />
+    <ClInclude Include="Math\Math.h" />
   </ItemGroup>
 </Project>

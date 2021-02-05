@@ -27,4 +27,7 @@ private:
     vec3<float> vecUp;
 
     float lensRadius = 0.f;
+
+    float timeStart = 0.f;
+    float timeEnd = 0.f;
 };

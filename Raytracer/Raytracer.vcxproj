@@ -180,6 +180,7 @@
     <ClCompile Include="RayTraceWindowHandler.cpp" />
     <ClCompile Include="Render\Functor\TestGradientFunctor.cpp" />
     <ClCompile Include="Render\Hitable\HitableList.cpp" />
+    <ClCompile Include="Render\Hitable\MovingSphere.cpp" />
     <ClCompile Include="Render\Hitable\Sphere.cpp" />
     <ClCompile Include="Render\Hitable\Triangle.cpp" />
     <ClCompile Include="Render\Material\Dielectric.cpp" />
@@ -211,6 +212,7 @@
     <ClInclude Include="Image\ImageView.h" />
     <ClInclude Include="ISystemBackBuffer.h" />
     <ClInclude Include="IWindowMessageHandler.h" />
+    <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Math\MathTest.h" />
     <ClInclude Include="Math\ray.h" />
     <ClInclude Include="Math\swizzleOp2.h" />
@@ -236,6 +238,7 @@
     <ClInclude Include="Render\Hitable\HitableList.h" />
     <ClInclude Include="Render\Hitable\HitRecord.h" />
     <ClInclude Include="Render\Hitable\IHitable.h" />
+    <ClInclude Include="Render\Hitable\MovingSphere.h" />
     <ClInclude Include="Render\Hitable\Sphere.h" />
     <ClInclude Include="Render\Hitable\Triangle.h" />
     <ClInclude Include="Render\Material\Dielectric.h" />

@@ -11,7 +11,7 @@ std::optional<ScatterRecord> Lambertian::Scatter(const ray<float>& r, const HitR
 
     ScatterRecord rec;
 
-    rec.scattered = ray<float>(hitRecord.point, target - hitRecord.point);
+    rec.scattered = ray<float>(hitRecord.point, target - hitRecord.point, r.time);
     rec.attenuation = this->albedo;
 
     return rec;

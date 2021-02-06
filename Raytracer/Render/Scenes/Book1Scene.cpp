@@ -1,6 +1,7 @@
 #include "Book1Scene.h"
 #include "Render/Hitable/HitableList.h"
 #include "Render/Hitable/Sphere.h"
+#include "Render/Hitable/MovingSphere.h"
 #include "Render/Hitable/Triangle.h"
 #include "Render/Material/Lambertian.h"
 #include "Render/Material/Metal.h"
@@ -29,25 +30,30 @@ std::unique_ptr<IHitable> Book1Scene::operator()()
 
 			if ((center - vec3<float>(4.f, 0.2f, 0.f)).length() > 0.9f)
 			{
-				std::unique_ptr<IMaterial> material;
+				std::unique_ptr<IHitable> hitable;
 
 				if (chooseMat < 0.8f)
 				{
 					vec3<float> color(RandomFloat() * RandomFloat(), RandomFloat() * RandomFloat(), RandomFloat() * RandomFloat());
-					material = std::make_unique<Lambertian>(color);
+					auto material = std::make_unique<Lambertian>(color);
+
+					hitable = std::make_unique<MovingSphere>(center, center + vec3<float>(0.f, 0.5f * RandomFloat(), 0.f), 0.f, 1.f, 0.2f, std::move(material));
 				}
 				else if (chooseMat < 0.95f)
 				{
 					vec3<float> color(0.5f * (1.f + RandomFloat()), 0.5f * (1.f + RandomFloat()), 0.5f * (1.f + RandomFloat()));
-					material = std::make_unique<Metal>(color, 0.5f * RandomFloat());
+					auto material = std::make_unique<Metal>(color, 0.5f * RandomFloat());
+
+					hitable = std::make_unique<Sphere>(center, 0.2f, std::move(material));
 				}
 				else
 				{
-					material = std::make_unique<Dielectric>(1.5f);
+					auto material = std::make_unique<Dielectric>(1.5f);
+
+					hitable = std::make_unique<Sphere>(center, 0.2f, std::move(material));
 				}
 
-				std::unique_ptr<Sphere> sphere = std::make_unique<Sphere>(center, 0.2f, std::move(material));
-				list->objects.push_back(std::move(sphere));
+				list->objects.push_back(std::move(hitable));
 			}
 		}
 	}

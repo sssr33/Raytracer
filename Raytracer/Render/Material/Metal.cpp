@@ -14,7 +14,7 @@ std::optional<ScatterRecord> Metal::Scatter(const ray<float>& r, const HitRecord
 
     ScatterRecord rec;
 
-    rec.scattered = ray<float>(hitRecord.point, reflected + this->fuzziness * RandomInSphere());
+    rec.scattered = ray<float>(hitRecord.point, reflected + this->fuzziness * RandomInSphere(), r.time);
     rec.attenuation = this->albedo;
 
     if (rec.scattered.direction.dot(hitRecord.normal) >= 0)

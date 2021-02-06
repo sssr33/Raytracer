@@ -4,22 +4,24 @@
 #include <memory>
 #include <Helpers/Size2D.h>
 
-struct CameraTransformSettings
+struct CameraBaseSettings
 {
     vec3<float> lookFrom = { 0.f, 0.f, 0.f };
     vec3<float> lookAt = { 0.f, 0.f, -1.f};
     vec3<float> vecUp = { 0.f, 1.f, 0.f };
     float aperture = 0.f;
     float focusDist = 1.f;
+    float timeStart = 0.f;
+    float timeEnd = 1.f;
 };
 
-struct CameraFovSettings : public CameraTransformSettings
+struct CameraFovSettings : public CameraBaseSettings
 {
     float fov = 90.f;
     float aspectRatio = 16.f / 9.f;
 };
 
-struct CameraViewSizeSettings : public CameraTransformSettings
+struct CameraViewSizeSettings : public CameraBaseSettings
 {
     explicit CameraViewSizeSettings(const CameraFovSettings & fovSettings);
 
@@ -28,7 +30,7 @@ struct CameraViewSizeSettings : public CameraTransformSettings
 
 private:
     CameraViewSizeSettings(
-        const CameraTransformSettings& transform,
+        const CameraBaseSettings& base,
         const Helpers::Size2D<float>& viewSize);
 
     static Helpers::Size2D<float> ViewSizeFromArFov(const CameraFovSettings& fovSettings);

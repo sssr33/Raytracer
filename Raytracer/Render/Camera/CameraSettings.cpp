@@ -5,14 +5,14 @@
 
 CameraViewSizeSettings::CameraViewSizeSettings(const CameraFovSettings& fovSettings)
 	: CameraViewSizeSettings(
-        static_cast<const CameraTransformSettings&>(fovSettings),
+        static_cast<const CameraBaseSettings&>(fovSettings),
         CameraViewSizeSettings::ViewSizeFromArFov(fovSettings))
 {}
 
 CameraViewSizeSettings::CameraViewSizeSettings(
-    const CameraTransformSettings& transform,
+    const CameraBaseSettings& base,
     const Helpers::Size2D<float>& viewSize)
-    : CameraTransformSettings(transform)
+    : CameraBaseSettings(base)
     , viewWidth(viewSize.width)
     , viewHeight(viewSize.height)
 {}

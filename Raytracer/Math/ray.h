@@ -5,8 +5,8 @@ template<class T>
 struct ray
 {
     ray() = default;
-    ray(const vec3<T>& origin, const vec3<T>& direction)
-        : origin(origin), direction(direction)
+    ray(const vec3<T>& origin, const vec3<T>& direction, T time)
+        : origin(origin), direction(direction), time(time)
     {}
 
     vec3<T> pointAtParameter(float t) const
@@ -17,4 +17,5 @@ struct ray
 
     vec3<T> origin;
     vec3<T> direction;
+    T time;
 };

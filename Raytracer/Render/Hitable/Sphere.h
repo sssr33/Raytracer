@@ -10,9 +10,8 @@ public:
 
 	vec3<float> center;
 	float radius;
+	std::unique_ptr<IMaterial> material;
 
 private:
 	HitRecord MakeHitRecord(const ray<float>& ray, float t) const;
-
-	std::unique_ptr<IMaterial> material;
 };

@@ -129,8 +129,8 @@ void RayTraceWindowHandler::TryStartRayTraceTask()
 		image = Image<BGRA<uint8_t>>::Resize(std::move(image), this->currentSize.width, this->currentSize.height);
 	}
 
-	//RayTraceFunctorParams rayTraceParams = this->MakeDefaultScene();
-	RayTraceFunctorParams rayTraceParams = this->MakeBook1Scene();
+	RayTraceFunctorParams rayTraceParams = this->MakeDefaultScene();
+	//RayTraceFunctorParams rayTraceParams = this->MakeBook1Scene();
 
 	this->rayTraceTask = std::async(
 		std::launch::async,
@@ -180,20 +180,13 @@ RayTraceFunctorParams RayTraceWindowHandler::MakeDefaultScene()
 	camSettings.lookFrom = { 3.f, 3.f, 2.f };
 	camSettings.lookAt = { 0.f, 0.f, -1.f };
 	camSettings.fov = 20.f;
-	camSettings.aperture = 0.5f;
+	camSettings.aperture = 0.1f;
 	camSettings.aspectRatio = imageSize.x / imageSize.y;
 	camSettings.focusDist = (camSettings.lookFrom - camSettings.lookAt).length();
 
 	std::shared_ptr<Camera> camera = std::make_shared<Camera>(camSettings);
 
 	std::shared_ptr<HitableList> hitableList = std::make_shared<HitableList>();
-
-	hitableList->objects.emplace_back(std::make_unique<Sphere>(
-	    vec3<float>{0.f, 0.f, -1.f},
-	    0.5f,
-	    std::make_unique<Lambertian>(vec3<float>(0.8f, 0.3f, 0.3f))
-	    )
-	);
 
 	hitableList->objects.emplace_back(std::make_unique<Sphere>(
 	    vec3<float>{0.f, -100.5f, -1.f},
@@ -203,10 +196,17 @@ RayTraceFunctorParams RayTraceWindowHandler::MakeDefaultScene()
 	);
 
 	hitableList->objects.emplace_back(std::make_unique<Sphere>(
-	    vec3<float>{1.f, 0.f, -1.f},
-	    0.5f,
-	    std::make_unique<Metal>(vec3<float>(0.8f, 0.6f, 0.2f), 0.025f)
-	    )
+		vec3<float>{1.f, 0.f, -1.f},
+		0.5f,
+		std::make_unique<Metal>(vec3<float>(0.8f, 0.6f, 0.2f), 0.025f)
+		)
+	);
+
+	hitableList->objects.emplace_back(std::make_unique<Sphere>(
+		vec3<float>{0.f, 0.f, -1.f},
+		0.5f,
+		std::make_unique<Lambertian>(vec3<float>(0.8f, 0.3f, 0.3f))
+		)
 	);
 
 	hitableList->objects.emplace_back(std::make_unique<Sphere>(
@@ -214,6 +214,19 @@ RayTraceFunctorParams RayTraceWindowHandler::MakeDefaultScene()
 	    0.5f,
 	    std::make_unique<Dielectric>(1.5f)
 	    )
+	);
+
+	//vec3<float> moveVec(-0.07f, 0.07f, 0.f);
+	vec3<float> moveVec(0.f, 0.f, 0.15f);
+
+	hitableList->objects.emplace_back(std::make_unique<MovingSphere>(
+		vec3<float>{0.3f, 0.5f, -1.f} - moveVec,
+		vec3<float>{0.3f, 0.5f, -1.f} + moveVec,
+		0.f,
+		1.f,
+		0.1f,
+		std::make_unique<Metal>(vec3<float>(0.8f, 0.6f, 0.2f), 0.025f)
+		)
 	);
 
 	vec3<float> center = { 0.f, 0.f, -1.f };

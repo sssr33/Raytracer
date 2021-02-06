@@ -36,16 +36,16 @@ std::optional<ScatterRecord> Dielectric::Scatter(const ray<float>& r, const HitR
 
 		if (rndVal <= reflectProbability)
 		{
-			scattered.scattered = ray<float>(hitRecord.point, reflected);
+			scattered.scattered = ray<float>(hitRecord.point, reflected, r.time);
 		}
 		else
 		{
-			scattered.scattered = ray<float>(hitRecord.point, *refracted);
+			scattered.scattered = ray<float>(hitRecord.point, *refracted, r.time);
 		}
 	}
 	else
 	{
-		scattered.scattered = ray<float>(hitRecord.point, reflected);
+		scattered.scattered = ray<float>(hitRecord.point, reflected, r.time);
 	}
 
 	return scattered;

@@ -5,7 +5,7 @@ template<class T>
 struct ray
 {
     ray() = default;
-    ray(const vec3<T>& origin, const vec3<T>& direction, T time = T(0))
+    ray(const vec3<T>& origin, const vec3<T>& direction, T time)
         : origin(origin), direction(direction), time(time)
     {}
 

@@ -27,6 +27,7 @@
     <ClCompile Include="Render\Scenes\Book1Scene.cpp" />
     <ClCompile Include="Render\Random\RandomFunctions.cpp" />
     <ClCompile Include="Render\Random\HybridTausFn.cpp" />
+    <ClCompile Include="Render\Hitable\MovingSphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -83,5 +84,6 @@
     <ClInclude Include="Render\Random\RandomFunctions.h" />
     <ClInclude Include="Render\Random\HybridTausFn.h" />
     <ClInclude Include="Math\Math.h" />
+    <ClInclude Include="Render\Hitable\MovingSphere.h" />
   </ItemGroup>
 </Project>

@@ -12,7 +12,7 @@ struct CameraBaseSettings
     float aperture = 0.f;
     float focusDist = 1.f;
     float timeStart = 0.f;
-    float timeEnd = 0.f;
+    float timeEnd = 1.f;
 };
 
 struct CameraFovSettings : public CameraBaseSettings

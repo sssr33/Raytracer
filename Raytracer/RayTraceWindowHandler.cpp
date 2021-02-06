@@ -11,6 +11,7 @@
 #include "Render/Camera/Camera.h"
 #include "Render/Hitable/HitableList.h"
 #include "Render/Hitable/Sphere.h"
+#include "Render/Hitable/MovingSphere.h"
 #include "Render/Hitable/Triangle.h"
 #include "Render/Material/Lambertian.h"
 #include "Render/Material/Metal.h"
@@ -128,8 +129,8 @@ void RayTraceWindowHandler::TryStartRayTraceTask()
 		image = Image<BGRA<uint8_t>>::Resize(std::move(image), this->currentSize.width, this->currentSize.height);
 	}
 
-	RayTraceFunctorParams rayTraceParams = this->MakeDefaultScene();
-	//RayTraceFunctorParams rayTraceParams = this->MakeBook1Scene();
+	//RayTraceFunctorParams rayTraceParams = this->MakeDefaultScene();
+	RayTraceFunctorParams rayTraceParams = this->MakeBook1Scene();
 
 	this->rayTraceTask = std::async(
 		std::launch::async,
@@ -286,12 +287,18 @@ RayTraceFunctorParams RayTraceWindowHandler::MakeBook1Scene()
 
 	CameraFovSettings camSettings;
 
-	camSettings.lookFrom = { 17.f, 2.5f, 4.f };
+	/*camSettings.lookFrom = { 17.f, 2.5f, 4.f };
 	camSettings.lookAt = { 0.f, 1.f, 0.f };
+	camSettings.focusDist = (camSettings.lookFrom - camSettings.lookAt).length();*/
+
+	// book position:
+	camSettings.lookFrom = { 13.f, 2.f, 3.f };
+	camSettings.lookAt = { 0.f, 0.f, 0.f };
+	camSettings.focusDist = 10.f;
+	
 	camSettings.fov = 20.f;
 	camSettings.aspectRatio = imageSize.x / imageSize.y;
-	camSettings.aperture = 0.3f;
-	camSettings.focusDist = (camSettings.lookFrom - camSettings.lookAt).length();
+	camSettings.aperture = 0.1f;
 
 	std::shared_ptr<Camera> camera = std::make_shared<Camera>(camSettings);
 

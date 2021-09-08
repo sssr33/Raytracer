@@ -169,6 +169,7 @@
   <ItemGroup>
     <ClCompile Include="GameWindow.cpp" />
     <ClCompile Include="HDCBackBuffer.cpp" />
+    <ClCompile Include="Math\aabb.cpp" />
     <ClCompile Include="Math\MathTest.cpp" />
     <ClCompile Include="Raytracer.cpp" />
     <ClCompile Include="Render\AntiAliasing\PixelMsaa.cpp" />
@@ -212,6 +213,7 @@
     <ClInclude Include="Image\ImageView.h" />
     <ClInclude Include="ISystemBackBuffer.h" />
     <ClInclude Include="IWindowMessageHandler.h" />
+    <ClInclude Include="Math\aabb.h" />
     <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Math\MathTest.h" />
     <ClInclude Include="Math\ray.h" />

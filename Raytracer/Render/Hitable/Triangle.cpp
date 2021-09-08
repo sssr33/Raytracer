@@ -72,3 +72,18 @@ std::optional<HitRecord> Triangle::Hit(const ray<float>& ray, float tMin, float 
 
     return std::nullopt;
 }
+
+std::optional<aabb> Triangle::GetBoundingBox(float time0, float time1) const
+{
+    vec3<float> min;
+    vec3<float> max;
+
+    for (int i = 0; i < 3; i++)
+    {
+        min[i] = std::min(std::min(v0[i], v1[i]), v2[i]);
+        max[i] = std::max(std::max(v0[i], v1[i]), v2[i]);
+    }
+
+    aabb res(min, max);
+    return res;
+}

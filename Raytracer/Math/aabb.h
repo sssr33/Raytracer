@@ -7,7 +7,7 @@ public:
 	aabb() = default;
 	aabb(const vec3<float>& min, const vec3<float>& max);
 
-	bool Hit(const ray<float>& r, float tMin, float tMax) const;
+	bool Hit(const ray<float>& ray, float tMin, float tMax) const;
 
 	aabb United(const aabb& other) const;
 

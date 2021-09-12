@@ -7,12 +7,12 @@ aabb::aabb(const vec3<float>& min, const vec3<float>& max)
 	, max(max)
 {}
 
-bool aabb::Hit(const ray<float>& r, float tMin, float tMax) const
+bool aabb::Hit(const ray<float>& ray, float tMin, float tMax) const
 {
 	for (size_t i = 0; i < 3; i++)
 	{
-		float tmpMin = GetT(i, min, r);
-		float tmpMax = GetT(i, max, r);
+		float tmpMin = GetT(i, min, ray);
+		float tmpMax = GetT(i, max, ray);
 
 		float t0 = std::min(tmpMin, tmpMax);
 		float t1 = std::max(tmpMin, tmpMax);

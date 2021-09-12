@@ -180,6 +180,7 @@
     <ClCompile Include="Render\Functor\RayTraceFunctorParams.cpp" />
     <ClCompile Include="RayTraceWindowHandler.cpp" />
     <ClCompile Include="Render\Functor\TestGradientFunctor.cpp" />
+    <ClCompile Include="Render\Hitable\BvhNode.cpp" />
     <ClCompile Include="Render\Hitable\HitableList.cpp" />
     <ClCompile Include="Render\Hitable\MovingSphere.cpp" />
     <ClCompile Include="Render\Hitable\Sphere.cpp" />
@@ -237,6 +238,7 @@
     <ClInclude Include="Render\Functor\RayTraceFunctorParams.h" />
     <ClInclude Include="RayTraceWindowHandler.h" />
     <ClInclude Include="Render\Functor\TestGradientFunctor.h" />
+    <ClInclude Include="Render\Hitable\BvhNode.h" />
     <ClInclude Include="Render\Hitable\HitableList.h" />
     <ClInclude Include="Render\Hitable\HitRecord.h" />
     <ClInclude Include="Render\Hitable\IHitable.h" />

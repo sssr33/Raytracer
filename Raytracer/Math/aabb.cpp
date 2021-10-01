@@ -31,7 +31,7 @@ bool aabb::Hit(const ray<float>& ray, float tMin, float tMax) const
 
 aabb aabb::United(const aabb& other) const
 {
-	aabb result;
+	aabb result = {};
 
 	for (int i = 0; i < 3; i++)
 	{

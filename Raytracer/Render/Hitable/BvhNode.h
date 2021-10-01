@@ -35,7 +35,7 @@ private:
     template<class It>
     static void SortSubTree(It begin, It end, float time0, float time1);
     template<class It, class AabbCmpFn>
-    static bool HitableSort(It begin, It end, float time0, float time1, AabbCmpFn aabbCmpFn);
+    static void HitableSort(It begin, It end, float time0, float time1, AabbCmpFn aabbCmpFn);
 
     // invalid aabb
     aabb box = aabb(vec3<float>(1.f), vec3<float>(-1.f));

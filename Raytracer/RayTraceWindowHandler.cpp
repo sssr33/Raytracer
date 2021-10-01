@@ -13,6 +13,7 @@
 #include "Render/Hitable/Sphere.h"
 #include "Render/Hitable/MovingSphere.h"
 #include "Render/Hitable/Triangle.h"
+#include "Render/Hitable/BvhNode.h"
 #include "Render/Material/Lambertian.h"
 #include "Render/Material/Metal.h"
 #include "Render/Material/Dielectric.h"
@@ -186,30 +187,30 @@ RayTraceFunctorParams RayTraceWindowHandler::MakeDefaultScene()
 
 	std::shared_ptr<Camera> camera = std::make_shared<Camera>(camSettings);
 
-	std::shared_ptr<HitableList> hitableList = std::make_shared<HitableList>();
+	std::vector<std::unique_ptr<IHitable>> sceneObjects;
 
-	hitableList->objects.emplace_back(std::make_unique<Sphere>(
+	sceneObjects.emplace_back(std::make_unique<Sphere>(
 	    vec3<float>{0.f, -100.5f, -1.f},
 	    100.f,
 	    std::make_unique<Lambertian>(vec3<float>(0.8f, 0.8f, 0.8f))
 	    )
 	);
 
-	hitableList->objects.emplace_back(std::make_unique<Sphere>(
+	sceneObjects.emplace_back(std::make_unique<Sphere>(
 		vec3<float>{1.f, 0.f, -1.f},
 		0.5f,
 		std::make_unique<Metal>(vec3<float>(0.8f, 0.6f, 0.2f), 0.025f)
 		)
 	);
 
-	hitableList->objects.emplace_back(std::make_unique<Sphere>(
+	sceneObjects.emplace_back(std::make_unique<Sphere>(
 		vec3<float>{0.f, 0.f, -1.f},
 		0.5f,
 		std::make_unique<Lambertian>(vec3<float>(0.8f, 0.3f, 0.3f))
 		)
 	);
 
-	hitableList->objects.emplace_back(std::make_unique<Sphere>(
+	sceneObjects.emplace_back(std::make_unique<Sphere>(
 	    vec3<float>{-1.f, 0.f, -1.f},
 	    0.5f,
 	    std::make_unique<Dielectric>(1.5f)
@@ -219,7 +220,7 @@ RayTraceFunctorParams RayTraceWindowHandler::MakeDefaultScene()
 	//vec3<float> moveVec(-0.07f, 0.07f, 0.f);
 	vec3<float> moveVec(0.f, 0.f, 0.15f);
 
-	hitableList->objects.emplace_back(std::make_unique<MovingSphere>(
+	sceneObjects.emplace_back(std::make_unique<MovingSphere>(
 		vec3<float>{0.3f, 0.5f, -1.f} - moveVec,
 		vec3<float>{0.3f, 0.5f, -1.f} + moveVec,
 		0.f,
@@ -235,7 +236,7 @@ RayTraceFunctorParams RayTraceWindowHandler::MakeDefaultScene()
 
 	float emission = 2.f;
 
-	hitableList->objects.emplace_back(
+	sceneObjects.emplace_back(
 	    std::make_unique<Triangle>(
 	        center + vec3<float>(-width * 0.5f, -height * 0.5f, 0.f),
 	        center + vec3<float>(width * 0.1f, height * 0.5f, 0.f),
@@ -247,7 +248,7 @@ RayTraceFunctorParams RayTraceWindowHandler::MakeDefaultScene()
 	        )
 	);
 
-	hitableList->objects.emplace_back(
+	sceneObjects.emplace_back(
 	    std::make_unique<Triangle>(
 	        center + vec3<float>(-width * 0.5f, -height * 0.5f, 0.f),
 	        center + vec3<float>(width * 0.5f, -height * 0.5f, 0.f),
@@ -259,7 +260,7 @@ RayTraceFunctorParams RayTraceWindowHandler::MakeDefaultScene()
 	        )
 	);
 
-	hitableList->objects.emplace_back(
+	sceneObjects.emplace_back(
 	    std::make_unique<Triangle>(
 	        vec3<float>(-width, -height, 1.f),
 	        vec3<float>(width, -height, 1.f),
@@ -274,7 +275,8 @@ RayTraceFunctorParams RayTraceWindowHandler::MakeDefaultScene()
 	RayTraceFunctorParams params;
 
 	params.camera = std::move(camera);
-	params.scene = std::move(hitableList);
+	//params.scene = std::make_shared<HitableList>(std::move(sceneObjects));
+	params.scene = std::make_shared<BvhNode>(std::move(sceneObjects), 0.f, 1.f);
 
 	return params;
 }

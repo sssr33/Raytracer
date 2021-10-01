@@ -5,7 +5,7 @@
 
 BvhNode::BvhNode(std::vector<std::unique_ptr<IHitable>> objects, float time0, float time1)
 {
-    BuildBvhTree(objects.begin(), objects.end(), time0, time1);
+    this->BuildBvhTree(objects.begin(), objects.end(), time0, time1);
 }
 
 std::optional<HitRecord> BvhNode::Hit(const ray<float>& ray, float tMin, float tMax) const
@@ -66,7 +66,7 @@ void BvhNode::BuildBvhTree(It begin, It end, float time0, float time1)
     }
     case 2:
         this->left = std::move(*begin);
-        this->right = std::move(*end);
+        this->right = std::move(*std::next(begin));
         break;
     default:
         if (elementCount <= 0)
@@ -135,7 +135,7 @@ void BvhNode::SortSubTree(It begin, It end, float time0, float time1)
 }
 
 template<class It, class AabbCmpFn>
-bool BvhNode::HitableSort(It begin, It end, float time0, float time1, AabbCmpFn aabbCmpFn)
+void BvhNode::HitableSort(It begin, It end, float time0, float time1, AabbCmpFn aabbCmpFn)
 {
     std::sort(begin, end, [&aabbCmpFn, time0, time1](const std::unique_ptr<IHitable>& left, const std::unique_ptr<IHitable>& right)
         {

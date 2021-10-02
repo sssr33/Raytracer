@@ -55,6 +55,12 @@ std::optional<HitRecord> Sphere::Hit(const ray<float>& ray, float tMin, float tM
     return std::nullopt;
 }
 
+std::optional<aabb> Sphere::GetBoundingBox(float time0, float time1) const
+{
+    aabb box(center - radius, center + radius);
+    return box;
+}
+
 HitRecord Sphere::MakeHitRecord(const ray<float>& ray, float t) const
 {
     HitRecord hitRec;

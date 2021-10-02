@@ -28,6 +28,8 @@
     <ClCompile Include="Render\Random\RandomFunctions.cpp" />
     <ClCompile Include="Render\Random\HybridTausFn.cpp" />
     <ClCompile Include="Render\Hitable\MovingSphere.cpp" />
+    <ClCompile Include="Math\aabb.cpp" />
+    <ClCompile Include="Render\Hitable\BvhNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -85,5 +87,7 @@
     <ClInclude Include="Render\Random\HybridTausFn.h" />
     <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Render\Hitable\MovingSphere.h" />
+    <ClInclude Include="Math\aabb.h" />
+    <ClInclude Include="Render\Hitable\BvhNode.h" />
   </ItemGroup>
 </Project>

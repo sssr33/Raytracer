@@ -12,6 +12,7 @@ public:
 	);
 
 	std::optional<HitRecord> Hit(const ray<float>& ray, float tMin, float tMax) const override;
+	std::optional<aabb> GetBoundingBox(float time0, float time1) const override;
 
 	vec3<float> v0;
 	vec3<float> v1;

@@ -204,6 +204,9 @@
     <ProjectReference Include="..\MassiveCompute\MassiveCompute.vcxproj">
       <Project>{bda7edac-e155-4dff-919d-759050bace9a}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\SoftRend\SoftRend.vcxproj">
+      <Project>{6bfdc65c-8ad1-451e-a141-84425745bd19}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameWindow.h" />

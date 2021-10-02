@@ -1,11 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="render\fixp\fpml\fixed_point.h" />
     <ClInclude Include="render\fixp\fixed_class.h" />
     <ClInclude Include="render\fixp\fixed_func.h" />
-    <ClInclude Include="render\fixp\fixsintab.h" />
-    <ClInclude Include="render\fixp\stdint.h" />
     <ClInclude Include="render\AlphaBlendStrategy.h" />
     <ClInclude Include="render\Clipper.h" />
     <ClInclude Include="render\ColorOp.h" />
@@ -31,6 +28,7 @@
     <ClInclude Include="render\triInterpolation.h" />
     <ClInclude Include="render\zBuffer.h" />
     <ClInclude Include="render\myDynamicBox.h" />
+    <ClInclude Include="render\fixp\fixsintab.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\fixp\fixed_func.cpp" />
@@ -58,15 +56,5 @@
     <ClCompile Include="render\triInterpolation.cpp" />
     <ClCompile Include="render\zBuffer.cpp" />
     <ClCompile Include="render\myDynamicBox.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="render\DrawStrategy_old_040911.rar" />
-    <None Include="render\triInterpIter_old.rar" />
-    <None Include="render\triInterpIter_old_040911.rar" />
-    <None Include="render\triInterpIter_old_080911.rar" />
-    <None Include="render\triInterpIter_old_vec_040911.rar" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="render\Pipeline_65g.txt" />
   </ItemGroup>
 </Project>

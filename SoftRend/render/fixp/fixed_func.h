@@ -40,11 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 #endif
 
-#ifndef _MSC_VER
-#include <stdint.h>
-#else
-#include "stdint.h"
-#endif
+#include <cstdint>
 
 namespace fixedpoint {
 

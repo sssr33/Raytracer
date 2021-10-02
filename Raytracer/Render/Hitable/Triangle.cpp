@@ -84,6 +84,8 @@ std::optional<aabb> Triangle::GetBoundingBox(float time0, float time1) const
         max[i] = std::max(std::max(v0[i], v1[i]), v2[i]);
     }
 
-    aabb res(min, max);
+    constexpr float AabbPadding = 0.0001f;
+
+    aabb res(min - AabbPadding, max + AabbPadding);
     return res;
 }

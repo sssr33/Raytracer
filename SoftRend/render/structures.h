@@ -1,11 +1,8 @@
 #pragma once
-
 #include "Math3DStructs.h"
-#include "wx/wx.h"
-#include <wx/clrpicker.h>
-#include <wx/tglbtn.h>
-#include <D3dx9math.h>
+
 #include <vector>
+#include <string>
 
 using namespace math3D;
 
@@ -400,7 +397,7 @@ const int VERTEX4DT_ATTR_GENERATED = 0x0010;
 
 		int id;
 		char name[64];
-		wxString strName;
+		std::string strName;
 		int color;
 		int state;
 		int attr;
@@ -458,9 +455,9 @@ const int VERTEX4DT_ATTR_GENERATED = 0x0010;
 		void setState(float *data, int size = 0);
 		void setState(float data, int dataidx = -1);
 
-		void setState(wxString *data, int dataidx = -1);
+		void setState(std::string data, int dataidx = -1);
 		void setState(int *data, int dataidx = -1);
-		void getState(wxString *data, int *size_out = 0);
+		void getState(std::string data, int *size_out = 0);
 		void getState(int *data, int *size_out = 0);
 	} OBJECT4D, *OBJECT4D_PTR;
 
@@ -500,109 +497,109 @@ const int VERTEX4DT_ATTR_GENERATED = 0x0010;
 		Name = 10, Color
 	};
 
-	class ObserverSizer : public Observer
-	{
-	public:
-		void Update();
-		void setSubject(SelectionSubject *subj);
-		void Release();
-		void unsetSubject();
-		void updateSubjectData(){}
-		void modifySubjectData(float modifier, int dataSlot){}
+	//class ObserverSizer : public Observer
+	//{
+	//public:
+	//	void Update();
+	//	void setSubject(SelectionSubject *subj);
+	//	void Release();
+	//	void unsetSubject();
+	//	void updateSubjectData(){}
+	//	void modifySubjectData(float modifier, int dataSlot){}
 
-		void setWindow(wxWindow *w);
-		void setCylinderSizer(wxSizer *s);
-		void setConeSizer(wxSizer *s);
-		void setSphereSizer(wxSizer *s);
-		void setBoxSizer(wxSizer *s);
-		void setEMSizer(wxSizer *s);
-	private:
-		wxWindow *mainWnd;
-		wxSizer *szCyl;
-		wxSizer *szCone;
-		wxSizer *szBox;
-		wxSizer *szSph;
-		wxSizer *szEM;
-		OBJECT4D_TYP *subject;
+	//	void setWindow(wxWindow *w);
+	//	void setCylinderSizer(wxSizer *s);
+	//	void setConeSizer(wxSizer *s);
+	//	void setSphereSizer(wxSizer *s);
+	//	void setBoxSizer(wxSizer *s);
+	//	void setEMSizer(wxSizer *s);
+	//private:
+	//	wxWindow *mainWnd;
+	//	wxSizer *szCyl;
+	//	wxSizer *szCone;
+	//	wxSizer *szBox;
+	//	wxSizer *szSph;
+	//	wxSizer *szEM;
+	//	OBJECT4D_TYP *subject;
 
-		void hideAll();
-	};
+	//	void hideAll();
+	//};
 
-	class ObserverText : public Observer
-	{
-	public:
-		void Update();
-		void setSubject(SelectionSubject *subj);
-		void Release();
-		void unsetSubject();
-		void updateSubjectData();
-		void modifySubjectData(float modifier, int dataSlot);
-		//void modifySubjectData(bool add, int dataSlot);
+	//class ObserverText : public Observer
+	//{
+	//public:
+	//	void Update();
+	//	void setSubject(SelectionSubject *subj);
+	//	void Release();
+	//	void unsetSubject();
+	//	void updateSubjectData();
+	//	void modifySubjectData(float modifier, int dataSlot);
+	//	//void modifySubjectData(bool add, int dataSlot);
 
-		void addTextCtrl(wxTextCtrl *t, int data_slot = -1);
+	//	void addTextCtrl(wxTextCtrl *t, int data_slot = -1);
 
-		void setMinNumber(float min);
-		void setMaxNumber(float max);
-		//void setNumberModifier(float modifier);
-	private:
-		std::vector<wxTextCtrl *> obj;
-		std::vector<float> min;
-		std::vector<float> max;
-		//std::vector<float> modifier;
-		std::vector<int> data_slots;
-		OBJECT4D_TYP *subject;
-	};
+	//	void setMinNumber(float min);
+	//	void setMaxNumber(float max);
+	//	//void setNumberModifier(float modifier);
+	//private:
+	//	std::vector<wxTextCtrl *> obj;
+	//	std::vector<float> min;
+	//	std::vector<float> max;
+	//	//std::vector<float> modifier;
+	//	std::vector<int> data_slots;
+	//	OBJECT4D_TYP *subject;
+	//};
 
-	class ObserverColor : public Observer
-	{
-	public:
-		void Update();
-		void setSubject(SelectionSubject *subj);
-		void Release();
-		void unsetSubject();
-		void updateSubjectData();
-		void modifySubjectData(float modifier, int dataSlot){}
+	//class ObserverColor : public Observer
+	//{
+	//public:
+	//	void Update();
+	//	void setSubject(SelectionSubject *subj);
+	//	void Release();
+	//	void unsetSubject();
+	//	void updateSubjectData();
+	//	void modifySubjectData(float modifier, int dataSlot){}
 
-		void setColorPicker(wxColourPickerCtrl *c);
-	private:
-		wxColourPickerCtrl *obj;
-		//int data_slot;
-		OBJECT4D_TYP *subject;
-	};
+	//	void setColorPicker(wxColourPickerCtrl *c);
+	//private:
+	//	wxColourPickerCtrl *obj;
+	//	//int data_slot;
+	//	OBJECT4D_TYP *subject;
+	//};
 
-	class ObseverBmpBtReset : public Observer
-	{
-	public:
-		void Update();
-		void setSubject(SelectionSubject *subj);
-		void Release(){}
-		void unsetSubject();
-		void updateSubjectData(){}
-		void modifySubjectData(float modifier, int dataSlot){}
-
-
-		void addBt(wxBitmapToggleButton *bt);
-	private:
-		std::vector<wxBitmapToggleButton *> obj;
-		OBJECT4D_TYP *subject;
-	};
-
-	class ObseverStatTxtCount : public Observer
-	{
-	public:
-		void Update();
-		void setSubject(SelectionSubject *subj);
-		void Release(){}
-		void unsetSubject();
-		void updateSubjectData(){}
-		void modifySubjectData(float modifier, int dataSlot){}
+	//class ObseverBmpBtReset : public Observer
+	//{
+	//public:
+	//	void Update();
+	//	void setSubject(SelectionSubject *subj);
+	//	void Release(){}
+	//	void unsetSubject();
+	//	void updateSubjectData(){}
+	//	void modifySubjectData(float modifier, int dataSlot){}
 
 
-		void addSt(wxStaticText *st);
-	private:
-		std::vector<wxStaticText *> obj;
-		SubSelectionCollection *subject;
-	};
+	//	void addBt(wxBitmapToggleButton *bt);
+	//private:
+	//	std::vector<wxBitmapToggleButton *> obj;
+	//	OBJECT4D_TYP *subject;
+	//};
+
+	//class ObseverStatTxtCount : public Observer
+	//{
+	//public:
+	//	void Update();
+	//	void setSubject(SelectionSubject *subj);
+	//	void Release(){}
+	//	void unsetSubject();
+	//	void updateSubjectData(){}
+	//	void modifySubjectData(float modifier, int dataSlot){}
+
+
+	//	void addSt(wxStaticText *st);
+	//private:
+	//	std::vector<wxStaticText *> obj;
+	//	SubSelectionCollection *subject;
+	//};
 
 	typedef struct RENDERLIST4D_TYP
 	{

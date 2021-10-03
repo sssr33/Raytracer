@@ -1152,12 +1152,12 @@ void struct3D::CAM4D_TYP::pitch(float angle)
 	MATRIX4X4 mat;
 	VECTOR4D vResult;
 
-	D3DXMATRIX T;
+	/*D3DXMATRIX T;
 	D3DXVECTOR3 right;
 
 	right.x = _right.x;
 	right.y = _right.y;
-	right.z = _right.z;
+	right.z = _right.z;*/
 
 	//D3DXMatrixRotationAxis(&T, &right, math3D::mathFunc.DEG_TO_RAD(angle));
 
@@ -1437,12 +1437,12 @@ void struct3D::OBJECT4D_TYP::setState(float data, int dataidx)
 	//this->Notify();
 }
 
-void struct3D::OBJECT4D_TYP::setState(wxString *data, int dataidx)
+void struct3D::OBJECT4D_TYP::setState(std::string data, int dataidx)
 {
 	if(dataidx != DataSlotCommon::Name)
 		return;
 
-	this->strName = data[0];
+	this->strName = data;
 }
 void struct3D::OBJECT4D_TYP::setState(int *data, int dataidx)
 {
@@ -1461,12 +1461,12 @@ void struct3D::OBJECT4D_TYP::setState(int *data, int dataidx)
 
 	this->Notify();
 }
-void struct3D::OBJECT4D_TYP::getState(wxString *data, int *size_out)
+void struct3D::OBJECT4D_TYP::getState(std::string data, int *size_out)
 {
-	if(!data || !size_out)
+	if(!size_out)
 		return;
 
-	data[0] = this->strName;
+	data = this->strName;
 	*size_out = 1;
 }
 void struct3D::OBJECT4D_TYP::getState(int *data, int *size_out)
@@ -1478,326 +1478,326 @@ void struct3D::OBJECT4D_TYP::getState(int *data, int *size_out)
 	*size_out = 1;
 }
 
-void struct3D::ObserverText::Update()
-{
-	int size;
-	float data[10];
-
-	this->subject->getState(data, &size);
-
-	//if(size != this->obj.size()) return;
-
-	/*TCHAR mas[128];
-	swprintf(mas, L"%d", size);
-	MessageBox(0,mas,0,0);*/
-
-	wxString str;
-	wxString *strName;
-
-	for(int i = 0; i < obj.size(); i++)
-	{
-		if(this->data_slots[i] > -1 && this->data_slots[i] < 10)
-		{
-			str = wxString::FromDouble(data[data_slots[i]]);//
-			obj[i]->ChangeValue(str);
-		}
-
-		if(this->data_slots[i] == DataSlotCommon::Name)
-		{
-			this->subject->getState(&str, &size);
-			obj[i]->ChangeValue(str);
-		}
-	}
-}
-
-void struct3D::ObserverText::setSubject(SelectionSubject *subj)
-{
-	this->subject = (OBJECT4D_TYP *)subj;
-}
-void struct3D::ObserverText::unsetSubject()
-{
-	this->subject = 0;
-}
-void struct3D::ObserverText::addTextCtrl(wxTextCtrl *t, int data_slot)
-{
-	this->obj.push_back(t);
-	this->data_slots.push_back(data_slot);
-}
-
-void struct3D::ObserverText::Release()
-{
-	this->obj.clear();
-}
-
-void struct3D::ObserverText::setMinNumber(float min)
-{
-	this->min.push_back(min);
-}
-void struct3D::ObserverText::setMaxNumber(float max)
-{
-	this->max.push_back(max);
-}
-//void struct3D::ObserverText::setNumberModifier(float modifier)
+//void struct3D::ObserverText::Update()
 //{
-//	this->modifier.push_back(fabs(modifier));
+//	int size;
+//	float data[10];
+//
+//	this->subject->getState(data, &size);
+//
+//	//if(size != this->obj.size()) return;
+//
+//	/*TCHAR mas[128];
+//	swprintf(mas, L"%d", size);
+//	MessageBox(0,mas,0,0);*/
+//
+//	wxString str;
+//	wxString *strName;
+//
+//	for(int i = 0; i < obj.size(); i++)
+//	{
+//		if(this->data_slots[i] > -1 && this->data_slots[i] < 10)
+//		{
+//			str = wxString::FromDouble(data[data_slots[i]]);//
+//			obj[i]->ChangeValue(str);
+//		}
+//
+//		if(this->data_slots[i] == DataSlotCommon::Name)
+//		{
+//			this->subject->getState(&str, &size);
+//			obj[i]->ChangeValue(str);
+//		}
+//	}
 //}
-
-void struct3D::ObserverText::updateSubjectData()
-{
-	float data[10];
-	double value;
-	wxString str;
-	int size_out = 0;
-
-	if(!this->subject) return;
-
-	this->subject->getState(data, &size_out);
-
-	for(int i = 0; i < this->obj.size(); i++)
-	{
-		str = obj[i]->GetLineText(0);
-
-		if(this->data_slots[i] > -1 && this->data_slots[i] < 10)
-		{
-			if(str.ToDouble(&value))
-			{
-				if(value >= min[i] && value <= max[i])
-				this->subject->setState(value, this->data_slots[i]);
-			}
-		}
-
-		if(this->data_slots[i] == DataSlotCommon::Name)
-		{
-			this->subject->setState(&str, this->data_slots[i]);
-		}
-	}
-
-	this->subject->Notify();
-}
-
-void struct3D::ObserverText::modifySubjectData(float modifier, int dataSlot)
-{
-	float data[10];
-	wxString str;
-	int size_out = 0;
-	//float modifier = 0;
-
-	if(!this->subject) return;
-
-	this->subject->getState(data, &size_out);
-
-	for(int i = 0; i < this->obj.size(); i++)
-	{
-		if(dataSlot == this->data_slots[i])
-		{
-			/*if(add)
-			{
-				modifier = this->modifier[i];
-			}
-			else
-			{
-				modifier = -this->modifier[i];
-			}*/
-
-			if((data[this->data_slots[i]] + modifier) >= min[i] && (data[this->data_slots[i]] + modifier) <= max[i])
-			this->subject->setState(data[this->data_slots[i]] + modifier, this->data_slots[i]);
-			break;
-		}
-	}
-
-	this->subject->Notify();
-}
-
-void struct3D::ObserverColor::Update()
-{
-	if(!this->subject) return;
-
-	wxColor data;
-	int datai;
-	int size = 0;
-
-	this->subject->getState(&datai, &size);
-
-	if(!size) return;
-
-	char r, g, b, a;
-
-	RGBFROM32BIT(datai, r, g, b);
-	a = 255;
-
-	data.Set(r, g, b, a);
-
-	this->obj->SetColour(data);
-}
-void struct3D::ObserverColor::setSubject(SelectionSubject *subj)
-{
-	this->subject = (OBJECT4D_TYP *)subj;
-}
-void struct3D::ObserverColor::Release()
-{
-	obj = 0;
-}
-void struct3D::ObserverColor::unsetSubject()
-{
-	this->subject = 0;
-}
-void struct3D::ObserverColor::updateSubjectData()
-{
-	if(!this->subject) return;
-
-	wxColor data;
-	int datai;
-
-	data = this->obj->GetColour();
-
-	datai = ARGB32BIT(255, (unsigned int)data.Red(), (unsigned int)data.Green(), (unsigned int)data.Blue());
-
-	this->subject->setState(&datai, DataSlotCommon::Color);
-}
-void struct3D::ObserverColor::setColorPicker(wxColourPickerCtrl *c)
-{
-	this->obj = c;
-}
-
-void struct3D::ObserverSizer::Update()
-{
-	hideAll();
-
-	if(!subject) return;
-
-	switch(this->subject->type)
-	{
-	case ObjectType::Box:
-		{
-			this->mainWnd->SetSizer(this->szBox, false);
-		}break;
-	case ObjectType::Cone:
-		{
-			this->mainWnd->SetSizer(this->szCone, false);
-		}break;
-	case ObjectType::Cylinder:
-		{
-			this->mainWnd->SetSizer(this->szCyl, false);
-		}break;
-	case ObjectType::Sphere:
-		{
-			this->mainWnd->SetSizer(this->szSph, false);
-		}break;
-	case ObjectType::EditableMesh:
-		{
-			this->mainWnd->SetSizer(this->szEM, false);
-			wxSizer *s = this->mainWnd->GetSizer();
-			size_t count = s->GetItemCount();
-
-			for(size_t i = 0; i < count; i++)
-			{
-				s->Hide(i);
-			}
-		}break;
-	default:
-		{
-			return;
-		}break;
-	};
-
-	this->mainWnd->GetSizer()->Show(size_t(0));
-	this->mainWnd->GetSizer()->Layout();
-	this->mainWnd->GetSizer()->SetSizeHints(this->mainWnd);
-	this->mainWnd->Show();
-	this->mainWnd->GetParent()->Layout();
-}
-
-void struct3D::ObserverSizer::hideAll()
-{
-	this->szBox->Hide(size_t(0));
-	this->szCone->Hide(size_t(0));
-	this->szCyl->Hide(size_t(0));
-	this->szSph->Hide(size_t(0));
-	this->szEM->Hide(size_t(0));
-}
-void struct3D::ObserverSizer::setSubject(SelectionSubject *subj)
-{
-	this->subject = (OBJECT4D_TYP *)subj;
-}
-void struct3D::ObserverSizer::Release()
-{
-
-}
-void struct3D::ObserverSizer::unsetSubject()
-{
-	this->subject = 0;
-}
-
-void struct3D::ObserverSizer::setWindow(wxWindow *w)
-{
-	this->mainWnd = w;
-}
-void struct3D::ObserverSizer::setCylinderSizer(wxSizer *s)
-{
-	this->szCyl = s;
-}
-void struct3D::ObserverSizer::setConeSizer(wxSizer *s)
-{
-	this->szCone = s;
-}
-void struct3D::ObserverSizer::setSphereSizer(wxSizer *s)
-{
-	this->szSph = s;
-}
-void struct3D::ObserverSizer::setBoxSizer(wxSizer *s)
-{
-	this->szBox = s;
-}
-void struct3D::ObserverSizer::setEMSizer(wxSizer *s)
-{
-	this->szEM = s;
-}
-void struct3D::ObseverBmpBtReset::Update()
-{
-	if(subject->type != ObjectType::EditableMesh) return;
-
-	for(int i = 0; i < this->obj.size(); i++)
-	{
-		this->obj[i]->SetValue(false);
-	}
-}
-void struct3D::ObseverBmpBtReset::setSubject(SelectionSubject *subj)
-{
-	this->subject = (OBJECT4D_TYP *)subj;
-}
-void struct3D::ObseverBmpBtReset::unsetSubject()
-{
-	this->subject = 0;
-}
-void struct3D::ObseverBmpBtReset::addBt(wxBitmapToggleButton *bt)
-{
-	this->obj.push_back(bt);
-}
-
-void struct3D::ObseverStatTxtCount::Update()
-{
-	int curr, max;
-
-	max = this->subject->getMax();
-	curr = this->subject->getCurrent();
-
-	for(int i = 0; i < this->obj.size(); i++)
-	{
-		obj[i]->SetLabel(wxString::FromDouble(curr) + "/" + wxString::FromDouble(max) + " elements selected");
-	}
-}
-void struct3D::ObseverStatTxtCount::setSubject(SelectionSubject *subj)
-{
-	this->subject = (SubSelectionCollection *)subj;
-}
-void struct3D::ObseverStatTxtCount::addSt(wxStaticText *st)
-{
-	this->obj.push_back(st);
-}
-void struct3D::ObseverStatTxtCount::unsetSubject()
-{
-	//this->subject = 0;
-}
+//
+//void struct3D::ObserverText::setSubject(SelectionSubject *subj)
+//{
+//	this->subject = (OBJECT4D_TYP *)subj;
+//}
+//void struct3D::ObserverText::unsetSubject()
+//{
+//	this->subject = 0;
+//}
+//void struct3D::ObserverText::addTextCtrl(wxTextCtrl *t, int data_slot)
+//{
+//	this->obj.push_back(t);
+//	this->data_slots.push_back(data_slot);
+//}
+//
+//void struct3D::ObserverText::Release()
+//{
+//	this->obj.clear();
+//}
+//
+//void struct3D::ObserverText::setMinNumber(float min)
+//{
+//	this->min.push_back(min);
+//}
+//void struct3D::ObserverText::setMaxNumber(float max)
+//{
+//	this->max.push_back(max);
+//}
+////void struct3D::ObserverText::setNumberModifier(float modifier)
+////{
+////	this->modifier.push_back(fabs(modifier));
+////}
+//
+//void struct3D::ObserverText::updateSubjectData()
+//{
+//	float data[10];
+//	double value;
+//	wxString str;
+//	int size_out = 0;
+//
+//	if(!this->subject) return;
+//
+//	this->subject->getState(data, &size_out);
+//
+//	for(int i = 0; i < this->obj.size(); i++)
+//	{
+//		str = obj[i]->GetLineText(0);
+//
+//		if(this->data_slots[i] > -1 && this->data_slots[i] < 10)
+//		{
+//			if(str.ToDouble(&value))
+//			{
+//				if(value >= min[i] && value <= max[i])
+//				this->subject->setState(value, this->data_slots[i]);
+//			}
+//		}
+//
+//		if(this->data_slots[i] == DataSlotCommon::Name)
+//		{
+//			this->subject->setState(&str, this->data_slots[i]);
+//		}
+//	}
+//
+//	this->subject->Notify();
+//}
+//
+//void struct3D::ObserverText::modifySubjectData(float modifier, int dataSlot)
+//{
+//	float data[10];
+//	wxString str;
+//	int size_out = 0;
+//	//float modifier = 0;
+//
+//	if(!this->subject) return;
+//
+//	this->subject->getState(data, &size_out);
+//
+//	for(int i = 0; i < this->obj.size(); i++)
+//	{
+//		if(dataSlot == this->data_slots[i])
+//		{
+//			/*if(add)
+//			{
+//				modifier = this->modifier[i];
+//			}
+//			else
+//			{
+//				modifier = -this->modifier[i];
+//			}*/
+//
+//			if((data[this->data_slots[i]] + modifier) >= min[i] && (data[this->data_slots[i]] + modifier) <= max[i])
+//			this->subject->setState(data[this->data_slots[i]] + modifier, this->data_slots[i]);
+//			break;
+//		}
+//	}
+//
+//	this->subject->Notify();
+//}
+//
+//void struct3D::ObserverColor::Update()
+//{
+//	if(!this->subject) return;
+//
+//	wxColor data;
+//	int datai;
+//	int size = 0;
+//
+//	this->subject->getState(&datai, &size);
+//
+//	if(!size) return;
+//
+//	char r, g, b, a;
+//
+//	RGBFROM32BIT(datai, r, g, b);
+//	a = 255;
+//
+//	data.Set(r, g, b, a);
+//
+//	this->obj->SetColour(data);
+//}
+//void struct3D::ObserverColor::setSubject(SelectionSubject *subj)
+//{
+//	this->subject = (OBJECT4D_TYP *)subj;
+//}
+//void struct3D::ObserverColor::Release()
+//{
+//	obj = 0;
+//}
+//void struct3D::ObserverColor::unsetSubject()
+//{
+//	this->subject = 0;
+//}
+//void struct3D::ObserverColor::updateSubjectData()
+//{
+//	if(!this->subject) return;
+//
+//	wxColor data;
+//	int datai;
+//
+//	data = this->obj->GetColour();
+//
+//	datai = ARGB32BIT(255, (unsigned int)data.Red(), (unsigned int)data.Green(), (unsigned int)data.Blue());
+//
+//	this->subject->setState(&datai, DataSlotCommon::Color);
+//}
+//void struct3D::ObserverColor::setColorPicker(wxColourPickerCtrl *c)
+//{
+//	this->obj = c;
+//}
+//
+//void struct3D::ObserverSizer::Update()
+//{
+//	hideAll();
+//
+//	if(!subject) return;
+//
+//	switch(this->subject->type)
+//	{
+//	case ObjectType::Box:
+//		{
+//			this->mainWnd->SetSizer(this->szBox, false);
+//		}break;
+//	case ObjectType::Cone:
+//		{
+//			this->mainWnd->SetSizer(this->szCone, false);
+//		}break;
+//	case ObjectType::Cylinder:
+//		{
+//			this->mainWnd->SetSizer(this->szCyl, false);
+//		}break;
+//	case ObjectType::Sphere:
+//		{
+//			this->mainWnd->SetSizer(this->szSph, false);
+//		}break;
+//	case ObjectType::EditableMesh:
+//		{
+//			this->mainWnd->SetSizer(this->szEM, false);
+//			wxSizer *s = this->mainWnd->GetSizer();
+//			size_t count = s->GetItemCount();
+//
+//			for(size_t i = 0; i < count; i++)
+//			{
+//				s->Hide(i);
+//			}
+//		}break;
+//	default:
+//		{
+//			return;
+//		}break;
+//	};
+//
+//	this->mainWnd->GetSizer()->Show(size_t(0));
+//	this->mainWnd->GetSizer()->Layout();
+//	this->mainWnd->GetSizer()->SetSizeHints(this->mainWnd);
+//	this->mainWnd->Show();
+//	this->mainWnd->GetParent()->Layout();
+//}
+//
+//void struct3D::ObserverSizer::hideAll()
+//{
+//	this->szBox->Hide(size_t(0));
+//	this->szCone->Hide(size_t(0));
+//	this->szCyl->Hide(size_t(0));
+//	this->szSph->Hide(size_t(0));
+//	this->szEM->Hide(size_t(0));
+//}
+//void struct3D::ObserverSizer::setSubject(SelectionSubject *subj)
+//{
+//	this->subject = (OBJECT4D_TYP *)subj;
+//}
+//void struct3D::ObserverSizer::Release()
+//{
+//
+//}
+//void struct3D::ObserverSizer::unsetSubject()
+//{
+//	this->subject = 0;
+//}
+//
+//void struct3D::ObserverSizer::setWindow(wxWindow *w)
+//{
+//	this->mainWnd = w;
+//}
+//void struct3D::ObserverSizer::setCylinderSizer(wxSizer *s)
+//{
+//	this->szCyl = s;
+//}
+//void struct3D::ObserverSizer::setConeSizer(wxSizer *s)
+//{
+//	this->szCone = s;
+//}
+//void struct3D::ObserverSizer::setSphereSizer(wxSizer *s)
+//{
+//	this->szSph = s;
+//}
+//void struct3D::ObserverSizer::setBoxSizer(wxSizer *s)
+//{
+//	this->szBox = s;
+//}
+//void struct3D::ObserverSizer::setEMSizer(wxSizer *s)
+//{
+//	this->szEM = s;
+//}
+//void struct3D::ObseverBmpBtReset::Update()
+//{
+//	if(subject->type != ObjectType::EditableMesh) return;
+//
+//	for(int i = 0; i < this->obj.size(); i++)
+//	{
+//		this->obj[i]->SetValue(false);
+//	}
+//}
+//void struct3D::ObseverBmpBtReset::setSubject(SelectionSubject *subj)
+//{
+//	this->subject = (OBJECT4D_TYP *)subj;
+//}
+//void struct3D::ObseverBmpBtReset::unsetSubject()
+//{
+//	this->subject = 0;
+//}
+//void struct3D::ObseverBmpBtReset::addBt(wxBitmapToggleButton *bt)
+//{
+//	this->obj.push_back(bt);
+//}
+//
+//void struct3D::ObseverStatTxtCount::Update()
+//{
+//	int curr, max;
+//
+//	max = this->subject->getMax();
+//	curr = this->subject->getCurrent();
+//
+//	for(int i = 0; i < this->obj.size(); i++)
+//	{
+//		obj[i]->SetLabel(wxString::FromDouble(curr) + "/" + wxString::FromDouble(max) + " elements selected");
+//	}
+//}
+//void struct3D::ObseverStatTxtCount::setSubject(SelectionSubject *subj)
+//{
+//	this->subject = (SubSelectionCollection *)subj;
+//}
+//void struct3D::ObseverStatTxtCount::addSt(wxStaticText *st)
+//{
+//	this->obj.push_back(st);
+//}
+//void struct3D::ObseverStatTxtCount::unsetSubject()
+//{
+//	//this->subject = 0;
+//}
 
 int struct3D::OBJECT4D_LINE_TYP::initialize(int num_lines)
 {

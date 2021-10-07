@@ -1,5 +1,6 @@
 #include "zBuffer.h"
 
+#include <algorithm>
 
 zBuffer::zBuffer(void)
 {
@@ -39,14 +40,7 @@ int zBuffer::clear()
 
 	//MessageBox(0,0,0,0);
 
-	__asm
-	{
-		mov eax, data
-		mov ecx, count
-		mov edi, dest
-
-		rep stosd
-	}
+	std::fill(dest, dest + count, data);
 
 	z_add = 0;
 

@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "Sys.h"
 
+#include <intrin.h>
+#include <array>
 
 Sys::Sys(void)
 {
@@ -12,7 +14,7 @@ Sys::~Sys(void)
 }
 
 unsigned int Sys::iSIMDFlags = 0; 
-TCHAR *Sys::tchErrorFile = TEXT("\error.txt");;
+const TCHAR *Sys::tchErrorFile = TEXT("error.txt");;
 
 int Sys::Initialize()
 {
@@ -22,57 +24,43 @@ int Sys::Initialize()
 	if(!Sys::isCPUIDPresent())
 	{
 		Sys::Error(TEXT("CPUID isn't present!"));
+		return 0;
 	}
-	else
+
+	const int num = 8;
+	unsigned int* SIMDInfo = new unsigned int[num];
+	ZeroMemory(SIMDInfo, sizeof(unsigned int) * num);
+
+	std::array<int, 4> cpui = {};
+
+	__cpuid(cpui.data(), 1);
+
+	constexpr int mmxBit = 1 << 23;
+	constexpr int sseBit = 1 << 25;
+	constexpr int sse2Bit = 1 << 26;
+	constexpr int sse3Bit = 1 << 0;
+	constexpr int ssse3Bit = 1 << 9;
+	constexpr int ssse4_1Bit = 1 << 19;
+	constexpr int ssse4_2Bit = 1 << 20;
+
+	const int& ecx = cpui[2];
+	const int& edx = cpui[3];
+
+	SIMDInfo[0] = edx & mmxBit;
+	SIMDInfo[1] = edx & sseBit;
+	SIMDInfo[2] = edx & sse2Bit;
+
+	SIMDInfo[3] = ecx & sse3Bit;
+	SIMDInfo[4] = ecx & ssse3Bit;
+	SIMDInfo[5] = ecx & ssse4_1Bit;
+	SIMDInfo[6] = ecx & ssse4_2Bit;
+
+	for (int i = 0; i < num; i++)
 	{
-		const int num = 8;
-		unsigned int *SIMDInfo = new unsigned int[num];
-		ZeroMemory(SIMDInfo, sizeof(unsigned int)  * num);
-
-		__asm{
-			mov eax, 01h
-			cpuid
-			mov edi, SIMDInfo
-
-			//MMX detect
-			add edi, 4
-			//MMX detect
-
-			mov eax, edx
-			and eax, 2000000h
-			mov [edi], eax //Проверка поддржки SSE1
-			add edi, 4
-
-			mov eax, edx
-			and eax, 4000000h
-			mov [edi], eax //Проверка поддержки SSE2
-			add edi, 4
-
-			mov eax, ecx
-			and eax, 1h
-			mov [edi], eax //Проверка поддержки SSE3
-			add edi, 4
-
-			mov eax, ecx
-			and eax, 200h
-			mov [edi], eax //Проверка поддержки SSSE3
-			add edi, 4
-
-			mov eax, ecx
-			and eax, 80000h
-			mov [edi], eax //Проверка поддержки SSE4.1
-			add edi, 4
-
-			mov eax, ecx
-			and eax, 100000h
-			mov [edi], eax //Проверка поддержки SSE4.2
-		}
-		
-		for(int i = 0; i < num; i++)
-		{
-			if(SIMDInfo[i]) setBit(Sys::iSIMDFlags, i); 
-		}
+		if (SIMDInfo[i]) setBit(Sys::iSIMDFlags, i);
 	}
+
+	return 1;
 }
 
 int Sys::Release()
@@ -82,24 +70,13 @@ int Sys::Release()
 
 bool Sys::isCPUIDPresent()
 {
-	bool result = 0;
+	std::array<int, 4> cpui = {};
 
-	__asm{
-		pushfd           //; размещение регистра EFLAGS в стеке
-		pop eax          //; извлечение значения EFLAGS в EAX
-		mov ebx, eax     //; сохранение значения в EBX
-		xor eax, 200000h //; изменение 21-го бита
-		push eax         //; размещение нового значения в стеке
-		popfd            //; сохранение нового значения в EFLAGS
-		pushfd           //; снова размещение EFLAGS в стеке
-		pop eax          //; значение EFLAGS теперь в EAX
-		xor eax, ebx
-		je no_cpuid
-		mov result, 1h
-	no_cpuid:
-	}
+	// https://docs.microsoft.com/en-us/cpp/intrinsics/cpuid-cpuidex?view=msvc-160
+	__cpuid(cpui.data(), 0);
+	int idCount = cpui[0];
 
-	return result;
+	return idCount != 0;
 }
 
 bool Sys::getSIMDInfo(SIMD enm)
@@ -107,11 +84,11 @@ bool Sys::getSIMDInfo(SIMD enm)
 	return Sys::iSIMDFlags & enm;
 }
 
-int Sys::Error(TCHAR *msg, bool showMsgBox)
+int Sys::Error(const TCHAR *msg, bool showMsgBox)
 {
 	return 1;
 }
-int Sys::setErrorFileName(TCHAR *name)
+int Sys::setErrorFileName(const TCHAR *name)
 {
 	return 1;
 }

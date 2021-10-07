@@ -18,11 +18,11 @@ public:
 	static int Release();
 
 	static bool getSIMDInfo(SIMD enm);
-	static int Error(TCHAR *msg, bool showMsgBox = 0);
-	static int setErrorFileName(TCHAR *name);
+	static int Error(const TCHAR *msg, bool showMsgBox = 0);
+	static int setErrorFileName(const TCHAR *name);
 private:
 	static unsigned int iSIMDFlags; 
-	static TCHAR *tchErrorFile;
+	static const TCHAR *tchErrorFile;
 
 	Sys(void);
 	static bool isCPUIDPresent();

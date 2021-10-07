@@ -946,7 +946,7 @@ void struct3D::CAM4D_TYP::Build_CAM4D_Matrix_Euler(int CamRotSeq)
 
 void struct3D::CAM4D_TYP::Build_CAM4D_Matrix_UVN(int mode)
 {
-	MATRIX4X4 mtInv, mUVN, mTmp;
+	MATRIX4X4 mtInv, mUVN/*, mTmp*/;
 
 	mtInv.Mat_Init_4X4(1.0f, 0.0f, 0.0f, 0.0f,
 					   0.0f, 1.0f, 0.0f, 0.0f,
@@ -2010,8 +2010,8 @@ void struct3D::SubSelectionCollection::rotate(VECTOR4D_PTR vAngles)
 {
 	MATRIX4X4 mrot;
 	POINT4D pCenter2;
-	float size = this->objects.size();
-	size = 1 / size;
+	float size = static_cast<float>(this->objects.size());
+	size = 1.f / size;
 
 	vecScale(size, &this->pCenter, &pCenter2);
 
@@ -2026,8 +2026,8 @@ void struct3D::SubSelectionCollection::rotate(VECTOR4D_PTR vAngles)
 void struct3D::SubSelectionCollection::rotate(MATRIX4X4_PTR mrot)
 {
 	POINT4D pCenter2;
-	float size = this->objects.size();
-	size = 1 / size;
+	float size = static_cast<float>(this->objects.size());
+	size = 1.f / size;
 
 	vecScale(size, &this->pCenter, &pCenter2);
 
@@ -2039,7 +2039,7 @@ void struct3D::SubSelectionCollection::rotate(MATRIX4X4_PTR mrot)
 
 int struct3D::SubSelectionCollection::getCurrent()
 {
-	return this->objects.size();
+	return static_cast<int>(this->objects.size());
 }
 
 void struct3D::SubSelectionCollection::getState(std::vector<float> *data_out)
@@ -2048,7 +2048,7 @@ void struct3D::SubSelectionCollection::getState(std::vector<float> *data_out)
 
 	data_out->clear();
 
-	data_out->push_back(this->objects.size());
+	data_out->push_back(static_cast<float>(this->objects.size()));
 }
 
 void struct3D::frameSelect::setFirstPoint(POINT2D_PTR p_in)

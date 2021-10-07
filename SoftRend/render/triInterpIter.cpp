@@ -300,7 +300,7 @@ void triInterpIter::intiForGeneral(float y0)
 
 void triInterpIter::setIndexY(int y_idx)
 {
-	this->y_idx = y_idx;
+	this->y_idx = static_cast<float>(y_idx);
 	
 	if(this->triType == TriType2::Simple)
 	{
@@ -373,7 +373,7 @@ void triInterpIter::setIndexY(int y_idx)
 }
 void triInterpIter::setIndexX(int x_idx)
 {
-	this->x_idx = x_idx;
+	this->x_idx = static_cast<float>(x_idx);
 }
 
 void triInterpIter::getColor(int *color_out)
@@ -383,11 +383,11 @@ void triInterpIter::getColor(int *color_out)
 
 int triInterpIter::getXL()
 {
-	return /*(int)*/(ceil(this->xs));
+	return static_cast<int>(ceil(this->xs));
 }
 int triInterpIter::getXR()
 {
-	return /*(int)*/(ceil(this->xe) - 1.0f);
+	return static_cast<int>(ceil(this->xe) - 1.0f);
 }
 
 void triInterpIter::getZInv(float *z)
@@ -398,5 +398,5 @@ void triInterpIter::getZInv(float *z)
 void triInterpIter::getCoords(int *x_out, int *y_out, float *z_inv_out)
 {
 	/**y_out = (this->vlist[0].y + this->y_idx);*/
-	*y_out = (yc0 + this->y_idx);
+	*y_out = static_cast<int>(yc0 + this->y_idx);
 }

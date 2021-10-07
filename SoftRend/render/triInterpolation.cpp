@@ -42,16 +42,16 @@ void triInterpolation::setTriangle(POLYF4D_PTR poly)
 		tri[1] = &poly->tvlist[v1];
 		tri[2] = &poly->tvlist[v2];*/
 
-		this->vlist[0].x = (int)(poly->tvlist[v0].x + 0.5f);
-		this->vlist[0].y = (int)(poly->tvlist[v0].y + 0.5f);
+		this->vlist[0].x = static_cast<float>((int)(poly->tvlist[v0].x + 0.5f));
+		this->vlist[0].y = static_cast<float>((int)(poly->tvlist[v0].y + 0.5f));
 		this->vlist[0].z = 1.0f / poly->tvlist[v0].z;
 
-		this->vlist[1].x = (int)(poly->tvlist[v1].x + 0.5f);
-		this->vlist[1].y = (int)(poly->tvlist[v1].y + 0.5f);
+		this->vlist[1].x = static_cast<float>((int)(poly->tvlist[v1].x + 0.5f));
+		this->vlist[1].y = static_cast<float>((int)(poly->tvlist[v1].y + 0.5f));
 		this->vlist[1].z = 1.0f / poly->tvlist[v1].z;
 
-		this->vlist[2].x = (int)(poly->tvlist[v2].x + 0.5f);
-		this->vlist[2].y = (int)(poly->tvlist[v2].y + 0.5f);
+		this->vlist[2].x = static_cast<float>((int)(poly->tvlist[v2].x + 0.5f));
+		this->vlist[2].y = static_cast<float>((int)(poly->tvlist[v2].y + 0.5f));
 		this->vlist[2].z = 1.0f / poly->tvlist[v2].z;
 
 		RGBFROM32BIT(poly->lit_color[v0], rBase[0], gBase[0], bBase[0]);
@@ -66,16 +66,16 @@ void triInterpolation::setTriangle(POLYF4D_PTR poly)
 		if(poly->tvlist[v2].x < poly->tvlist[v1].x)
 			SWAP(v2, v1, tmp);
 
-		this->vlist[0].x = (int)(poly->tvlist[v0].x + 0.5f);
-		this->vlist[0].y = (int)(poly->tvlist[v0].y + 0.5f);
+		this->vlist[0].x = static_cast<float>((int)(poly->tvlist[v0].x + 0.5f));
+		this->vlist[0].y = static_cast<float>((int)(poly->tvlist[v0].y + 0.5f));
 		this->vlist[0].z = 1.0f / poly->tvlist[v0].z;
 
-		this->vlist[1].x = (int)(poly->tvlist[v1].x + 0.5f);
-		this->vlist[1].y = (int)(poly->tvlist[v1].y + 0.5f);
+		this->vlist[1].x = static_cast<float>((int)(poly->tvlist[v1].x + 0.5f));
+		this->vlist[1].y = static_cast<float>((int)(poly->tvlist[v1].y + 0.5f));
 		this->vlist[1].z = 1.0f / poly->tvlist[v1].z;
 
-		this->vlist[2].x = (int)(poly->tvlist[v2].x + 0.5f);
-		this->vlist[2].y = (int)(poly->tvlist[v2].y + 0.5f);
+		this->vlist[2].x = static_cast<float>((int)(poly->tvlist[v2].x + 0.5f));
+		this->vlist[2].y = static_cast<float>((int)(poly->tvlist[v2].y + 0.5f));
 		this->vlist[2].z = 1.0f / poly->tvlist[v2].z;
 
 		RGBFROM32BIT(poly->lit_color[v0], rBase[0], gBase[0], bBase[0]);
@@ -87,16 +87,16 @@ void triInterpolation::setTriangle(POLYF4D_PTR poly)
 	}
 	else
 	{
-		this->vlist[0].x = (int)(poly->tvlist[v0].x + 0.5f);
-		this->vlist[0].y = (int)(poly->tvlist[v0].y + 0.5f);
+		this->vlist[0].x = static_cast<float>((int)(poly->tvlist[v0].x + 0.5f));
+		this->vlist[0].y = static_cast<float>((int)(poly->tvlist[v0].y + 0.5f));
 		this->vlist[0].z = 1.0f / poly->tvlist[v0].z;
 
-		this->vlist[1].x = (int)(poly->tvlist[v1].x + 0.5f);
-		this->vlist[1].y = (int)(poly->tvlist[v1].y + 0.5f);
+		this->vlist[1].x = static_cast<float>((int)(poly->tvlist[v1].x + 0.5f));
+		this->vlist[1].y = static_cast<float>((int)(poly->tvlist[v1].y + 0.5f));
 		this->vlist[1].z = 1.0f / poly->tvlist[v1].z;
 
-		this->vlist[2].x = (int)(poly->tvlist[v2].x + 0.5f);
-		this->vlist[2].y = (int)(poly->tvlist[v2].y + 0.5f);
+		this->vlist[2].x = static_cast<float>((int)(poly->tvlist[v2].x + 0.5f));
+		this->vlist[2].y = static_cast<float>((int)(poly->tvlist[v2].y + 0.5f));
 		this->vlist[2].z = 1.0f / poly->tvlist[v2].z;
 
 		RGBFROM32BIT(poly->lit_color[v0], rBase[0], gBase[0], bBase[0]);
@@ -205,7 +205,7 @@ void triInterpolation::intiForGeneral()
 
 void triInterpolation::setIndexY(int y_idx)
 {
-	this->y_idx = y_idx;
+	this->y_idx = static_cast<float>(y_idx);
 
 	if(this->y_idx != this->y_prev_idx)
 	{
@@ -230,8 +230,8 @@ void triInterpolation::setIndexY(int y_idx)
 			cr.M[1] = y_idx * dcdyr.M[1] + gBase[0];//g
 			cr.M[2] = y_idx * dcdyr.M[2] + bBase[0];//b
 
-			x_start = (int)(xl + 0.5f);
-			x_end = (int)(xr + 0.5f);
+			x_start = static_cast<float>((int)(xl + 0.5f));
+			x_end = static_cast<float>((int)(xr + 0.5f));
 
 			/*if((dx = (xr * d_correction) - (xl * d_correction)) > 0)*/
 			/*if((dx = ((int)(xr + 0.5f) * d_correction) - ((int)(xl + 0.5f) * d_correction)) > 0)*/
@@ -277,8 +277,8 @@ void triInterpolation::setIndexY(int y_idx)
 			cr.M[1] = y_idx * dcdyr.M[1] + gBase[0];//g
 			cr.M[2] = y_idx * dcdyr.M[2] + bBase[0];//b
 
-			x_start = (int)(xl + 0.5f);
-			x_end = (int)(xr + 0.5f);
+			x_start = static_cast<float>((int)(xl + 0.5f));
+			x_end = static_cast<float>((int)(xr + 0.5f));
 
 			/*if((dx = (xr * d_correction) - (xl * d_correction)) > 0)*/
 			/*if((dx = ((int)(xr + 0.5f) * d_correction) - ((int)(xl + 0.5f) * d_correction)) > 0)*/
@@ -310,15 +310,15 @@ void triInterpolation::setIndexY(int y_idx)
 
 void triInterpolation::setIndexX(int x_idx)
 {
-	this->x_idx = x_idx;
+	this->x_idx = static_cast<float>(x_idx);
 }
 
 void triInterpolation::getCoords(int *x_out, int *y_out, float *z_inv_out)
 {
 	/**x_out = (xl  + 0.5 + (x_idx * d_correction));*/
-	*x_out = x_start + (x_idx * d_correction);
+	*x_out = static_cast<int>(x_start + (x_idx * d_correction));
 	/**y_out = y_idx + tri[0]->y;*/
-	*y_out = y_idx + (int)vlist[0].y;
+	*y_out = static_cast<int>(y_idx + (int)vlist[0].y);
 	if(z_inv_out)
 		*z_inv_out = zl + (dz * x_idx);
 }
@@ -328,9 +328,9 @@ void triInterpolation::getColor(int *c_out)
 	/*int r = cl.M[0] + (dc.M[0] * (x_idx * d_correction));
 	int g = cl.M[1] + (dc.M[1] * (x_idx * d_correction));
 	int b = cl.M[2] + (dc.M[2] * (x_idx * d_correction));*/
-	int r = cl.M[0] + (dc.M[0] * x_idx);
-	int g = cl.M[1] + (dc.M[1] * x_idx);
-	int b = cl.M[2] + (dc.M[2] * x_idx);
+	int r = static_cast<int>(cl.M[0] + (dc.M[0] * x_idx));
+	int g = static_cast<int>(cl.M[1] + (dc.M[1] * x_idx));
+	int b = static_cast<int>(cl.M[2] + (dc.M[2] * x_idx));
 
 	*c_out = ARGB32BIT(255, r, g, b);
 }
@@ -342,16 +342,16 @@ TriType triInterpolation::getTriType()
 
 int triInterpolation::getDX()
 {
-	return (this->dx /*+ 1.0f*/);
+	return static_cast<int>(this->dx /*+ 1.0f*/);
 }
 
 int triInterpolation::getXL()
 {
 	//return (this->xl /*+ 0.5f*/);	
-	return (this->x_start /*+ 0.5f*/);
+	return static_cast<int>(this->x_start /*+ 0.5f*/);
 }
 int triInterpolation::getXR()
 {
 	//return (this->xr /*+ 0.5f*/);
-	return (this->x_end /*+ 0.5f*/);
+	return static_cast<int>(this->x_end /*+ 0.5f*/);
 }

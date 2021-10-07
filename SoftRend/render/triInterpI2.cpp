@@ -53,7 +53,7 @@ void triInterpI2::setTriangle(POLYF4D_PTR poly)
 		dy_inv1 = 1.0f / (poly->tvlist[v2].y - poly->tvlist[v0].y);
 		dy_inv2 = 1.0f / (poly->tvlist[v2].y - poly->tvlist[v1].y);
 		y1_gen = poly->tvlist[v1].y;
-		height = this->vlist[2].y - this->vlist[0].y;
+		height = static_cast<int>(this->vlist[2].y - this->vlist[0].y);
 		
 		this->triType = TriType3::Simple;
 		//this->intiForFlatTop(poly->tvlist[v0].y);
@@ -78,7 +78,7 @@ void triInterpI2::setTriangle(POLYF4D_PTR poly)
 
 		dy_inv1 = 1.0f / (poly->tvlist[v2].y - poly->tvlist[v0].y);
 		dy_inv2 = 1.0f / (poly->tvlist[v1].y - poly->tvlist[v0].y);
-		height = this->vlist[2].y - this->vlist[0].y;
+		height = static_cast<int>(this->vlist[2].y - this->vlist[0].y);
 
 		this->triType = TriType3::Simple;
 		//this->initForFlatBottom(poly->tvlist[v0].y);
@@ -102,7 +102,7 @@ void triInterpI2::setTriangle(POLYF4D_PTR poly)
 		y0_gen = poly->tvlist[v0].y;
 		y1_gen = poly->tvlist[v1].y;
 		y2_gen = poly->tvlist[v2].y;
-		height = this->vlist[2].y - this->vlist[0].y;
+		height = static_cast<int>(this->vlist[2].y - this->vlist[0].y);
 
 		//this->intiForGeneral(poly->tvlist[v0].y);
 	}

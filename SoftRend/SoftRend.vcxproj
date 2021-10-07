@@ -36,7 +36,6 @@
     <ClInclude Include="render\lineInterp.h" />
     <ClInclude Include="render\math3DFunc.h" />
     <ClInclude Include="render\Math3DStructs.h" />
-    <ClInclude Include="render\myDynamicBox.h" />
     <ClInclude Include="render\Pipeline.h" />
     <ClInclude Include="render\RenderState.h" />
     <ClInclude Include="render\stdafx.h" />
@@ -64,7 +63,6 @@
     <ClCompile Include="render\lineInterp.cpp" />
     <ClCompile Include="render\math3DFunc.cpp" />
     <ClCompile Include="render\Math3DStructs.cpp" />
-    <ClCompile Include="render\myDynamicBox.cpp" />
     <ClCompile Include="render\Pipeline.cpp" />
     <ClCompile Include="render\RenderState.cpp" />
     <ClCompile Include="render\stdafx.cpp" />

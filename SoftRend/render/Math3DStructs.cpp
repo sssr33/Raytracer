@@ -70,7 +70,7 @@ void math3D::VECTOR4D_TYP::VECTOR4D_Normalize()
 	if (length < EPSILON_E5) 
 	   return;
 
-	float length_inv = 1.0/length;
+	float length_inv = 1.0f / length;
 
 	// compute normalized version of vector
 	this->x *= length_inv;
@@ -421,7 +421,7 @@ void math3D::VECTOR3D_TYP::VECTOR3D_Normalize(VECTOR3D_PTR vn)
 	if (length < EPSILON_E5) 
 	   return;
 
-	float length_inv = 1.0/length;
+	float length_inv = 1.0f / length;
 
 	// compute normalized version of vector
 	vn->x = this->x * length_inv;
@@ -762,9 +762,9 @@ float math3D::vecLengthFast(VECTOR4D_PTR vec)
 	int x,y,z; // used for algorithm
 
 	// make sure values are all positive
-	x = fabs(vec->x) * 1024;
-	y = fabs(vec->y) * 1024;
-	z = fabs(vec->z) * 1024;
+	x = static_cast<int>(fabs(vec->x) * 1024.f);
+	y = static_cast<int>(fabs(vec->y) * 1024.f);
+	z = static_cast<int>(fabs(vec->z) * 1024.f);
 
 	// sort values
 	if (y < x) 
@@ -799,9 +799,9 @@ float math3D::vecLengthFast(VECTOR3D_PTR vec)
 	int x,y,z; // used for algorithm
 
 	// make sure values are all positive
-	x = fabs(vec->x) * 1024;
-	y = fabs(vec->y) * 1024;
-	z = fabs(vec->z) * 1024;
+	x = static_cast<int>(fabs(vec->x) * 1024.f);
+	y = static_cast<int>(fabs(vec->y) * 1024.f);
+	z = static_cast<int>(fabs(vec->z) * 1024.f);
 
 	// sort values
 	if (y < x) 
@@ -832,14 +832,14 @@ float math3D::vecLengthFast(VECTOR3D_PTR vec)
 }
 float math3D::vecLengthFast(VECTOR2D_PTR vec)
 {
-	int x = abs(vec->x);
-	int y = abs(vec->y);
+	int x = static_cast<int>(abs(vec->x));
+	int y = static_cast<int>(abs(vec->y));
 
 	// compute the minimum of x,y
 	int mn = min(x,y);
 
 	// return the distance
-	return(x+y-(mn>>1)-(mn>>2)+(mn>>4));
+	return static_cast<float>(x+y-(mn>>1)-(mn>>2)+(mn>>4));
 }
 
 void math3D::vecReflect(VECTOR4D_PTR va, VECTOR4D_PTR vn, VECTOR4D_PTR vres)

@@ -8,8 +8,6 @@
 #include <iostream>
 #include <limits>
 
-#include <wx/file.h>
-
 using namespace std;
 
 #define _ARGB32BIT(a,r,g,b) (b + (g << 8) + (r << 16) + (a << 24))

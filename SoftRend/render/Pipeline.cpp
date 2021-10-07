@@ -1871,6 +1871,7 @@ void Pipeline::WorldToCamera_and_BackfaceRemoveRENDERLIST4D(RENDERLIST4D_PTR ren
 	for(int poly = 0; poly < rendList->num_polys; poly++)
 	{
 		POLYF4D_PTR currPoly = rendList->poly_ptrs[poly];
+		float dp = 0.f;
 
 		if((currPoly->attr & struct3D::POLY4D_ATTR_2SIDED)) goto vertPROC;
 
@@ -1885,7 +1886,7 @@ void Pipeline::WorldToCamera_and_BackfaceRemoveRENDERLIST4D(RENDERLIST4D_PTR ren
 
 		vecBuild(&currPoly->tvlist[0].v, &cam->pos, &view);
 
-		float dp = vecDot(&n, &view);
+		dp = vecDot(&n, &view);
 		if(dp <= 0.0f)
 			currPoly->state |= struct3D::POLY4D_STATE_BACKFACE;
 		else

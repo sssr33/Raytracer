@@ -254,7 +254,7 @@ int struct3D::RENDERLIST4D_TYP::selectionVertex(RECT *r, VERTEX4DT_PTR *verts, i
 	int temp;
 	*num = 0;
 	struct3D::POLYF4D_PTR currPoly;
-	OBJECT4D_PTR obj;
+	OBJECT4D_PTR obj = nullptr;
 
 	if(r->left > r->right) SWAP(r->left, r->right, temp);
 	if(r->top > r->bottom) SWAP(r->top, r->bottom, temp);

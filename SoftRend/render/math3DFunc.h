@@ -20,11 +20,11 @@ public:
 
 	inline float DEG_TO_RAD(float ang) 
 	{ 
-		return ((ang)*PI/180.0);
+		return ((ang)*PI/180.0f);
 	}
 	inline float RAD_TO_DEG(float rads) 
 	{
-		return ((rads)*180.0/PI);
+		return ((rads)*180.0f/PI);
 	}
 	inline int RAND_RANGE(int x, int y)
 	{

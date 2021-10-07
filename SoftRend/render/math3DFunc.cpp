@@ -69,9 +69,9 @@ float math3DFunc::Fast_Distance_3D(float fx, float fy, float fz)
 	int x,y,z; // used for algorithm
 
 	// make sure values are all positive
-	x = fabs(fx) * 1024;
-	y = fabs(fy) * 1024;
-	z = fabs(fz) * 1024;
+	x = static_cast<int>(fabs(fx) * 1024.f);
+	y = static_cast<int>(fabs(fy) * 1024.f);
+	z = static_cast<int>(fabs(fz) * 1024.f);
 
 	// sort values
 	if (y < x) 

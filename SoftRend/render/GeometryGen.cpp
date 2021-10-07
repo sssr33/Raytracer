@@ -15,12 +15,12 @@ GeometryGen::~GeometryGen(void)
 
 int GeometryGen::generateTerrainOBJECT4D(OBJECT4D_PTR obj, float width, float height, float scale, TEXTURE2D_PTR tex2DMap, TEXTURE2D_PTR tex2D, unsigned int color, POINT4D_PTR pos, VECTOR4D_PTR rot, unsigned int attr)
 {
-	char buffer[256];
+	//char buffer[256];
 
-	float colTstep, rowTstep;
-	float colVstep, rowVstep;
+	//float colTstep, rowTstep;
+	//float colVstep, rowVstep;
 
-	unsigned int rgbWhite;
+	//unsigned int rgbWhite;
 
 	//TEXTURE2D tex
 
@@ -61,7 +61,7 @@ int GeometryGen::generateRotationForm(POINT4D_PTR pts, int numPts, int numSides,
 	int polyColor = iColor;
 	MATRIX4X4 mrot;
 
-	float objCenter;
+	//float objCenter;
 	float objHMax = FLT_MIN;
 	float objHMin = FLT_MAX;
 	POINT4D pCenterCorrection;
@@ -101,7 +101,7 @@ int GeometryGen::generateRotationForm(POINT4D_PTR pts, int numPts, int numSides,
 
 	mrot.Build_XYZ_Rotation_MATRIX4X4(0, rotAngle, 0);
 
-	TCHAR mas[128];
+	//TCHAR mas[128];
 
 	obj->Init(numVerts, numPolys + numPolysIn1Side, 1);
 	obj->state = struct3D::OBJECT4D_STATE_ACTIVE | struct3D::OBJECT4D_STATE_VISIBLE;
@@ -412,7 +412,7 @@ int GeometryGen::generateCone(int numSides, int numHSegs, int numCapSegs, float 
 
 	numPts = numCapPointsT + numCapPointsB + (numHSegs - 1);
 
-	TCHAR mas[128];
+	//TCHAR mas[128];
 
 	ptsRot = new POINT4D[numPts];
 
@@ -576,7 +576,7 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 		topIdx.push_back(shapeIdx[i]);
 
 	int pm = HSegs - 1;
-	int shapeIdxSize = shapeIdx.size();
+	int shapeIdxSize = static_cast<int>(shapeIdx.size());
 
 	for(int i = 0; i < pm; i++)
 	{
@@ -846,7 +846,7 @@ int GeometryGen::generateShadowVolume(LIGHT_PTR l_in, int num_l_in, OBJECT4D_PTR
 	
 	//Для точечного источника света нужно добавить преобразование его позиции в пространсво объекта!!!!
 
-	VECTOR4D u, v, n, r, c, l;
+	VECTOR4D u, v, n, /*r, c,*/ l;
 	float dp;
 
 	int idx[4] = {0, 1, 2, 0};
@@ -986,8 +986,8 @@ int GeometryGen::generateShadowVolume(LIGHT_PTR l_in, int num_l_in, OBJECT4D_PTR
 	//return 1;
 	//creating shadow volume
 
-	int vertnum = svVerts.size() * 2;
-	int pnum = svVerts.size();
+	int vertnum = static_cast<int>(svVerts.size()) * 2;
+	int pnum = static_cast<int>(svVerts.size());
 	int polyAttr = struct3D::POLY4D_ATTR_RGB24 | struct3D::POLY4D_ATTR_SHADE_MODE_GOURAUD | struct3D::POLY4D_ATTR_DISABLE_MATERIAL;
 	int vertAttr = struct3D::VERTEX4DT_ATTR_NORMAL | struct3D::VERTEX4DT_ATTR_POINT;
 	int polyState = struct3D::POLY4D_STATE_ACTIVE | struct3D::OBJECT4D_STATE_VISIBLE;

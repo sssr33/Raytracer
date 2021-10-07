@@ -27,7 +27,6 @@
     <ClInclude Include="render\triInterpIter.h" />
     <ClInclude Include="render\triInterpolation.h" />
     <ClInclude Include="render\zBuffer.h" />
-    <ClInclude Include="render\myDynamicBox.h" />
     <ClInclude Include="render\fixp\fixsintab.h" />
   </ItemGroup>
   <ItemGroup>
@@ -55,6 +54,5 @@
     <ClCompile Include="render\triInterpIter.cpp" />
     <ClCompile Include="render\triInterpolation.cpp" />
     <ClCompile Include="render\zBuffer.cpp" />
-    <ClCompile Include="render\myDynamicBox.cpp" />
   </ItemGroup>
 </Project>

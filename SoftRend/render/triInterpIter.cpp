@@ -177,7 +177,7 @@ void triInterpIter::initForFlatBottom(float y0)
 
 	if(tf != vlist[1].y) 
 	{	
-		swprintf(mas, L"real %f <<< %f H: %f", vlist[1].y, height, dy_inv2);
+		swprintf(mas, std::size(mas), L"real %f <<< %f H: %f", vlist[1].y, height, dy_inv2);
 		MessageBox(0, mas,0,0);
 	}
 

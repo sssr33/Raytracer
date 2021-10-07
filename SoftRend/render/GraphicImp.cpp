@@ -583,7 +583,7 @@ void GraphicImpDirectDraw::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POIN
 	TCHAR mas[128];
 	if(KEYDOWN(VK_NUMPAD5))
 	{
-		swprintf(mas, L"tri: %f %f %f | %f %f %f | %f %f %f %F", rendList->poly_data[idx].tvlist[0].x, rendList->poly_data[idx].tvlist[0].y, rendList->poly_data[idx].tvlist[0].z,  rendList->poly_data[idx].tvlist[1].x, rendList->poly_data[idx].tvlist[1].y, rendList->poly_data[idx].tvlist[1].z, rendList->poly_data[idx].tvlist[2].x, rendList->poly_data[idx].tvlist[2].y, rendList->poly_data[idx].tvlist[2].z, rendList->poly_data[idx].tvlist[2].z);
+		swprintf(mas, std::size(mas), L"tri: %f %f %f | %f %f %f | %f %f %f %F", rendList->poly_data[idx].tvlist[0].x, rendList->poly_data[idx].tvlist[0].y, rendList->poly_data[idx].tvlist[0].z,  rendList->poly_data[idx].tvlist[1].x, rendList->poly_data[idx].tvlist[1].y, rendList->poly_data[idx].tvlist[1].z, rendList->poly_data[idx].tvlist[2].x, rendList->poly_data[idx].tvlist[2].y, rendList->poly_data[idx].tvlist[2].z, rendList->poly_data[idx].tvlist[2].z);
 		MessageBox(0, mas, 0, 0);
 	}
 
@@ -596,7 +596,7 @@ void GraphicImpDirectDraw::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POIN
 				if((memcmp(&rendList->poly_data[idx].tvlist[i].x, &rendList->poly_data[idx2].tvlist[j].x, sizeof(float)) == 0) && (memcmp(&rendList->poly_data[idx].tvlist[i].y, &rendList->poly_data[idx2].tvlist[j].y, sizeof(float)) == 0) && (memcmp(&rendList->poly_data[idx].tvlist[i].z, &rendList->poly_data[idx2].tvlist[j].z, sizeof(float)) == 0))
 				{
 					
-					swprintf(mas, L"%d %d == %d %d", idx, i, idx2, j);
+					swprintf(mas, std::size(mas), L"%d %d == %d %d", idx, i, idx2, j);
 					MessageBox(0, mas, 0, 0);
 				}
 			}
@@ -607,29 +607,29 @@ void GraphicImpDirectDraw::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POIN
 
 	if(KEYDOWN(VK_NUMPAD1))
 	{
-		wxFile file;
+		//wxFile file;
 
-		if(/*(idx != idx_old)*/file.Open("triTest.bin", wxFile::read_write))
-		{
-			//file.Create("triTest.bin");
-			file.SeekEnd(0);
-			POLYF4D *p = &rendList->poly_data[idx];
+		//if(/*(idx != idx_old)*/file.Open("triTest.bin", wxFile::read_write))
+		//{
+		//	//file.Create("triTest.bin");
+		//	file.SeekEnd(0);
+		//	POLYF4D *p = &rendList->poly_data[idx];
 
-			for(int i = 0; i < 3; i++)
-			{
-				file.Write(&p->tvlist[i].x, sizeof(float));
-				file.Write(&p->tvlist[i].y, sizeof(float));
-				file.Write(&p->tvlist[i].z, sizeof(float));
-			}
+		//	for(int i = 0; i < 3; i++)
+		//	{
+		//		file.Write(&p->tvlist[i].x, sizeof(float));
+		//		file.Write(&p->tvlist[i].y, sizeof(float));
+		//		file.Write(&p->tvlist[i].z, sizeof(float));
+		//	}
 
-			idx_old = idx;
+		//	idx_old = idx;
 
-			MessageBox(0, L"poly saved to file...", 0, 0);
-		}
-		else
-		{
-			MessageBox(0, L"File Open Error!!!", 0, 0);
-		}
+		//	MessageBox(0, L"poly saved to file...", 0, 0);
+		//}
+		//else
+		//{
+		//	MessageBox(0, L"File Open Error!!!", 0, 0);
+		//}
 	}
 
 	for(int poly = 0; poly < rendList->num_polys; poly++)

@@ -134,6 +134,8 @@ bool InputImpDirectInput::GetKeyState(int iDIKCode)
 {
 	if(_bIsDataReady)
 		return (_ucKeyboardState[iDIKCode] & 0x80);
+
+	return false;
 }
 
 bool InputImpDirectInput::GetMouseKeyState(MouseKeyNumber KeyNum){
@@ -148,7 +150,7 @@ int InputImpDirectInput::GetMouseAxisState(MouseAxisNumber AxisNum, MouseMode Mo
 
 	if(Mode == MouseMode::Screen){
 		POINT pt;
-		RECT rWnd, r;
+		RECT /*rWnd,*/ r;
 		GetClientRect(_hWnd, &r);
 
 		GetCursorPos(&pt);
@@ -212,7 +214,7 @@ unsigned short InputImpDirectInput::GetPressedKey()
 	short sKey;
 	static HKL KeyboardLayout = GetKeyboardLayout(0);
 	unsigned char WinKeyStates[256];
-	unsigned short i, ScanCode, VirtualKey, Keys, Num;
+	unsigned short /*i,*/ ScanCode, VirtualKey, /*Keys,*/ Num;
 	wchar_t str[1];
 
 	GetKeyboardState(WinKeyStates);

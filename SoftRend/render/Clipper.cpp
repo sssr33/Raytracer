@@ -33,7 +33,7 @@ int Clipper::clipCohenSutherland(RECT *clippingRect, std::vector<POINT2D> *subjP
 	int pcode1, pcode2;
 	POINT2D pRes1, pRes2;
 
-	int numPts = subjPoly->size();
+	int numPts = static_cast<int>(subjPoly->size());
 
 	if(numPts < 1) return 0;
 
@@ -163,11 +163,11 @@ int Clipper::clipLineCS(RECT *clippingRect, POINT2D *pt1, POINT2D *pt2, int pcod
 	const int CLIP_CODE_NW = 0x0009;
 	const int CLIP_CODE_SW = 0x0005;
 	
-	float minX = clippingRect->left;
-	float minY = clippingRect->top;
+	float minX = static_cast<float>(clippingRect->left);
+	float minY = static_cast<float>(clippingRect->top);
 
-	float maxX = clippingRect->right;
-	float maxY = clippingRect->bottom;
+	float maxX = static_cast<float>(clippingRect->right);
+	float maxY = static_cast<float>(clippingRect->bottom);
 
 	float t = 0;
 

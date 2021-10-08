@@ -213,7 +213,7 @@ int Draw32BitStrategy::DrawPixel(math3D::POINT2D *pts, int numPts, unsigned int 
 	if(numPts < 0) return 0;
 
 	int *vb = (int *)videoMemory;
-	float alpha = (color >> 24) & 0x000000FF;
+	float alpha = static_cast<float>((color >> 24) & 0x000000FF);
 	int x, y;
 	lpitch >>= 2;
 
@@ -228,10 +228,10 @@ int Draw32BitStrategy::DrawPixel(math3D::POINT2D *pts, int numPts, unsigned int 
 	{
 		if(pts[i].x > this->minClipX && pts[i].x < this->maxClipX && pts[i].y > this->minClipY && pts[i].y < this->maxClipY)
 		{
-			alphas[0] = alpha * (float)( (1.0f - (pts[i].x - (int)pts[i].x)) * (1.0f - (pts[i].y - (int)pts[i].y)) );
-			alphas[1] = alpha * (float)( (pts[i].x - (int)pts[i].x) * (1.0f - (pts[i].y - (int)pts[i].y)) );
-			alphas[2] = alpha * (float)( (1.0f - (pts[i].x - (int)pts[i].x)) * (pts[i].y - (int)pts[i].y) );
-			alphas[3] = alpha * (float)( (pts[i].x - (int)pts[i].x) * (pts[i].y - (int)pts[i].y) );
+			alphas[0] = static_cast<uint32_t>(alpha * (float)( (1.0f - (pts[i].x - (int)pts[i].x)) * (1.0f - (pts[i].y - (int)pts[i].y)) ));
+			alphas[1] = static_cast<uint32_t>(alpha * (float)( (pts[i].x - (int)pts[i].x) * (1.0f - (pts[i].y - (int)pts[i].y)) ));
+			alphas[2] = static_cast<uint32_t>(alpha * (float)( (1.0f - (pts[i].x - (int)pts[i].x)) * (pts[i].y - (int)pts[i].y) ));
+			alphas[3] = static_cast<uint32_t>(alpha * (float)( (pts[i].x - (int)pts[i].x) * (pts[i].y - (int)pts[i].y) ));
 
 			colorSour[0] = (color & 0x00FFFFFF) | (alphas[0] << 24);
 			colorSour[1] = (color & 0x00FFFFFF) | (alphas[1] << 24);
@@ -261,7 +261,7 @@ int Draw32BitStrategy::DrawPixel(math3D::POINT2D *pts, int numPts, unsigned int 
 void Draw32BitStrategy::DrawTopTri(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int *videoMemory, int lpitch)
 {
 	float dx_right, dx_left, xs, xe, height;
-	float temp_x, temp_y, right, left;
+	float temp_x, /*temp_y,*/ right, left;
 	int iy1, iy3, loop_y;
 	//unsigned int *vb = NULL;
 	//int lpitch2 = lpitch >> 2;
@@ -291,11 +291,11 @@ void Draw32BitStrategy::DrawTopTri(float x1, float y1, float x2, float y2, float
    // reset y1
 		y1 = minClipY;
 
-		iy1 = y1;
+		iy1 = static_cast<int>(y1);
    } // end if top is off screen
 	else
 	{
-		iy1 = ceil(y1);
+		iy1 = static_cast<int>(ceil(y1));
 
 		xs = xs + dx_left * (iy1 - y1);
 		xe = xe + dx_right * (iy1 - y1);
@@ -304,11 +304,11 @@ void Draw32BitStrategy::DrawTopTri(float x1, float y1, float x2, float y2, float
    if (y3 > maxClipY)
    {
 	  y3 = maxClipY;
-	  iy3 = y3 - 1;
+	  iy3 = static_cast<int>(y3 - 1);
    }
    else
    {
-	  iy3 = ceil(y3) - 1;
+	  iy3 = static_cast<int>(ceil(y3) - 1);
    }
 
 	//vb = videoMemory + (int)y1 * lpitch2;
@@ -375,7 +375,7 @@ void Draw32BitStrategy::DrawTopTri(float x1, float y1, float x2, float y2, float
 void Draw32BitStrategy::DrawBottomTri(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int *videoMemory, int lpitch)
 {
 	float dx_right, dx_left, xs, xe, height;
-	float temp_x, temp_y, right, left;
+	float temp_x, /*temp_y,*/ right, left;
 	int iy1, iy3, loop_y;
 	//unsigned int *vb = NULL;
 	//int lpitch2 = lpitch >> 2;
@@ -404,11 +404,11 @@ void Draw32BitStrategy::DrawBottomTri(float x1, float y1, float x2, float y2, fl
 
 		// reset y1
 		y1 = minClipY;
-		iy1 = y1;
+		iy1 = static_cast<int>(y1);
 	} // end if top is off screen
 	else
 	{
-		iy1 = ceil(y1);
+		iy1 = static_cast<int>(ceil(y1));
 
 		xs = xs + dx_left * (iy1 - y1);
 		xe = xe + dx_right * (iy1 - y1);
@@ -417,11 +417,11 @@ void Draw32BitStrategy::DrawBottomTri(float x1, float y1, float x2, float y2, fl
 	if (y3 > maxClipY)
 	{
 		y3 = maxClipY;
-		iy3 = y3 - 1;
+		iy3 = static_cast<int>(y3 - 1);
 	}
 	else
 	{
-		iy3 = ceil(y3) - 1;
+		iy3 = static_cast<int>(ceil(y3) - 1);
 	}
 
 	/*TCHAR mas[128];
@@ -550,11 +550,11 @@ int Draw32BitStrategy::setClipBorders(float minClipX, float minClipY, float maxC
 	this->minClipX = minClipX;
 	this->minClipY = minClipY;
 
-	clipRt.left = this->minClipX;
-	clipRt.top = this->minClipY;
+	clipRt.left = static_cast<LONG>(this->minClipX);
+	clipRt.top = static_cast<LONG>(this->minClipY);
 
-	clipRt.right = this->maxClipX;
-	clipRt.bottom = this->maxClipY;
+	clipRt.right = static_cast<LONG>(this->maxClipX);
+	clipRt.bottom = static_cast<LONG>(this->maxClipY);
 
 	return 1;
 }
@@ -578,12 +578,12 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 		irestart = INTERP_LHS;
 	float dx, dy, dyl, dyr;
 	float tempf = 0;
-	int u, v, w;
+	/*int u, v, w;*/
 	float du, dv, dw;
 	int xi, yi;
 	float ui, vi, wi;
-	int index_x, index_y;
-	int x, y;
+	/*int index_x, index_y*/;
+	/*int x, y;*/
 	int xstart, xend, ystart, yrestart, yend;
 	float dxdyl, xr, xl, dxdyr, dudyl, ul, dvdyl, vl, dwdyl, wl, dudyr, ur, dvdyr, vr, dwdyr, wr;
 	float x0, y0, tu0, tv0, tw0;
@@ -648,22 +648,22 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 	RGBFROM32BIT(face->lit_color[v1], r_base1, g_base1, b_base1);
 	RGBFROM32BIT(face->lit_color[v2], r_base2, g_base2, b_base2);
 
-	x0 = (int)(face->tvlist[v0].x + 0.5f);
-	y0 = (int)(face->tvlist[v0].y + 0.5f);
+	x0 = static_cast<float>((int)(face->tvlist[v0].x + 0.5f));
+	y0 = static_cast<float>((int)(face->tvlist[v0].y + 0.5f));
 
 	tu0 = r_base0; tv0 = g_base0; tw0 = b_base0;
 
-	x1 = (int)(face->tvlist[v1].x + 0.5f);
-	y1 = (int)(face->tvlist[v1].y + 0.5f);
+	x1 = static_cast<float>((int)(face->tvlist[v1].x + 0.5f));
+	y1 = static_cast<float>((int)(face->tvlist[v1].y + 0.5f));
 
 	tu1 = r_base1; tv1 = g_base1; tw1 = b_base1;
 
-	x2 = (int)(face->tvlist[v2].x + 0.5f);
-	y2 = (int)(face->tvlist[v2].y + 0.5f);
+	x2 = static_cast<float>((int)(face->tvlist[v2].x + 0.5f));
+	y2 = static_cast<float>((int)(face->tvlist[v2].y + 0.5f));
 
 	tu2 = r_base2; tv2 = g_base2; tw2 = b_base2;
 
-	yrestart = y1;
+	yrestart = static_cast<int>(y1);
 
 	if(tri_type & TRI_TYPE_FLAT_MASK)
 	{
@@ -694,7 +694,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 				vr = dvdyr * dy + tv1;
 				wr = dwdyr * dy + tw1;
 
-				ystart = this->minClipY;
+				ystart = static_cast<int>(this->minClipY);
 			}
 			else
 			{
@@ -708,7 +708,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 				vr = tv1;
 				wr = tw1;
 
-				ystart = y0;
+				ystart = static_cast<int>(y0);
 			}
 		}//if(tri_type == TRI_TYPE_FLAT_TOP)
 		else //tri_type == TRI_TYPE_FLAT_BOTTOM
@@ -738,7 +738,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 				vr = dvdyr * dy + tv0;
 				wr = dwdyr * dy + tw0;
 
-				ystart = this->minClipY;
+				ystart = static_cast<int>(this->minClipY);
 			}
 			else
 			{
@@ -752,13 +752,13 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 				vr = tv0;
 				wr = tw0;
 
-				ystart = y0;
+				ystart = static_cast<int>(y0);
 			}
 		}//else //tri_type == TRI_TYPE_FLAT_BOTTOM
 
-		if((yend = y2) > this->maxClipY)
+		if((yend = static_cast<int>(y2)) > this->maxClipY)
 		{
-			yend = this->maxClipY;
+			yend = static_cast<int>(this->maxClipY);
 		}
 
 		if((x0 < this->minClipX) || (x0 > this->maxClipX) || (x1 < this->minClipX) || (x1 > this->maxClipX) || (x2 < this->minClipX) || (x2 > this->maxClipX))
@@ -767,14 +767,14 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 
 			for(yi = ystart; yi <= yend; yi++)
 			{
-				xstart = (xl + 0.5f);
-				xend = (xr + 0.5f);
+				xstart = static_cast<int>(xl + 0.5f);
+				xend = static_cast<int>(xr + 0.5f);
 
 				ui = ul;//(ul + 0.5f);
 				vi = vl;//(vl + 0.5f);
 				wi = wl;//(wl + 0.5f);
 
-				if((dx = (xend - xstart)) > 0)
+				if((dx = static_cast<float>(xend - xstart)) > 0)
 				{
 					dx = 1.0f / dx;
 
@@ -797,11 +797,11 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 					vi += dx * dv;
 					wi += dx * dw;
 
-					xstart = this->minClipX;
+					xstart = static_cast<int>(this->minClipX);
 				}
 
 				if(xend > this->maxClipX)
-					xend = this->maxClipX;
+					xend = static_cast<int>(this->maxClipX);
 
 				for(xi = xstart; xi <= xend; xi++)
 				{
@@ -831,14 +831,14 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 
 			for(yi = ystart; yi <= yend; yi++)
 			{
-				xstart = (xl + 0.5f);
-				xend = (xr + 0.5f);
+				xstart = static_cast<int>(xl + 0.5f);
+				xend = static_cast<int>(xr + 0.5f);
 
 				ui = ul;//(ul + 0.5f);
 				vi = vl;//(vl + 0.5f);
 				wi = wl;//(wl + 0.5f);
 
-				if((dx = (xend - xstart)) > 0)
+				if((dx = static_cast<float>(xend - xstart)) > 0)
 				{
 					dx = 1.0f / dx;
 
@@ -878,8 +878,8 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 	}//if(tri_type & TRI_TYPE_FLAT_MASK)
 	else if(tri_type == TRI_TYPE_GENERAL)
 	{
-		if((yend = y2) > this->maxClipY)
-			yend = this->maxClipY;
+		if((yend = static_cast<int>(y2)) > this->maxClipY)
+			yend = static_cast<int>(this->maxClipY);
 
 		if(y1 < this->minClipY)
 		{
@@ -909,7 +909,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 			vr = dvdyr * dyr + tv0;
 			wr = dwdyr * dyr + tw0;
 
-			ystart = this->minClipY;
+			ystart = static_cast<int>(this->minClipY);
 
 			if(dxdyr > dxdyl)
 			{
@@ -956,7 +956,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 			vr = dvdyr * dy + tv0;
 			wr = dwdyr * dy + tw0;
 
-			ystart = this->minClipY;
+			ystart = static_cast<int>(this->minClipY);
 
 			if(dxdyr < dxdyl)
 			{
@@ -996,7 +996,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 			vl = vr = tv0;
 			wl = wr = tw0;
 
-			ystart = y0;
+			ystart = static_cast<int>(y0);
 
 			if(dxdyr < dxdyl)
 			{
@@ -1024,14 +1024,14 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 
 			for(yi = ystart; yi <= yend; yi++)
 			{
-				xstart = (xl + 0.5f);
-				xend = (xr + 0.5f);
+				xstart = static_cast<int>(xl + 0.5f);
+				xend = static_cast<int>(xr + 0.5f);
 
 				ui = ul;
 				vi = vl;
 				wi = wl;
 
-				if((dx = xend - xstart) > 0)
+				if((dx = static_cast<float>(xend - xstart)) > 0)
 				{
 					dx = 1.0f / dx;
 
@@ -1054,10 +1054,10 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 					vi += dv * dx;
 					wi += dw * dx;
 
-					xstart = this->minClipX;
+					xstart = static_cast<int>(this->minClipX);
 				}
 				if(xend > this->maxClipX)
-					xend = this->maxClipX;
+					xend = static_cast<int>(this->maxClipX);
 
 				for(xi = xstart; xi <= xend; xi++)
 				{
@@ -1129,14 +1129,14 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 
 			for(yi = ystart; yi <= yend; yi++)
 			{
-				xstart = (xl + 0.5f);
-				xend = (xr + 0.5f);
+				xstart = static_cast<int>(xl + 0.5f);
+				xend = static_cast<int>(xr + 0.5f);
 
 				ui = ul;
 				vi = vl;
 				wi = wl;
 
-				if((dx = xend - xstart) > 0)
+				if((dx = static_cast<float>(xend - xstart)) > 0)
 				{
 					dx = 1.0f / dx;
 
@@ -1244,7 +1244,7 @@ int Draw32BitStrategy::DrawGouraudTriangle2(struct3D::POLYF4D_PTR face, unsigned
 	triInterp.setTriangle(face);
 
 	int dyist = 0;
-	int dyiend = (triInterp.vlist[2].y) - (triInterp.vlist[0].y);
+	int dyiend = static_cast<int>((triInterp.vlist[2].y) - (triInterp.vlist[0].y));
 	int dxist = 0;
 	int dxiend = 0;
 	float xend, xst;
@@ -1252,11 +1252,11 @@ int Draw32BitStrategy::DrawGouraudTriangle2(struct3D::POLYF4D_PTR face, unsigned
 
 	if(triInterp.vlist[0].y < this->minClipY)
 	{
-		dyist = this->minClipY - (triInterp.vlist[0].y);
+		dyist = static_cast<int>(this->minClipY - (triInterp.vlist[0].y));
 	}
 	if(triInterp.vlist[2].y > this->maxClipY)
 	{
-		dyiend -= (triInterp.vlist[2].y) - this->maxClipY;
+		dyiend -= static_cast<int>((triInterp.vlist[2].y) - this->maxClipY);
 	}
 
 	if((face->tvlist[0].x < this->minClipX) || (face->tvlist[0].x > this->maxClipX) || (face->tvlist[1].x < this->minClipX) || (face->tvlist[1].x > this->maxClipX) || (face->tvlist[2].x < this->minClipX) || (face->tvlist[2].x > this->maxClipX))
@@ -1273,26 +1273,26 @@ int Draw32BitStrategy::DrawGouraudTriangle2(struct3D::POLYF4D_PTR face, unsigned
 
 			dxiend = triInterp.getDX();
 
-			xst = triInterp.getXL();
-			xend = triInterp.getXR();
+			xst = static_cast<float>(triInterp.getXL());
+			xend = static_cast<float>(triInterp.getXR());
 			//dxiend = xend - xst;
 
 			if(xst > this->maxClipX)
 			{
-				dxist = xst - this->maxClipX;
+				dxist = static_cast<int>(xst - this->maxClipX);
 			}
 			else if(xst < this->minClipX)
 			{
-				dxist = this->minClipX - xst;
+				dxist = static_cast<int>(this->minClipX - xst);
 			}
 
 			if(xend > this->maxClipX)
 			{
-				dxiend -= xend - this->maxClipX;
+				dxiend -= static_cast<int>(xend - this->maxClipX);
 			}
 			else if(xend < this->minClipX)
 			{
-				dxiend -= this->minClipX - xend;
+				dxiend -= static_cast<int>(this->minClipX - xend);
 			}
 			for(int dxi = dxist; dxi <= dxiend; dxi++)
 			{
@@ -1386,7 +1386,7 @@ int Draw32BitStrategy::DrawGouraudTriangle3(struct3D::POLYF4D_PTR face, unsigned
 	int len;
 	int y;
 	int dyist = 0;
-	int dyiend = triInterpI.height;
+	int dyiend = static_cast<int>(triInterpI.height);
 	int dxist = 0;
 	int dxiend = 0;
 	int color = 0;//ARGB32BIT(127,255,255,255);
@@ -1394,11 +1394,11 @@ int Draw32BitStrategy::DrawGouraudTriangle3(struct3D::POLYF4D_PTR face, unsigned
 
 	if(triInterpI.yc0 < this->minClipY)
 	{
-		dyist = this->minClipY - (triInterpI.yc0);
+		dyist = static_cast<int>(this->minClipY - (triInterpI.yc0));
 	}
 	if(triInterpI.yc2 > this->maxClipY)
 	{
-		dyiend -= (triInterpI.yc2) - this->maxClipY;
+		dyiend -= static_cast<int>((triInterpI.yc2) - this->maxClipY);
 	}
 
 	if((face->tvlist[0].x < this->minClipX) || (face->tvlist[0].x > this->maxClipX) || (face->tvlist[1].x < this->minClipX) || (face->tvlist[1].x > this->maxClipX) || (face->tvlist[2].x < this->minClipX) || (face->tvlist[2].x > this->maxClipX))
@@ -1417,20 +1417,20 @@ int Draw32BitStrategy::DrawGouraudTriangle3(struct3D::POLYF4D_PTR face, unsigned
 
 			if(dxst > this->maxClipX)
 			{
-				dxist = dxst - this->maxClipX;
+				dxist = static_cast<int>(dxst - this->maxClipX);
 			}
 			else if(dxst < this->minClipX)
 			{
-				dxist = this->minClipX - dxst;
+				dxist = static_cast<int>(this->minClipX - dxst);
 			}
 
 			if(dxend > this->maxClipX)
 			{
-				dxiend -= dxend - this->maxClipX;
+				dxiend -= static_cast<int>(dxend - this->maxClipX);
 			}
 			else if(dxend < this->minClipX)
 			{
-				dxiend -= this->minClipX - dxend;
+				dxiend -= static_cast<int>(this->minClipX - dxend);
 			}
 
 			/*TCHAR mas[128];
@@ -1524,7 +1524,7 @@ int Draw32BitStrategy::DrawTriangle2(struct3D::POLYF4D_PTR face, unsigned int *v
 	int len;
 	int y;
 	int dyist = 0;
-	int dyiend = triInterpI.height;
+	int dyiend = static_cast<int>(triInterpI.height);
 	int dxist = 0;
 	int dxiend = 0;
 	int color = face->lit_color[0];
@@ -1532,11 +1532,11 @@ int Draw32BitStrategy::DrawTriangle2(struct3D::POLYF4D_PTR face, unsigned int *v
 
 	if(triInterpI.vlist[0].y < this->minClipY)
 	{
-		dyist = this->minClipY - (triInterpI.vlist[0].y);
+		dyist = static_cast<int>(this->minClipY - (triInterpI.vlist[0].y));
 	}
 	if(triInterpI.vlist[2].y > this->maxClipY)
 	{
-		dyiend -= (triInterpI.vlist[2].y) - this->maxClipY;
+		dyiend -= static_cast<int>((triInterpI.vlist[2].y) - this->maxClipY);
 	}
 
 	if((face->tvlist[0].x < this->minClipX) || (face->tvlist[0].x > this->maxClipX) || (face->tvlist[1].x < this->minClipX) || (face->tvlist[1].x > this->maxClipX) || (face->tvlist[2].x < this->minClipX) || (face->tvlist[2].x > this->maxClipX))
@@ -1555,20 +1555,20 @@ int Draw32BitStrategy::DrawTriangle2(struct3D::POLYF4D_PTR face, unsigned int *v
 
 			if(dxst > this->maxClipX)
 			{
-				dxist = dxst - this->maxClipX;
+				dxist = static_cast<int>(dxst - this->maxClipX);
 			}
 			else if(dxst < this->minClipX)
 			{
-				dxist = this->minClipX - dxst;
+				dxist = static_cast<int>(this->minClipX - dxst);
 			}
 
 			if(dxend > this->maxClipX)
 			{
-				dxiend -= dxend - this->maxClipX;
+				dxiend -= static_cast<int>(dxend - this->maxClipX);
 			}
 			else if(dxend < this->minClipX)
 			{
-				dxiend -= this->minClipX - dxend;
+				dxiend -= static_cast<int>(this->minClipX - dxend);
 			}
 
 			for(int x_idx = dxist; x_idx <= dxiend; x_idx++)
@@ -1648,7 +1648,7 @@ int Draw32BitStrategy::DrawTriangle3(struct3D::POLYF4D_PTR face, unsigned int *v
 	int len;
 	int y;
 	int dyist = 0;
-	int dyiend = triInterpI.height;
+	int dyiend = static_cast<int>(triInterpI.height);
 	int dxist = 0;
 	int dxiend = 0;
 	int color = 0;//ARGB32BIT(127,255,255,255);
@@ -1656,11 +1656,11 @@ int Draw32BitStrategy::DrawTriangle3(struct3D::POLYF4D_PTR face, unsigned int *v
 
 	if(triInterpI.vlist[0].y < this->minClipY)
 	{
-		dyist = this->minClipY - (triInterpI.vlist[0].y);
+		dyist = static_cast<int>(this->minClipY - (triInterpI.vlist[0].y));
 	}
 	if(triInterpI.vlist[2].y > this->maxClipY)
 	{
-		dyiend -= (triInterpI.vlist[2].y) - this->maxClipY;
+		dyiend -= static_cast<int>((triInterpI.vlist[2].y) - this->maxClipY);
 	}
 
 	if((face->tvlist[0].x < this->minClipX) || (face->tvlist[0].x > this->maxClipX) || (face->tvlist[1].x < this->minClipX) || (face->tvlist[1].x > this->maxClipX) || (face->tvlist[2].x < this->minClipX) || (face->tvlist[2].x > this->maxClipX))
@@ -1679,20 +1679,20 @@ int Draw32BitStrategy::DrawTriangle3(struct3D::POLYF4D_PTR face, unsigned int *v
 
 			if(dxst > this->maxClipX)
 			{
-				dxist = dxst - this->maxClipX;
+				dxist = static_cast<int>(dxst - this->maxClipX);
 			}
 			else if(dxst < this->minClipX)
 			{
-				dxist = this->minClipX - dxst;
+				dxist = static_cast<int>(this->minClipX - dxst);
 			}
 
 			if(dxend > this->maxClipX)
 			{
-				dxiend -= dxend - this->maxClipX;
+				dxiend -= static_cast<int>(dxend - this->maxClipX);
 			}
 			else if(dxend < this->minClipX)
 			{
-				dxiend -= this->minClipX - dxend;
+				dxiend -= static_cast<int>(this->minClipX - dxend);
 			}
 
 			for(int x_idx = dxist; x_idx <= dxiend; x_idx++)
@@ -1762,12 +1762,12 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 	float dx, dy, dyl, dyr;
 	float tempf = 0;
 	unsigned int tempColor;
-	int u, v, w;
+	/*int u, v, w;*/
 	float du, dv, dw;
 	int xi, yi;
 	float ui, vi, wi;
-	int index_x, index_y;
-	int x, y;
+	/*int index_x, index_y;*/
+	/*int x, y;*/
 	int xstart, xend, ystart, yrestart, yend;
 	float dxdyl, xr, xl, dxdyr, dudyl, ul, dvdyl, vl, dwdyl, wl, dudyr, ur, dvdyr, vr, dwdyr, wr;
 	float /*x0, y0, */tu0, tv0, tw0;
@@ -1852,22 +1852,22 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 	RGBFROM32BIT(V1color, r_base1, g_base1, b_base1);
 	RGBFROM32BIT(V2color, r_base2, g_base2, b_base2);
 
-	x0 = (int)(x0 + 0.5f);
-	y0 = (int)(y0 + 0.5f);
+	x0 = static_cast<float>((int)(x0 + 0.5f));
+	y0 = static_cast<float>((int)(y0 + 0.5f));
 
 	tu0 = r_base0; tv0 = g_base0; tw0 = b_base0;
 
-	x1 = (int)(x1 + 0.5f);
-	y1 = (int)(y1 + 0.5f);
+	x1 = static_cast<float>((int)(x1 + 0.5f));
+	y1 = static_cast<float>((int)(y1 + 0.5f));
 
 	tu1 = r_base1; tv1 = g_base1; tw1 = b_base1;
 
-	x2 = (int)(x2 + 0.5f);
-	y2 = (int)(y2 + 0.5f);
+	x2 = static_cast<float>((int)(x2 + 0.5f));
+	y2 = static_cast<float>((int)(y2 + 0.5f));
 
 	tu2 = r_base2; tv2 = g_base2; tw2 = b_base2;
 
-	yrestart = y1;
+	yrestart = static_cast<int>(y1);
 
 	if(tri_type & TRI_TYPE_FLAT_MASK)
 	{
@@ -1898,7 +1898,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 				vr = dvdyr * dy + tv1;
 				wr = dwdyr * dy + tw1;
 
-				ystart = this->minClipY;
+				ystart = static_cast<int>(this->minClipY);
 			}
 			else
 			{
@@ -1912,7 +1912,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 				vr = tv1;
 				wr = tw1;
 
-				ystart = y0;
+				ystart = static_cast<int>(y0);
 			}
 		}//if(tri_type == TRI_TYPE_FLAT_TOP)
 		else //tri_type == TRI_TYPE_FLAT_BOTTOM
@@ -1942,7 +1942,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 				vr = dvdyr * dy + tv0;
 				wr = dwdyr * dy + tw0;
 
-				ystart = this->minClipY;
+				ystart = static_cast<int>(this->minClipY);
 			}
 			else
 			{
@@ -1956,13 +1956,13 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 				vr = tv0;
 				wr = tw0;
 
-				ystart = y0;
+				ystart = static_cast<int>(y0);
 			}
 		}//else //tri_type == TRI_TYPE_FLAT_BOTTOM
 
-		if((yend = y2) > this->maxClipY)
+		if((yend = static_cast<int>(y2)) > this->maxClipY)
 		{
-			yend = this->maxClipY;
+			yend = static_cast<int>(this->maxClipY);
 		}
 
 		if((x0 < this->minClipX) || (x0 > this->maxClipX) || (x1 < this->minClipX) || (x1 > this->maxClipX) || (x2 < this->minClipX) || (x2 > this->maxClipX))
@@ -1971,14 +1971,14 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 
 			for(yi = ystart; yi <= yend; yi++)
 			{
-				xstart = (xl + 0.5f);
-				xend = (xr + 0.5f);
+				xstart = static_cast<int>(xl + 0.5f);
+				xend = static_cast<int>(xr + 0.5f);
 
 				ui = ul;//(ul + 0.5f);
 				vi = vl;//(vl + 0.5f);
 				wi = wl;//(wl + 0.5f);
 
-				if((dx = (xend - xstart)) > 0)
+				if((dx = static_cast<float>(xend - xstart)) > 0)
 				{
 					dx = 1.0f / dx;
 
@@ -2001,11 +2001,11 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 					vi += dx * dv;
 					wi += dx * dw;
 
-					xstart = this->minClipX;
+					xstart = static_cast<int>(this->minClipX);
 				}
 
 				if(xend > this->maxClipX)
-					xend = this->maxClipX;
+					xend = static_cast<int>(this->maxClipX);
 
 				for(xi = xstart; xi <= xend; xi++)
 				{
@@ -2035,14 +2035,14 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 
 			for(yi = ystart; yi <= yend; yi++)
 			{
-				xstart = (xl + 0.5f);
-				xend = (xr + 0.5f);
+				xstart = static_cast<int>(xl + 0.5f);
+				xend = static_cast<int>(xr + 0.5f);
 
 				ui = ul;//(ul + 0.5f);
 				vi = vl;//(vl + 0.5f);
 				wi = wl;//(wl + 0.5f);
 
-				if((dx = (xend - xstart)) > 0)
+				if((dx = static_cast<float>(xend - xstart)) > 0)
 				{
 					dx = 1.0f / dx;
 
@@ -2082,8 +2082,8 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 	}//if(tri_type & TRI_TYPE_FLAT_MASK)
 	else if(tri_type == TRI_TYPE_GENERAL)
 	{
-		if((yend = y2) > this->maxClipY)
-			yend = this->maxClipY;
+		if((yend = static_cast<int>(y2)) > this->maxClipY)
+			yend = static_cast<int>(this->maxClipY);
 
 		if(y1 < this->minClipY)
 		{
@@ -2113,7 +2113,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 			vr = dvdyr * dyr + tv0;
 			wr = dwdyr * dyr + tw0;
 
-			ystart = this->minClipY;
+			ystart = static_cast<int>(this->minClipY);
 
 			if(dxdyr > dxdyl)
 			{
@@ -2160,7 +2160,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 			vr = dvdyr * dy + tv0;
 			wr = dwdyr * dy + tw0;
 
-			ystart = this->minClipY;
+			ystart = static_cast<int>(this->minClipY);
 
 			if(dxdyr < dxdyl)
 			{
@@ -2200,7 +2200,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 			vl = vr = tv0;
 			wl = wr = tw0;
 
-			ystart = y0;
+			ystart = static_cast<int>(y0);
 
 			if(dxdyr < dxdyl)
 			{
@@ -2228,14 +2228,14 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 
 			for(yi = ystart; yi <= yend; yi++)
 			{
-				xstart = (xl + 0.5f);
-				xend = (xr + 0.5f);
+				xstart = static_cast<int>(xl + 0.5f);
+				xend = static_cast<int>(xr + 0.5f);
 
 				ui = ul;
 				vi = vl;
 				wi = wl;
 
-				if((dx = xend - xstart) > 0)
+				if((dx = static_cast<float>(xend - xstart)) > 0)
 				{
 					dx = 1.0f / dx;
 
@@ -2258,10 +2258,10 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 					vi += dv * dx;
 					wi += dw * dx;
 
-					xstart = this->minClipX;
+					xstart = static_cast<int>(this->minClipX);
 				}
 				if(xend > this->maxClipX)
-					xend = this->maxClipX;
+					xend = static_cast<int>(this->maxClipX);
 
 				for(xi = xstart; xi <= xend; xi++)
 				{
@@ -2333,14 +2333,14 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 
 			for(yi = ystart; yi <= yend; yi++)
 			{
-				xstart = (xl + 0.5f);
-				xend = (xr + 0.5f);
+				xstart = static_cast<int>(xl + 0.5f);
+				xend = static_cast<int>(xr + 0.5f);
 
 				ui = ul;
 				vi = vl;
 				wi = wl;
 
-				if((dx = xend - xstart) > 0)
+				if((dx = static_cast<float>(xend - xstart)) > 0)
 				{
 					dx = 1.0f / dx;
 
@@ -2454,8 +2454,8 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 	float dnx, dny, dnz;
 	int xi, yi;
 	float nxi, nyi, nzi;
-	int index_x, index_y;
-	int x, y;
+	/*int index_x, index_y;*/
+	/*int x, y;*/
 	int xstart, xend, ystart, yrestart, yend;
 	float dxdyl, xr, xl, dxdyr, dnxdyl, nxl, dnydyl, nyl, dnzdyl, nzl, dnxdyr, nxr, dnydyr, nyr, dnzdyr, nzr;
 	float dzdyl, zr, zl, dzdyr, zi, dz;//»нтерпол€ци€ Z дл€ вычисление вектора от пиксел€ к точечному источнику света.
@@ -2469,7 +2469,7 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 	
 	int rBase, gBase, bBase;
 	int rSum, gSum, bSum;
-	float nl, dp, dist, atten, intensity;
+	float /*nl,*/ dp, dist, atten, intensity;
 	/*float r_base1, g_base1, b_base1;
 	float r_base2, g_base2, b_base2;*/
 
@@ -2525,25 +2525,25 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 		tri_type = TRI_TYPE_GENERAL;
 	}
 
-	x0 = (int)(face->tvlist[v0].x + 0.5f);
-	y0 = (int)(face->tvlist[v0].y + 0.5f);
+	x0 = static_cast<float>((int)(face->tvlist[v0].x + 0.5f));
+	y0 = static_cast<float>((int)(face->tvlist[v0].y + 0.5f));
 	z0 = face->tvlist[v0].z;
 
 	tnx0 = face->vlist[v0].n.x; tny0 = face->vlist[v0].n.y; tnz0 = face->vlist[v0].n.z;
 
-	x1 = (int)(face->tvlist[v1].x + 0.5f);
-	y1 = (int)(face->tvlist[v1].y + 0.5f);
+	x1 = static_cast<float>((int)(face->tvlist[v1].x + 0.5f));
+	y1 = static_cast<float>((int)(face->tvlist[v1].y + 0.5f));
 	z1 = face->tvlist[v1].z;
 
 	tnx1 = face->vlist[v1].n.x; tny1 = face->vlist[v1].n.y; tnz1 = face->vlist[v1].n.z;
 
-	x2 = (int)(face->tvlist[v2].x + 0.5f);
-	y2 = (int)(face->tvlist[v2].y + 0.5f);
+	x2 = static_cast<float>((int)(face->tvlist[v2].x + 0.5f));
+	y2 = static_cast<float>((int)(face->tvlist[v2].y + 0.5f));
 	z2 = face->tvlist[v2].z;
 
 	tnx2 = face->vlist[v2].n.x; tny2 = face->vlist[v2].n.y; tnz2 = face->vlist[v2].n.z;
 
-	yrestart = y1;
+	yrestart = static_cast<int>(y1);
 
 	if(tri_type & TRI_TYPE_FLAT_MASK)
 	{
@@ -2594,7 +2594,7 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 				wr.y = wdyr.y * dy + face->worldPos[v1].y;
 				wr.z = wdyr.z * dy + face->worldPos[v1].z;
 
-				ystart = this->minClipY;
+				ystart = static_cast<int>(this->minClipY);
 			}
 			else
 			{
@@ -2618,7 +2618,7 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 				wr.y = face->worldPos[v1].y;
 				wr.z = face->worldPos[v1].z;
 
-				ystart = y0;
+				ystart = static_cast<int>(y0);
 			}
 		}
 		else// if(tri_type == TRI_TYPE_FLAT_BOTTOM)
@@ -2668,7 +2668,7 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 				wr.y = wdyr.y * dy + face->worldPos[v0].y;
 				wr.z = wdyr.z * dy + face->worldPos[v0].z;
 
-				ystart = this->minClipY;
+				ystart = static_cast<int>(this->minClipY);
 			}
 			else
 			{
@@ -2692,13 +2692,13 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 				wr.y = face->worldPos[v0].y;
 				wr.z = face->worldPos[v0].z;
 
-				ystart = y0;
+				ystart = static_cast<int>(y0);
 			}
 		}
 
-		if((yend = y2) > this->maxClipY)
+		if((yend = static_cast<int>(y2)) > this->maxClipY)
 		{
-			yend = this->maxClipY;
+			yend = static_cast<int>(this->maxClipY);
 		}
 
 		/*if((x0 < this->minClipX) || (x0 > this->maxClipX) || (x1 < this->minClipX) || (x1 > this->maxClipX) || (x2 < this->minClipX) || (x2 > this->maxClipX))
@@ -2707,8 +2707,8 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 
 			for(yi = ystart; yi <= yend; yi++)
 			{
-				xstart = (xl + 0.5f);
-				xend = (xr + 0.5f);
+				xstart = static_cast<int>(xl + 0.5f);
+				xend = static_cast<int>(xr + 0.5f);
 
 				nxi = nxl;
 				nzi = nyl;
@@ -2717,7 +2717,7 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 
 				wl.VECTOR4D_COPY(&wi);
 
-				if((dx = xend - xstart) > 0)
+				if((dx = static_cast<float>(xend - xstart)) > 0)
 				{
 					dx = 1.0f / dx;
 
@@ -2755,10 +2755,10 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 					wi.y += dw.y * dx;
 					wi.z += dw.z * dx;
 
-					xstart = this->minClipX;
+					xstart = static_cast<int>(this->minClipX);
 				}
 				if(xend > this->maxClipX)
-					xend = this->maxClipX;
+					xend = static_cast<int>(this->maxClipX);
 
 				for(xi = xstart; xi <= xend; xi++)
 				{
@@ -2870,8 +2870,8 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 	}
 	else if(tri_type == TRI_TYPE_GENERAL)
 	{
-		if((yend = y2) > this->maxClipY)
-			yend = this->maxClipY;
+		if((yend = static_cast<int>(y2)) > this->maxClipY)
+			yend = static_cast<int>(this->maxClipY);
 
 		if(y1 < this->minClipY)
 		{
@@ -2920,7 +2920,7 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 			wr.y = wdyr.y * dyr + face->worldPos[v0].y;
 			wr.z = wdyr.z * dyr + face->worldPos[v0].z;
 
-			ystart = this->minClipY;
+			ystart = static_cast<int>(this->minClipY);
 
 			if(dxdyr > dxdyl)
 			{
@@ -2994,7 +2994,7 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 			wr.y = wdyr.y * dy + face->worldPos[v0].y;
 			wr.z = wdyr.z * dy + face->worldPos[v0].z;
 
-			ystart = this->minClipY;
+			ystart = static_cast<int>(this->minClipY);
 
 			if(dxdyr < dxdyl)
 			{
@@ -3056,7 +3056,7 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 			wl.y = wr.y = face->worldPos[v0].y;
 			wl.z = wr.z = face->worldPos[v0].z;
 
-			ystart = y0;
+			ystart = static_cast<int>(y0);
 
 			if(dxdyr < dxdyl)
 			{
@@ -3092,8 +3092,8 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 
 			for(yi = ystart; yi <= yend; yi++)
 			{
-				xstart = (xl + 0.5f);
-				xend = (xr + 0.5f);
+				xstart = static_cast<int>(xl + 0.5f);
+				xend = static_cast<int>(xr + 0.5f);
 
 				nxi = nxl;
 				nyi = nyl;
@@ -3102,7 +3102,7 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 
 				wl.VECTOR4D_COPY(&wi);
 
-				if((dx = xend - xstart) > 0)
+				if((dx = static_cast<float>(xend - xstart)) > 0)
 				{
 					dx = 1.0f / dx;
 
@@ -3140,10 +3140,10 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 					wi.y += dw.y * dx;
 					wi.z += dw.z * dx;
 
-					xstart = this->minClipX;
+					xstart = static_cast<int>(this->minClipX);
 				}
 				if(xend > this->maxClipX)
-					xend = this->maxClipX;
+					xend = static_cast<int>(this->maxClipX);
 
 				for(xi = xstart; xi <= xend; xi++)
 				{
@@ -3191,9 +3191,9 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 							(сейчас p3D в координатах камеры!!!). »ли сохран€ть мировые координаты вершин и их потом интерполировать(скорее всего!!!!...–јЅќ“ј≈“!!!!). »ли преобразовывать 
 							всЄ(нормали к пиксел€м) в координаты камеры.*/
 							VECTOR4D n, l, p3D;
-							MATRIX4X4 mcamInv;
-							VECTOR4D pR;
-							float alpha, beta;
+							/*MATRIX4X4 mcamInv;*/
+							/*VECTOR4D pR;*/
+							/*float alpha, beta;*/
 
 							n.x = nxi;
 							n.y = nyi;
@@ -3390,8 +3390,8 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 
 	int xi, yi;
 
-	int index_x, index_y;
-	int x, y;
+	/*int index_x, index_y;*/
+	/*int x, y;*/
 	int xstart, xend, ystart, yrestart, yend;
 
 	math3D::VECTOR4D vt;
@@ -3466,19 +3466,19 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 		tri_type = TRI_TYPE_GENERAL;
 	}
 
-	x0 = (int)(face->tvlist[v0].x + 0.5f);
-	y0 = (int)(face->tvlist[v0].y + 0.5f);
+	x0 = static_cast<float>((int)(face->tvlist[v0].x + 0.5f));
+	y0 = static_cast<float>((int)(face->tvlist[v0].y + 0.5f));
 	vecCopy(&face->vlist[v0].n, &tn0);
 
-	x1 = (int)(face->tvlist[v1].x + 0.5f);
-	y1 = (int)(face->tvlist[v1].y + 0.5f);
+	x1 = static_cast<float>((int)(face->tvlist[v1].x + 0.5f));
+	y1 = static_cast<float>((int)(face->tvlist[v1].y + 0.5f));
 	vecCopy(&face->vlist[v1].n, &tn1);
 
-	x2 = (int)(face->tvlist[v2].x + 0.5f);
-	y2 = (int)(face->tvlist[v2].y + 0.5f);
+	x2 = static_cast<float>((int)(face->tvlist[v2].x + 0.5f));
+	y2 = static_cast<float>((int)(face->tvlist[v2].y + 0.5f));
 	vecCopy(&face->vlist[v2].n, &tn2);
 
-	yrestart = y1;
+	yrestart = static_cast<int>(y1);
 
 	if(tri_type & TRI_TYPE_FLAT_MASK)
 	{
@@ -3513,7 +3513,7 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 				vecScale(dy, &dwdyr, &wr);
 				vecAdd(&wr, &face->worldPos[v1], &wr);
 
-				ystart = this->minClipY;
+				ystart = static_cast<int>(this->minClipY);
 			}
 			else
 			{
@@ -3525,7 +3525,7 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 				vecCopy(&tn1, &nr);
 				vecCopy(&face->worldPos[v1], &wr);
 
-				ystart = y0;
+				ystart = static_cast<int>(y0);
 			}
 		}
 		else
@@ -3559,7 +3559,7 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 				vecScale(dy, &dwdyr, &wr);
 				vecAdd(&wr, &face->worldPos[v0], &wr);
 
-				ystart = this->minClipY;
+				ystart = static_cast<int>(this->minClipY);
 			}
 			else
 			{
@@ -3571,13 +3571,13 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 				vecCopy(&tn0, &nr);
 				vecCopy(&face->worldPos[v0], &wr);
 
-				ystart = y0;
+				ystart = static_cast<int>(y0);
 			}
 		}
 
-		if((yend = y2) > this->maxClipY)
+		if((yend = static_cast<int>(y2)) > this->maxClipY)
 		{
-			yend = this->maxClipY;
+			yend = static_cast<int>(this->maxClipY);
 		}
 
 		//if((x0 < this->minClipX) || (x0 > this->maxClipX) || (x1 < this->minClipX) || (x1 > this->maxClipX) || (x2 < this->minClipX) || (x2 > this->maxClipX))
@@ -3586,13 +3586,13 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 
 			for(yi = ystart; yi <= yend; yi++)
 			{
-				xstart = (xl + 0.5f);
-				xend = (xr + 0.5f);
+				xstart = static_cast<int>(xl + 0.5f);
+				xend = static_cast<int>(xr + 0.5f);
 
 				vecCopy(&wl, &wi);
 				vecCopy(&nl, &ni);
 
-				if((dx = xend - xstart) > 0)
+				if((dx = static_cast<float>(xend - xstart)) > 0)
 				{
 					dx = 1.0f / dx;
 
@@ -3618,11 +3618,11 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 					vecScale(dx, &dw, &vt);
 					vecAdd(&wi, &vt, &wi);
 
-					xstart = this->minClipX;
+					xstart = static_cast<int>(this->minClipX);
 				}
 
 				if(xend > this->maxClipX)
-					xend = this->maxClipX;
+					xend = static_cast<int>(this->maxClipX);
 
 				for(xi = xstart; xi <= xend; xi++)
 				{
@@ -3641,7 +3641,7 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 						}
 						else if(lights->lights[currLight].attr & mat::LIGHT_ATTR_INFINITE)
 						{
-							VECTOR4D n, p3D, l, c, r;
+							VECTOR4D n, /*p3D, l,*/ c, r;
 
 							vecCopy(&ni, &n);
 							vecNormalize(&n);
@@ -3670,9 +3670,9 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 									dpSpec = pow(dpSpec, lights->lights[currLight].pf);
 									intensity = dpSpec * dp;
 
-									rSum += (lights->lights[currLight].c_specular.r * rBase * intensity) / 256;
-									gSum += (lights->lights[currLight].c_specular.g * gBase * intensity) / 256;
-									bSum += (lights->lights[currLight].c_specular.b * bBase * intensity) / 256;
+									rSum += static_cast<int>((lights->lights[currLight].c_specular.r * rBase * intensity) / 256);
+									gSum += static_cast<int>((lights->lights[currLight].c_specular.g * gBase * intensity) / 256);
+									bSum += static_cast<int>((lights->lights[currLight].c_specular.b * bBase * intensity) / 256);
 								}
 							}
 						}
@@ -3713,9 +3713,9 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 									dpSpec = pow(dpSpec, lights->lights[currLight].pf);
 									intensity = dpSpec * dp / atten;
 
-									rSum += (lights->lights[currLight].c_specular.r * rBase * intensity) / 256;
-									gSum += (lights->lights[currLight].c_specular.g * gBase * intensity) / 256;
-									bSum += (lights->lights[currLight].c_specular.b * bBase * intensity) / 256;
+									rSum += static_cast<int>((lights->lights[currLight].c_specular.r * rBase * intensity) / 256);
+									gSum += static_cast<int>((lights->lights[currLight].c_specular.g * gBase * intensity) / 256);
+									bSum += static_cast<int>((lights->lights[currLight].c_specular.b * bBase * intensity) / 256);
 								}
 							}
 						}
@@ -3748,8 +3748,8 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 	}
 	else if(tri_type == TRI_TYPE_GENERAL)
 	{
-		if((yend = y2) > this->maxClipY)
-			yend = this->maxClipY;
+		if((yend = static_cast<int>(y2)) > this->maxClipY)
+			yend = static_cast<int>(this->maxClipY);
 
 		if(y1 < this->minClipY)
 		{
@@ -3782,7 +3782,7 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 			vecScale(dyr, &dwdyr, &wr);
 			vecAdd(&wr, &face->worldPos[v0], &wr);
 
-			ystart = this->minClipY;
+			ystart = static_cast<int>(this->minClipY);
 
 			if(dxdyr > dxdyl)
 			{
@@ -3832,7 +3832,7 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 			vecScale(dy, &dwdyr, &wr);
 			vecAdd(&wr, &face->worldPos[v0], &wr);
 
-			ystart = this->minClipY;
+			ystart = static_cast<int>(this->minClipY);
 
 			if(dxdyr < dxdyl)
 			{
@@ -3874,7 +3874,7 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 			vecCopy(&face->worldPos[v0], &wl);
 			vecCopy(&face->worldPos[v0], &wr);
 
-			ystart = y0;
+			ystart = static_cast<int>(y0);
 
 			if(dxdyr < dxdyl)
 			{
@@ -3902,13 +3902,13 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 
 		for(yi = ystart; yi <= yend; yi++)
 		{
-				xstart = (xl + 0.5f);
-				xend = (xr + 0.5f);
+				xstart = static_cast<int>(xl + 0.5f);
+				xend = static_cast<int>(xr + 0.5f);
 
 				vecCopy(&nl, &ni);
 				vecCopy(&wl, &wi);
 
-				if((dx = xend - xstart) > 0)
+				if((dx = static_cast<float>(xend - xstart)) > 0)
 				{
 					dx = 1.0f / dx;
 
@@ -3932,11 +3932,11 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 					vecScale(dx, &dw, &vt);
 					vecAdd(&wi, &vt, &wi);
 
-					xstart = this->minClipX;
+					xstart = static_cast<int>(this->minClipX);
 				}
 
 				if(xend > this->maxClipX)
-					xend = this->maxClipX;
+					xend = static_cast<int>(this->maxClipX);
 
 				for(xi = xstart; xi <= xend; xi++)
 				{
@@ -3957,7 +3957,7 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 						}
 						else if(lights->lights[currLight].attr & mat::LIGHT_ATTR_INFINITE)
 						{
-							VECTOR4D n, p3D, l, c, r;
+							VECTOR4D n, /*p3D, l,*/ c, r;
 
 							vecCopy(&ni, &n);
 							vecNormalize(&n);
@@ -3986,9 +3986,9 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 									dpSpec = pow(dpSpec, lights->lights[currLight].pf);
 									i = dpSpec * dp;
 
-									rSum += (lights->lights[currLight].c_specular.r * rBase * i) / 256;
-									gSum += (lights->lights[currLight].c_specular.g * gBase * i) / 256;
-									bSum += (lights->lights[currLight].c_specular.b * bBase * i) / 256;
+									rSum += static_cast<int>((lights->lights[currLight].c_specular.r * rBase * i) / 256);
+									gSum += static_cast<int>((lights->lights[currLight].c_specular.g * gBase * i) / 256);
+									bSum += static_cast<int>((lights->lights[currLight].c_specular.b * bBase * i) / 256);
 								}
 							}
 						}
@@ -4029,9 +4029,9 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 									dpSpec = pow(dpSpec, lights->lights[currLight].pf);
 									i = dpSpec * dp / atten;
 
-									rSum += (lights->lights[currLight].c_specular.r * rBase * i) / 256;
-									gSum += (lights->lights[currLight].c_specular.g * gBase * i) / 256;
-									bSum += (lights->lights[currLight].c_specular.b * bBase * i) / 256;
+									rSum += static_cast<int>((lights->lights[currLight].c_specular.r * rBase * i) / 256);
+									gSum += static_cast<int>((lights->lights[currLight].c_specular.g * gBase * i) / 256);
+									bSum += static_cast<int>((lights->lights[currLight].c_specular.b * bBase * i) / 256);
 								}
 							}
 						}
@@ -4144,8 +4144,8 @@ int Draw32BitStrategy::FullScreenShader(unsigned int *videoMemory, int lpitch)
 
 	__declspec(align(16)) unsigned int iMask[4] = { 0x000000FF, 0x000000FF, 0x000000FF, 0x000000FF};
 
-	int iMasSize = (this->maxClipY - 2) * this->maxClipX;
-	int iMasWidth = this->maxClipX;
+	int iMasSize = static_cast<int>((this->maxClipY - 2) * this->maxClipX);
+	int iMasWidth = static_cast<int>(this->maxClipX);
 	int iRedColor = 0x00FF0000;
 	int *vb = (int *)videoMemory;
 	int lpitch2 = lpitch;

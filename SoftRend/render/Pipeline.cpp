@@ -404,9 +404,9 @@ int Pipeline::LightOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 					{
 						i = 128 * dp / nl;
 
-						rSum += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-						gSum += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-						bSum += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+						rSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+						gSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+						bSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 					}
 				}
 				else if(lights.lights[currLight].attr & mat::LIGHT_ATTR_POINT)
@@ -432,9 +432,9 @@ int Pipeline::LightOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 
 						i = 128 * dp / (nl * dist * atten);
 
-						rSum += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-						gSum += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-						bSum += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+						rSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+						gSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+						bSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 					}
 				}
 				else if(lights.lights[currLight].attr & mat::LIGHT_ATTR_SPOTLIGHT1)
@@ -460,14 +460,14 @@ int Pipeline::LightOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 
 						i = 128 * dp / (nl * atten);
 
-						rSum += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-						gSum += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-						bSum += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+						rSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+						gSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+						bSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 					}
 				}
 				else if(lights.lights[currLight].attr & mat::LIGHT_ATTR_SPOTLIGHT2)
 				{
-					VECTOR4D u, v, n, d, s;
+					VECTOR4D u, v, n, /*d,*/ s;
 
 					u.VECTOR4D_Build(&obj->vlist_trans[vindex0].v, &obj->vlist_trans[vindex1].v);
 					v.VECTOR4D_Build(&obj->vlist_trans[vindex0].v, &obj->vlist_trans[vindex2].v);
@@ -499,9 +499,9 @@ int Pipeline::LightOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 
 							i = 128 * dp * dpslExp / (nl * atten);
 
-							rSum += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-							gSum += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-							bSum += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+							rSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+							gSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+							bSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 						}
 					}
 				}
@@ -547,9 +547,9 @@ int Pipeline::LightOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 					{
 						i = 128 * dp;
 						
-						rSum += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-						gSum += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-						bSum += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+						rSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+						gSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+						bSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 					}
 
 					dp = obj->vlist_trans[vindex1].n.VECTOR4D_Dot(&lights.lights[currLight].tdir);
@@ -558,9 +558,9 @@ int Pipeline::LightOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 					{
 						i = 128 * dp;
 
-						rSum1 += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-						gSum1 += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-						bSum1 += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+						rSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+						gSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+						bSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 					}
 
 					dp = obj->vlist_trans[vindex2].n.VECTOR4D_Dot(&lights.lights[currLight].tdir);
@@ -569,9 +569,9 @@ int Pipeline::LightOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 					{
 						i = 128 * dp;
 
-						rSum2 += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-						gSum2 += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-						bSum2 += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+						rSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+						gSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+						bSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 					}
 				}
 				else if(lights.lights[currLight].attr & mat::LIGHT_ATTR_POINT)
@@ -590,9 +590,9 @@ int Pipeline::LightOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 
 						i = 128 * dp / (dist * atten);
 
-						rSum += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-						gSum += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-						bSum += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+						rSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+						gSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+						bSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 					}
 
 					dp = obj->vlist_trans[vindex1].n.VECTOR4D_Dot(&l);
@@ -603,9 +603,9 @@ int Pipeline::LightOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 
 						i = 128 * dp / (dist * atten);
 
-						rSum1 += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-						gSum1 += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-						bSum1 += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+						rSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+						gSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+						bSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 					}
 
 					dp = obj->vlist_trans[vindex2].n.VECTOR4D_Dot(&l);
@@ -616,9 +616,9 @@ int Pipeline::LightOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 
 						i = 128 * dp / (dist * atten);
 
-						rSum2 += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-						gSum2 += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-						bSum2 += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+						rSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+						gSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+						bSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 					}
 				}//POINT
 				else if(lights.lights[currLight].attr & mat::LIGHT_ATTR_SPOTLIGHT1)
@@ -637,9 +637,9 @@ int Pipeline::LightOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 
 						i = 128 * dp / atten;
 
-						rSum += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-						gSum += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-						bSum += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+						rSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+						gSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+						bSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 					}
 
 					dp = obj->vlist_trans[vindex1].n.VECTOR4D_Dot(&lights.lights[currLight].tdir);
@@ -650,9 +650,9 @@ int Pipeline::LightOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 
 						i = 128 * dp / atten;
 
-						rSum1 += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-						gSum1 += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-						bSum1 += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+						rSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+						gSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+						bSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 					}
 
 					dp = obj->vlist_trans[vindex2].n.VECTOR4D_Dot(&lights.lights[currLight].tdir);
@@ -663,9 +663,9 @@ int Pipeline::LightOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 
 						i = 128 * dp / atten;
 
-						rSum2 += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-						gSum2 += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-						bSum2 += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+						rSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+						gSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+						bSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 					}
 				}//SPOTLIGHT1
 				else if(lights.lights[currLight].attr & mat::LIGHT_ATTR_SPOTLIGHT2)
@@ -693,9 +693,9 @@ int Pipeline::LightOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 
 							i = 128 * dp * dpsl_exp / atten;
 
-							rSum += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-							gSum += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-							bSum += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+							rSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+							gSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+							bSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 						}
 					}
 
@@ -720,9 +720,9 @@ int Pipeline::LightOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 
 							i = 128 * dp * dpsl_exp / atten;
 
-							rSum1 += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-							gSum1 += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-							bSum1 += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+							rSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+							gSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+							bSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 						}
 					}
 
@@ -747,9 +747,9 @@ int Pipeline::LightOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 
 							i = 128 * dp * dpsl_exp / atten;
 
-							rSum2 += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-							gSum2 += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-							bSum2 += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+							rSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+							gSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+							bSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 						}
 					}
 				}//SPOTLIGHT2
@@ -829,7 +829,7 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 				}
 				else if(lights.lights[currLight].attr & mat::LIGHT_ATTR_INFINITE)
 				{
-					VECTOR4D u, v, n, r, c, l;
+					VECTOR4D u, v, n, /*r,*/ /*c,*/ l;
 
 					u.VECTOR4D_Build(&currPoly->tvlist[0].v, &currPoly->tvlist[1].v);
 					v.VECTOR4D_Build(&currPoly->tvlist[0].v, &currPoly->tvlist[2].v);
@@ -845,9 +845,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 					{
 						i = /*128 * */dp / nl;
 
-						rSum += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 /** 128*/);
-						gSum += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 /** 128*/);
-						bSum += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 /** 128*/);
+						rSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 /** 128*/));
+						gSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 /** 128*/));
+						bSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 /** 128*/));
 					}
 
 					/*vecReflect(&lights.lights[currLight].tdir, &n, &r);
@@ -878,9 +878,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 
 						i = 128 * dp / (nl * dist * atten);
 
-						rSum += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-						gSum += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-						bSum += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+						rSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+						gSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+						bSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 					}
 				}
 				else if(lights.lights[currLight].attr & mat::LIGHT_ATTR_SPOTLIGHT1)
@@ -906,14 +906,14 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 
 						i = 128 * dp / (nl * atten);
 
-						rSum += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-						gSum += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-						bSum += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+						rSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+						gSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+						bSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 					}
 				}
 				else if(lights.lights[currLight].attr & mat::LIGHT_ATTR_SPOTLIGHT2)
 				{
-					VECTOR4D u, v, n, d, s;
+					VECTOR4D u, v, n, /*d,*/ s;
 
 					u.VECTOR4D_Build(&currPoly->tvlist[0].v, &currPoly->tvlist[1].v);
 					v.VECTOR4D_Build(&currPoly->tvlist[0].v, &currPoly->tvlist[2].v);
@@ -945,9 +945,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 
 							i = 128 * dp * dpslExp / (nl * atten);
 
-							rSum += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-							gSum += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-							bSum += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+							rSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+							gSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+							bSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 						}
 					}
 				}
@@ -1010,9 +1010,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 					{
 						i = /*128 * */dp;
 						
-						rSum += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256/* * 128*/);
-						gSum += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256/* * 128*/);
-						bSum += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256/* * 128*/);
+						rSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256/* * 128*/));
+						gSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256/* * 128*/));
+						bSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256/* * 128*/));
 
 						vecReflect(&l, &currPoly->tvlist[0].n, &r);
 						c.w = 0;
@@ -1028,9 +1028,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 							dpSpec = pow(dpSpec, lights.lights[currLight].pf);
 							i = dpSpec * dp;
 
-							rSum += (lights.lights[currLight].c_specular.r * rBase * i) / (256/* * 128*/);
-							gSum += (lights.lights[currLight].c_specular.g * gBase * i) / (256/* * 128*/);
-							bSum += (lights.lights[currLight].c_specular.b * bBase * i) / (256/* * 128*/);
+							rSum += static_cast<uint32_t>((lights.lights[currLight].c_specular.r * rBase * i) / (256/* * 128*/));
+							gSum += static_cast<uint32_t>((lights.lights[currLight].c_specular.g * gBase * i) / (256/* * 128*/));
+							bSum += static_cast<uint32_t>((lights.lights[currLight].c_specular.b * bBase * i) / (256/* * 128*/));
 						}
 					}
 
@@ -1040,9 +1040,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 					{
 						i = dp;
 
-						rSum1 += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256);
-						gSum1 += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256);
-						bSum1 += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256);
+						rSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256));
+						gSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256));
+						bSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256));
 
 						vecReflect(&l, &currPoly->tvlist[1].n, &r);
 						c.w = 0;
@@ -1058,9 +1058,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 							dpSpec = pow(dpSpec, lights.lights[currLight].pf);
 							i = dpSpec * dp;
 
-							rSum1 += (lights.lights[currLight].c_specular.r * rBase * i) / (256/* * 128*/);
-							gSum1 += (lights.lights[currLight].c_specular.g * gBase * i) / (256/* * 128*/);
-							bSum1 += (lights.lights[currLight].c_specular.b * bBase * i) / (256/* * 128*/);
+							rSum1 += static_cast<uint32_t>((lights.lights[currLight].c_specular.r * rBase * i) / (256/* * 128*/));
+							gSum1 += static_cast<uint32_t>((lights.lights[currLight].c_specular.g * gBase * i) / (256/* * 128*/));
+							bSum1 += static_cast<uint32_t>((lights.lights[currLight].c_specular.b * bBase * i) / (256/* * 128*/));
 						}
 					}
 
@@ -1070,9 +1070,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 					{
 						i = dp;
 
-						rSum2 += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256);
-						gSum2 += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256);
-						bSum2 += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256);
+						rSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256));
+						gSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256));
+						bSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256));
 
 						vecReflect(&l, &currPoly->tvlist[2].n, &r);
 						c.w = 0;
@@ -1088,9 +1088,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 							dpSpec = pow(dpSpec, lights.lights[currLight].pf);
 							i = dpSpec * dp;
 
-							rSum2 += (lights.lights[currLight].c_specular.r * rBase * i) / (256/* * 128*/);
-							gSum2 += (lights.lights[currLight].c_specular.g * gBase * i) / (256/* * 128*/);
-							bSum2 += (lights.lights[currLight].c_specular.b * bBase * i) / (256/* * 128*/);
+							rSum2 += static_cast<uint32_t>((lights.lights[currLight].c_specular.r * rBase * i) / (256/* * 128*/));
+							gSum2 += static_cast<uint32_t>((lights.lights[currLight].c_specular.g * gBase * i) / (256/* * 128*/));
+							bSum2 += static_cast<uint32_t>((lights.lights[currLight].c_specular.b * bBase * i) / (256/* * 128*/));
 						}
 					}
 				}//INFINITE
@@ -1108,7 +1108,7 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 					vecNormalize(&l);
 					dp = currPoly->tvlist[0].n.VECTOR4D_Dot(&l);
 
-					float kd = 0.01;
+					float kd = 0.01f;
 
 					if(dp > 0)
 					{
@@ -1117,9 +1117,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 						//i = 128 * dp / (/*dist **/ atten);
 						i = dp / atten;//(dist * atten);
 
-						rSum += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256);
-						gSum += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256);
-						bSum += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256);
+						rSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256));
+						gSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256));
+						bSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256));
 
 						vecReflect(&l, &currPoly->tvlist[0].n, &r);
 						vecCopy(&currPoly->tvlist[0].v, &c);
@@ -1132,9 +1132,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 							dpSpec = pow(dpSpec, lights.lights[currLight].pf);
 							i = dpSpec * dp / atten;/// (dist * atten);
 
-							rSum += (lights.lights[currLight].c_specular.r * rBase * i) / 256;
-							gSum += (lights.lights[currLight].c_specular.g * gBase * i) / 256;
-							bSum += (lights.lights[currLight].c_specular.b * bBase * i) / 256;
+							rSum += static_cast<uint32_t>((lights.lights[currLight].c_specular.r * rBase * i) / 256);
+							gSum += static_cast<uint32_t>((lights.lights[currLight].c_specular.g * gBase * i) / 256);
+							bSum += static_cast<uint32_t>((lights.lights[currLight].c_specular.b * bBase * i) / 256);
 						}
 					}
 
@@ -1153,9 +1153,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 						//i = 128 * dp / (/*dist **/ atten);
 						i = dp / atten;//(dist * atten);
 
-						rSum1 += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256);
-						gSum1 += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256);
-						bSum1 += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256);
+						rSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256));
+						gSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256));
+						bSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256));
 
 						vecReflect(&l, &currPoly->tvlist[1].n, &r);
 						vecCopy(&currPoly->tvlist[1].v, &c);
@@ -1168,9 +1168,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 							dpSpec = pow(dpSpec, lights.lights[currLight].pf);
 							i = dpSpec * dp / atten;/// (dist * atten);
 
-							rSum1 += (lights.lights[currLight].c_specular.r * rBase * i) / 256;
-							gSum1 += (lights.lights[currLight].c_specular.g * gBase * i) / 256;
-							bSum1 += (lights.lights[currLight].c_specular.b * bBase * i) / 256;
+							rSum1 += static_cast<uint32_t>((lights.lights[currLight].c_specular.r * rBase * i) / 256);
+							gSum1 += static_cast<uint32_t>((lights.lights[currLight].c_specular.g * gBase * i) / 256);
+							bSum1 += static_cast<uint32_t>((lights.lights[currLight].c_specular.b * bBase * i) / 256);
 						}
 					}
 
@@ -1190,9 +1190,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 						//i = 128 * dp / (dist * atten);
 						i = dp / atten;//(dist * atten);
 
-						rSum2 += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256);
-						gSum2 += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256);
-						bSum2 += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256);
+						rSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256));
+						gSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256));
+						bSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256));
 
 						vecReflect(&l, &currPoly->tvlist[2].n, &r);
 						vecCopy(&currPoly->tvlist[2].v, &c);
@@ -1205,9 +1205,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 							dpSpec = pow(dpSpec, lights.lights[currLight].pf);
 							i = dpSpec * dp / atten;/// (dist * atten);
 
-							rSum2 += (lights.lights[currLight].c_specular.r * rBase * i) / 256;
-							gSum2 += (lights.lights[currLight].c_specular.g * gBase * i) / 256;
-							bSum2 += (lights.lights[currLight].c_specular.b * bBase * i) / 256;
+							rSum2 += static_cast<uint32_t>((lights.lights[currLight].c_specular.r * rBase * i) / 256);
+							gSum2 += static_cast<uint32_t>((lights.lights[currLight].c_specular.g * gBase * i) / 256);
+							bSum2 += static_cast<uint32_t>((lights.lights[currLight].c_specular.b * bBase * i) / 256);
 						}
 					}
 				}//POINT
@@ -1227,9 +1227,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 
 						i = 128 * dp / atten;
 
-						rSum += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-						gSum += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-						bSum += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+						rSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+						gSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+						bSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 					}
 
 					dp = currPoly->tvlist[1].n.VECTOR4D_Dot(&lights.lights[currLight].tdir);
@@ -1240,9 +1240,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 
 						i = 128 * dp / atten;
 
-						rSum1 += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-						gSum1 += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-						bSum1 += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+						rSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+						gSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+						bSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 					}
 
 					dp = currPoly->tvlist[2].n.VECTOR4D_Dot(&lights.lights[currLight].tdir);
@@ -1253,9 +1253,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 
 						i = 128 * dp / atten;
 
-						rSum2 += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-						gSum2 += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-						bSum2 += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+						rSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+						gSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+						bSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 					}
 				}//SPOTLIGHT1
 				else if(lights.lights[currLight].attr & mat::LIGHT_ATTR_SPOTLIGHT2)
@@ -1283,9 +1283,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 
 							i = 128 * dp * dpsl_exp / atten;
 
-							rSum += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-							gSum += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-							bSum += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+							rSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+							gSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+							bSum += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 						}
 					}
 
@@ -1310,9 +1310,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 
 							i = 128 * dp * dpsl_exp / atten;
 
-							rSum1 += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-							gSum1 += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-							bSum1 += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+							rSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+							gSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+							bSum1 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 						}
 					}
 
@@ -1337,9 +1337,9 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 
 							i = 128 * dp * dpsl_exp / atten;
 
-							rSum2 += (lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128);
-							gSum2 += (lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128);
-							bSum2 += (lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128);
+							rSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.r * rBase * i) / (256 * 128));
+							gSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.g * gBase * i) / (256 * 128));
+							bSum2 += static_cast<uint32_t>((lights.lights[currLight].c_diffuse.b * bBase * i) / (256 * 128));
 						}
 					}
 				}//SPOTLIGHT2
@@ -1836,7 +1836,7 @@ void Pipeline::PerspectiveToScreenRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_
 
 void Pipeline::CameraToScreenRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 {
-	OBJECT4D_PTR obj;
+	/*OBJECT4D_PTR obj;*/
 
 	for(int poly = 0; poly < rendList->num_polys; poly++)
 	{

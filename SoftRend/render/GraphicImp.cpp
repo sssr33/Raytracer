@@ -94,7 +94,7 @@ int GraphicImpDirectDraw::Initialize(_screenParams *params, HWND hWnd)
 	VECTOR4D camDir = {0, 0, 0, 1};
 	POINT4D target = {0, 0, 1, 1};
 
-	mainCam.Init_CAM4D(struct3D::CAM_MODEL_EULER, &camPos, &camDir, &target, 10.0f, 100000.0f, 90.0f, params->iWidth, params->iHeight); 
+	mainCam.Init_CAM4D(struct3D::CAM_MODEL_EULER, &camPos, &camDir, &target, 10.0f, 100000.0f, 90.0f, static_cast<float>(params->iWidth), static_cast<float>(params->iHeight)); 
 	//mainCam.Build_CAM4D_Matrix_Euler(struct3D::CAM_ROT_SEQ_ZYX);
 
 	return 1;
@@ -105,14 +105,14 @@ int GraphicImpDirectDraw::InitializeDrawStrategies(_screenParams *params){
 	if(params->iBitsPerPixel == 32)
 	{
 		_draw = new Draw32BitStrategy(params->iGraphicQuality);
-		_draw->setClipBorders(0, 0, params->iWidth, params->iHeight);
+		_draw->setClipBorders(0.f, 0.f, static_cast<float>(params->iWidth), static_cast<float>(params->iHeight));
 		//_draw->setObj3DMap(this->ppObj3DMap, this->_sp.iWidth, this->_sp.iHeight);
 		_draw->setScreenSize(this->_sp.iWidth, this->_sp.iHeight);
 	}
 	else if(params->iBitsPerPixel == 16)
 	{
 		_draw = new Draw16BitStrategy(params->iGraphicQuality);
-		_draw->setClipBorders(0, 0, params->iWidth, params->iHeight);
+		_draw->setClipBorders(0.f, 0.f, static_cast<float>(params->iWidth), static_cast<float>(params->iHeight));
 		//_draw->setObj3DMap(this->ppObj3DMap, this->_sp.iWidth, this->_sp.iHeight);
 		_draw->setScreenSize(this->_sp.iWidth, this->_sp.iHeight);
 	}
@@ -256,50 +256,50 @@ int GraphicImpDirectDraw::ClipLine( int &x1, int &y1, int &x2, int &y2, _screenP
 
 		case CLIP_CODE_N:
 			yc1 = MIN_CLIP_Y;
-			xc1 = x1 + 0.5 + (MIN_CLIP_Y - y1) * (x2 - x1) / (y2 - y1);
+			xc1 = static_cast<int>(x1 + 0.5 + (MIN_CLIP_Y - y1) * (x2 - x1) / (y2 - y1));
 			break;
 		case CLIP_CODE_S:
 			yc1 = MAX_CLIP_Y;
-			xc1 = x1 + 0.5 + (MAX_CLIP_Y - y1) * (x2 - x1) / (y2 - y1);
+			xc1 = static_cast<int>(x1 + 0.5 + (MAX_CLIP_Y - y1) * (x2 - x1) / (y2 - y1));
 			break;
 		case CLIP_CODE_W:
 			xc1 = MIN_CLIP_X;
-			yc1 = y1 + 0.5 + (MIN_CLIP_X - x1) * (y2 - y1) / (x2 - x1);
+			yc1 = static_cast<int>(y1 + 0.5 + (MIN_CLIP_X - x1) * (y2 - y1) / (x2 - x1));
 			break;
 		case CLIP_CODE_E:
 			xc1 = MAX_CLIP_X;
-			yc1 = y1 + 0.5 + (MAX_CLIP_X - x1) * (y2 - y1) / (x2 - x1);
+			yc1 = static_cast<int>(y1 + 0.5 + (MAX_CLIP_X - x1) * (y2 - y1) / (x2 - x1));
 			break;
 		case CLIP_CODE_NE:
 			yc1 = MIN_CLIP_Y;
-			xc1 = x1 + 0.5 + (MIN_CLIP_Y - y1) * (x2 - x1) / (y2 - y1);
+			xc1 = static_cast<int>(x1 + 0.5 + (MIN_CLIP_Y - y1) * (x2 - x1) / (y2 - y1));
 			if(xc1 < MIN_CLIP_X || xc1 > MAX_CLIP_X){
 				xc1 = MAX_CLIP_X;
-				yc1 = y1 + 0.5 + (MAX_CLIP_X - x1) * (y2 - y1) / (x2 - x1);
+				yc1 = static_cast<int>(y1 + 0.5 + (MAX_CLIP_X - x1) * (y2 - y1) / (x2 - x1));
 			}
 			break;
 		case CLIP_CODE_SE:
 			yc1 = MAX_CLIP_Y;
-			xc1 = x1 + 0.5 + (MAX_CLIP_Y - y1) * (x2 - x1) / (y2 - y1);
+			xc1 = static_cast<int>(x1 + 0.5 + (MAX_CLIP_Y - y1) * (x2 - x1) / (y2 - y1));
 			if(xc1 < MIN_CLIP_X || xc1 > MAX_CLIP_X){
 				xc1 = MAX_CLIP_X;
-				yc1 = y1 + 0.5 + (MAX_CLIP_X - x1) * (y2 - y1) / (x2 - x1);
+				yc1 = static_cast<int>(y1 + 0.5 + (MAX_CLIP_X - x1) * (y2 - y1) / (x2 - x1));
 			}
 			break;
 		case CLIP_CODE_NW:
 			yc1 = MIN_CLIP_Y;
-			xc1 = x1 + 0.5 + (MIN_CLIP_Y - y1) * (x2 - x1) / (y2 - y1);
+			xc1 = static_cast<int>(x1 + 0.5 + (MIN_CLIP_Y - y1) * (x2 - x1) / (y2 - y1));
 			if(xc1 < MIN_CLIP_X || xc1 > MAX_CLIP_X){
 				xc1 = MIN_CLIP_X;
-				yc1 = y1 + 0.5 + (MIN_CLIP_X - x1) * (y2 - y1) / (x2 - x1);
+				yc1 = static_cast<int>(y1 + 0.5 + (MIN_CLIP_X - x1) * (y2 - y1) / (x2 - x1));
 			}
 			break;
 		case CLIP_CODE_SW:
 			yc1 = MAX_CLIP_Y;
-			xc1 = x1 + 0.5 + (MAX_CLIP_Y - y1) * (x2 - x1) / (y2 - y1);
+			xc1 = static_cast<int>(x1 + 0.5 + (MAX_CLIP_Y - y1) * (x2 - x1) / (y2 - y1));
 			if(xc1 < MIN_CLIP_X || xc1 > MAX_CLIP_X){
 				xc1 = MIN_CLIP_X;
-				yc1 = y1 + 0.5 + (MIN_CLIP_X - x1) * (y2 - y1) / (x2 - x1);
+				yc1 = static_cast<int>(y1 + 0.5 + (MIN_CLIP_X - x1) * (y2 - y1) / (x2 - x1));
 			}
 			break;
 		default : break;
@@ -310,50 +310,50 @@ int GraphicImpDirectDraw::ClipLine( int &x1, int &y1, int &x2, int &y2, _screenP
 
 		case CLIP_CODE_N:
 			yc2 = MIN_CLIP_Y;
-			xc2 = x2 + 0.5 + (MIN_CLIP_Y - y2) * (x1 - x2) / (y1 - y2);
+			xc2 = static_cast<int>(x2 + 0.5 + (MIN_CLIP_Y - y2) * (x1 - x2) / (y1 - y2));
 			break;
 		case CLIP_CODE_S:
 			yc2 = MAX_CLIP_Y;
-			xc2 = x2 + 0.5 + (MAX_CLIP_Y - y2) * (x1 - x2) / (y1 - y2);
+			xc2 = static_cast<int>(x2 + 0.5 + (MAX_CLIP_Y - y2) * (x1 - x2) / (y1 - y2));
 			break;
 		case CLIP_CODE_W:
 			xc2 = MIN_CLIP_X;
-			yc2 = y2 + 0.5 + (MIN_CLIP_X - x2) * (y1 - y2) / (x1 - x2);
+			yc2 = static_cast<int>(y2 + 0.5 + (MIN_CLIP_X - x2) * (y1 - y2) / (x1 - x2));
 			break;
 		case CLIP_CODE_E:
 			xc2 = MAX_CLIP_X;
-			yc2 = y2 + 0.5 + (MAX_CLIP_X - x2) * (y1 - y2) / (x1 - x2);
+			yc2 = static_cast<int>(y2 + 0.5 + (MAX_CLIP_X - x2) * (y1 - y2) / (x1 - x2));
 			break;
 		case CLIP_CODE_NE:
 			yc2 = MIN_CLIP_Y;
-			xc2 = x2 + 0.5 + (MIN_CLIP_Y - y2) * (x1 - x2) / (y1 - y2);
+			xc2 = static_cast<int>(x2 + 0.5 + (MIN_CLIP_Y - y2) * (x1 - x2) / (y1 - y2));
 			if(xc2 < MIN_CLIP_X || xc2 > MAX_CLIP_X){
 				xc2 = MAX_CLIP_X;
-				yc2 = y2 + 0.5 + (MAX_CLIP_X - x2) * (y1 - y2) / (x1 - x2);
+				yc2 = static_cast<int>(y2 + 0.5 + (MAX_CLIP_X - x2) * (y1 - y2) / (x1 - x2));
 			}
 			break;
 		case CLIP_CODE_SE:
 			yc2 = MAX_CLIP_Y;
-			xc2 = x2 + 0.5 + (MAX_CLIP_Y - y2) * (x1 - x2) / (y1 - y2);
+			xc2 = static_cast<int>(x2 + 0.5 + (MAX_CLIP_Y - y2) * (x1 - x2) / (y1 - y2));
 			if(xc2 < MIN_CLIP_X || xc2 > MAX_CLIP_X){
 				xc2 = MAX_CLIP_X;
-				yc2 = y2 + 0.5 + (MAX_CLIP_X - x2) * (y1 - y2) / (x1 - x2);
+				yc2 = static_cast<int>(y2 + 0.5 + (MAX_CLIP_X - x2) * (y1 - y2) / (x1 - x2));
 			}
 			break;
 		case CLIP_CODE_NW:
 			yc2 = MIN_CLIP_Y;
-			xc2 = x2 + 0.5 + (MIN_CLIP_Y - y2) * (x1 - x2) / (y1 - y2);
+			xc2 = static_cast<int>(x2 + 0.5 + (MIN_CLIP_Y - y2) * (x1 - x2) / (y1 - y2));
 			if(xc2 < MIN_CLIP_X || xc1 > MAX_CLIP_X){
 				xc2 = MIN_CLIP_X;
-				yc2 = y2 + 0.5 + (MIN_CLIP_X - x2) * (y1 - y2) / (x1 - x2);
+				yc2 = static_cast<int>(y2 + 0.5 + (MIN_CLIP_X - x2) * (y1 - y2) / (x1 - x2));
 			}
 			break;
 		case CLIP_CODE_SW:
 			yc2 = MAX_CLIP_Y;
-			xc2 = x2 + 0.5 + (MAX_CLIP_Y - y2) * (x1 - x2) / (y1 - y2);
+			xc2 = static_cast<int>(x2 + 0.5 + (MAX_CLIP_Y - y2) * (x1 - x2) / (y1 - y2));
 			if(xc2 < MIN_CLIP_X || xc2 > MAX_CLIP_X){
 				xc2 = MIN_CLIP_X;
-				yc2 = y2 + 0.5 + (MIN_CLIP_X - x2) * (y1 - y2) / (x1 - x2);
+				yc2 = static_cast<int>(y2 + 0.5 + (MIN_CLIP_X - x2) * (y1 - y2) / (x1 - x2));
 			}
 			break;
 		default : break;
@@ -453,9 +453,9 @@ void GraphicImpDirectDraw::DrawOBJECT4DWire(OBJECT4D_PTR obj)
 		int vindex1 = obj->plist[poly].vert[1];
 		int vindex2 = obj->plist[poly].vert[2];
 
-		this->DrawLine(obj->vlist_trans[vindex0].x, obj->vlist_trans[vindex0].y, obj->vlist_trans[vindex1].x, obj->vlist_trans[vindex1].y, obj->plist[poly].lit_color[0]);
-		this->DrawLine(obj->vlist_trans[vindex1].x, obj->vlist_trans[vindex1].y, obj->vlist_trans[vindex2].x, obj->vlist_trans[vindex2].y, obj->plist[poly].lit_color[0]);
-		this->DrawLine(obj->vlist_trans[vindex2].x, obj->vlist_trans[vindex2].y, obj->vlist_trans[vindex0].x, obj->vlist_trans[vindex0].y, obj->plist[poly].lit_color[0]);
+		this->DrawLine(static_cast<int>(obj->vlist_trans[vindex0].x), static_cast<int>(obj->vlist_trans[vindex0].y), static_cast<int>(obj->vlist_trans[vindex1].x), static_cast<int>(obj->vlist_trans[vindex1].y), obj->plist[poly].lit_color[0]);
+		this->DrawLine(static_cast<int>(obj->vlist_trans[vindex1].x), static_cast<int>(obj->vlist_trans[vindex1].y), static_cast<int>(obj->vlist_trans[vindex2].x), static_cast<int>(obj->vlist_trans[vindex2].y), obj->plist[poly].lit_color[0]);
+		this->DrawLine(static_cast<int>(obj->vlist_trans[vindex2].x), static_cast<int>(obj->vlist_trans[vindex2].y), static_cast<int>(obj->vlist_trans[vindex0].x), static_cast<int>(obj->vlist_trans[vindex0].y), obj->plist[poly].lit_color[0]);
 	}
 }
 void GraphicImpDirectDraw::DrawRENDERLIST4DWire(RENDERLIST4D_PTR rendList, POINT4D_PTR worldPos)
@@ -473,9 +473,9 @@ void GraphicImpDirectDraw::DrawRENDERLIST4DWire(RENDERLIST4D_PTR rendList, POINT
 	{
 		if(!(rendList->poly_ptrs[poly]->state & struct3D::POLY4D_STATE_ACTIVE) || (rendList->poly_ptrs[poly]->state & struct3D::POLY4D_STATE_CLIPPED) || (rendList->poly_ptrs[poly]->state & struct3D::POLY4D_STATE_BACKFACE)) continue;
 
-		this->DrawLine(rendList->poly_ptrs[poly]->tvlist[0].x, rendList->poly_ptrs[poly]->tvlist[0].y, rendList->poly_ptrs[poly]->tvlist[1].x, rendList->poly_ptrs[poly]->tvlist[1].y, rendList->poly_ptrs[poly]->lit_color[0]);
-		this->DrawLine(rendList->poly_ptrs[poly]->tvlist[1].x, rendList->poly_ptrs[poly]->tvlist[1].y, rendList->poly_ptrs[poly]->tvlist[2].x, rendList->poly_ptrs[poly]->tvlist[2].y, rendList->poly_ptrs[poly]->lit_color[0]);
-		this->DrawLine(rendList->poly_ptrs[poly]->tvlist[2].x, rendList->poly_ptrs[poly]->tvlist[2].y, rendList->poly_ptrs[poly]->tvlist[0].x, rendList->poly_ptrs[poly]->tvlist[0].y, rendList->poly_ptrs[poly]->lit_color[0]);
+		this->DrawLine(static_cast<int>(rendList->poly_ptrs[poly]->tvlist[0].x), static_cast<int>(rendList->poly_ptrs[poly]->tvlist[0].y), static_cast<int>(rendList->poly_ptrs[poly]->tvlist[1].x), static_cast<int>(rendList->poly_ptrs[poly]->tvlist[1].y), rendList->poly_ptrs[poly]->lit_color[0]);
+		this->DrawLine(static_cast<int>(rendList->poly_ptrs[poly]->tvlist[1].x), static_cast<int>(rendList->poly_ptrs[poly]->tvlist[1].y), static_cast<int>(rendList->poly_ptrs[poly]->tvlist[2].x), static_cast<int>(rendList->poly_ptrs[poly]->tvlist[2].y), rendList->poly_ptrs[poly]->lit_color[0]);
+		this->DrawLine(static_cast<int>(rendList->poly_ptrs[poly]->tvlist[2].x), static_cast<int>(rendList->poly_ptrs[poly]->tvlist[2].y), static_cast<int>(rendList->poly_ptrs[poly]->tvlist[0].x), static_cast<int>(rendList->poly_ptrs[poly]->tvlist[0].y), rendList->poly_ptrs[poly]->lit_color[0]);
 
 		if(this->state.checkFlag(RendState::RS_SHOWVERTEX))
 		{
@@ -483,11 +483,11 @@ void GraphicImpDirectDraw::DrawRENDERLIST4DWire(RENDERLIST4D_PTR rendList, POINT
 			int rSize = this->state.checkFlag(RendState::RS_VERTEXSIZE) * this->_sp.iHeight / this->_sp.iHeight;
 			unsigned int iColor;
 
-			r.left = rendList->poly_ptrs[poly]->tvlist[0].x - rSize;
-			r.top = rendList->poly_ptrs[poly]->tvlist[0].y - rSize;
+			r.left = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[0].x - rSize);
+			r.top = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[0].y - rSize);
 
-			r.right = rendList->poly_ptrs[poly]->tvlist[0].x + rSize;
-			r.bottom = rendList->poly_ptrs[poly]->tvlist[0].y + rSize;
+			r.right = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[0].x + rSize);
+			r.bottom = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[0].y + rSize);
 
 			iColor = ARGB32BIT(255,255,255,255);
 			if(rendList->poly_ptrs[poly]->tvlist[0].attr & struct3D::VERTEX4DT_ATTR_SELECTED)
@@ -495,11 +495,11 @@ void GraphicImpDirectDraw::DrawRENDERLIST4DWire(RENDERLIST4D_PTR rendList, POINT
 
 			this->_draw->DrawRect(&r, iColor, this->_videoBuffer, this->_lPitch);
 
-			r.left = rendList->poly_ptrs[poly]->tvlist[1].x - rSize;
-			r.top = rendList->poly_ptrs[poly]->tvlist[1].y - rSize;
+			r.left = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[1].x - rSize);
+			r.top = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[1].y - rSize);
 
-			r.right = rendList->poly_ptrs[poly]->tvlist[1].x + rSize;
-			r.bottom = rendList->poly_ptrs[poly]->tvlist[1].y + rSize;
+			r.right = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[1].x + rSize);
+			r.bottom = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[1].y + rSize);
 
 			iColor = ARGB32BIT(255,255,255,255);
 			if(rendList->poly_ptrs[poly]->tvlist[1].attr & struct3D::VERTEX4DT_ATTR_SELECTED)
@@ -507,11 +507,11 @@ void GraphicImpDirectDraw::DrawRENDERLIST4DWire(RENDERLIST4D_PTR rendList, POINT
 
 			this->_draw->DrawRect(&r, iColor, this->_videoBuffer, this->_lPitch);
 
-			r.left = rendList->poly_ptrs[poly]->tvlist[2].x - rSize;
-			r.top = rendList->poly_ptrs[poly]->tvlist[2].y - rSize;
+			r.left = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[2].x - rSize);
+			r.top = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[2].y - rSize);
 
-			r.right = rendList->poly_ptrs[poly]->tvlist[2].x + rSize;
-			r.bottom = rendList->poly_ptrs[poly]->tvlist[2].y + rSize;
+			r.right = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[2].x + rSize);
+			r.bottom = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[2].y + rSize);
 
 			iColor = ARGB32BIT(255,255,255,255);
 			if(rendList->poly_ptrs[poly]->tvlist[2].attr & struct3D::VERTEX4DT_ATTR_SELECTED)
@@ -865,8 +865,8 @@ void GraphicImpDirectDraw::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POIN
 void GraphicImpDirectDraw::DrawOBJECT4DLINE(OBJECT4D_LINE_PTR obj)
 {
 	obj->vtrans_curr = 0;
-	VECTOR2D v1, v2;
-	POINT2D p, p2, p3;
+	/*VECTOR2D v1, v2*/;
+	/*POINT2D p, p2, p3;*/
 
 	/*vecZero(&obj->vlocal[0].v0.v);
 	vecZero(&obj->vlocal[0].v1.v);
@@ -985,7 +985,7 @@ int GraphicImpDirectDraw::DrawTexture(mat::TEXTURE2D_PTR tex, RECT *rect)
 		if(rect->bottom < rect->right)
 		{
 			texAR = (float)tex->width / (float)tex->height;
-			float newH = rect->bottom;
+			float newH = static_cast<float>(rect->bottom);
 			float newW = newH * texAR;
 
 			/*TCHAR m[128];
@@ -1000,7 +1000,7 @@ int GraphicImpDirectDraw::DrawTexture(mat::TEXTURE2D_PTR tex, RECT *rect)
 		else
 		{
 			texAR = (float)tex->height / (float)tex->width;
-			float newW = rect->right;
+			float newW = static_cast<float>(rect->right);
 			float newH = newW * texAR;
 
 			xInc = (float)tex->width / newW;
@@ -1039,7 +1039,7 @@ int GraphicImpDirectDraw::DrawTexTri(struct3D::POLYF4D_PTR face)
 
 POLYF4D_PTR GraphicImpDirectDraw::getSelectedPoly(int x, int y)
 {
-	if(x < 0 || y < 0 || x > this->_sp.iWidth || y > this->_sp.iHeight)
+	if(x < 0 || y < 0 || x > static_cast<int>(this->_sp.iWidth) || y > static_cast<int>(this->_sp.iHeight))
 		return 0;
 
 	return this->ppObj3DMap[x + y * this->_sp.iWidth];
@@ -1069,7 +1069,7 @@ int GraphicImpDirectDraw::DrawCircle(POINT2D *ptCenter, unsigned int iRadius, un
 		this->DrawPixel(&ptCurr, 1, ARGB32BIT(255,0,255,0));
 	}*/
 
-	float R = iRadius;
+	float R = static_cast<float>(iRadius);
 	float Z = 0, x = 0, y = R;
 
 	if(!bSmooth)
@@ -1160,7 +1160,7 @@ int GraphicImpDirectDraw::DrawSpline(std::vector<POINT2D> *pts)
 	float t = 0;
 	POINT2D pt;
 
-	int numPts = pts->size();
+	int numPts = static_cast<int>(pts->size());
 
 	if(numPts > 10 || numPts == 0) return 0;
 
@@ -1182,8 +1182,8 @@ int GraphicImpDirectDraw::DrawSpline(std::vector<POINT2D> *pts)
 
 		for(int i = 0; i < numPts; i++)
 		{
-			pt.x += c[i] * pow(t, i) * pow((1.0f - t), m - i) * pts->at(i).x;
-			pt.y += c[i] * pow(t, i) * pow((1.0f - t), m - i) * pts->at(i).y;
+			pt.x += static_cast<float>(c[i] * pow(t, i) * pow((1.0f - t), m - i) * pts->at(i).x);
+			pt.y += static_cast<float>(c[i] * pow(t, i) * pow((1.0f - t), m - i) * pts->at(i).y);
 		}
 
 		this->DrawPixel(&pt, 1, ARGB32BIT(255,0,255,0));
@@ -1356,7 +1356,7 @@ int GraphicImpDirectDraw::point2DToVector3D(math3D::POINT2D_PTR pt2D, math3D::VE
 
 int GraphicImpDirectDraw::DrawPolygon(std::vector<POINT2D> *pts, unsigned int iColor)
 {
-	int numPts = pts->size();
+	int numPts = static_cast<int>(pts->size());
 	int lpitch = this->_lPitch >> 2;
 	unsigned int *vb = (unsigned int *)_videoBuffer;
 
@@ -1364,8 +1364,8 @@ int GraphicImpDirectDraw::DrawPolygon(std::vector<POINT2D> *pts, unsigned int iC
 	if(numPts == 1)
 	{
 		int x,y;
-		x = pts->at(0).x;
-		y = pts->at(0).y;
+		x = static_cast<int>(pts->at(0).x);
+		y = static_cast<int>(pts->at(0).y);
 		vb[x + y * lpitch] = iColor;
 
 		return 1;
@@ -1373,12 +1373,12 @@ int GraphicImpDirectDraw::DrawPolygon(std::vector<POINT2D> *pts, unsigned int iC
 
 	for(int i = 0; i < numPts - 1; i++)
 	{
-		this->DrawLine(pts->at(i).x, pts->at(i).y, pts->at(i + 1).x, pts->at(i + 1).y, iColor);
+		this->DrawLine(static_cast<int>(pts->at(i).x), static_cast<int>(pts->at(i).y), static_cast<int>(pts->at(i + 1).x), static_cast<int>(pts->at(i + 1).y), iColor);
 	}
 
 	if(numPts > 2)
 	{
-		this->DrawLine(pts->at(0).x, pts->at(0).y, pts->at(numPts - 1).x, pts->at(numPts - 1).y, iColor);
+		this->DrawLine(static_cast<int>(pts->at(0).x), static_cast<int>(pts->at(0).y), static_cast<int>(pts->at(numPts - 1).x), static_cast<int>(pts->at(numPts - 1).y), iColor);
 	}
 
 	return 1;
@@ -1582,7 +1582,7 @@ int GraphicImpDirectDraw::Resize(int newWidth, int newHeight)
 	VECTOR4D camDir = {0, 0, 0, 1};
 	POINT4D target = {0, 0, 1, 1};
 
-	mainCam.Init_CAM4D(struct3D::CAM_MODEL_EULER, &camPos, &camDir, &target, 10.0f, 100000.0f, 90.0f, this->_sp.iWidth, this->_sp.iHeight);
+	mainCam.Init_CAM4D(struct3D::CAM_MODEL_EULER, &camPos, &camDir, &target, 10.0f, 100000.0f, 90.0f, static_cast<float>(this->_sp.iWidth), static_cast<float>(this->_sp.iHeight));
 
 	return 1;
 }
@@ -1595,7 +1595,7 @@ void GraphicImpDirectDraw::testAdj(POINT2D_PTR pt, OBJECT4D_PTR obj)
 		obj->plist[i].color = ARGB32BIT(255,0,255,0);
 	}
 
-	POINT4D p, v;
+	POINT4D p/*, v*/;
 
 	//vecZero(&p);
 	//vecZero(&v);

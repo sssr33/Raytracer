@@ -2469,7 +2469,7 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 	
 	int rBase, gBase, bBase;
 	int rSum, gSum, bSum;
-	float /*nl,*/ dp, dist, atten, intensity;
+	float /*nl,*/ dp, dist = 0.f, atten, intensity;
 	/*float r_base1, g_base1, b_base1;
 	float r_base2, g_base2, b_base2;*/
 
@@ -4142,179 +4142,181 @@ int Draw32BitStrategy::FullScreenShader(unsigned int *videoMemory, int lpitch)
 		}
 	}*/
 
-	__declspec(align(16)) unsigned int iMask[4] = { 0x000000FF, 0x000000FF, 0x000000FF, 0x000000FF};
+	// TODO rewrite with intrinsics and plain C/C++
+	/*__declspec(align(16)) unsigned int iMask[4] = { 0x000000FF, 0x000000FF, 0x000000FF, 0x000000FF};
 
 	int iMasSize = static_cast<int>((this->maxClipY - 2) * this->maxClipX);
 	int iMasWidth = static_cast<int>(this->maxClipX);
 	int iRedColor = 0x00FF0000;
 	int *vb = (int *)videoMemory;
-	int lpitch2 = lpitch;
+	int lpitch2 = lpitch;*/
 
-	__asm{
-		pushad
-
-
-		mov eax, lpitch2 //Загружаем значение y + 1 для видеопамяти
-		mov ecx, iMasSize //Загружаем количество эл. в виделпамяти y - 1
-
-		mov edi, vb;//_videoBuffer //Загружаем начало видеопамяти
-		mov esi, iMasWidth //Загружаем кол. эл. по вертикали 
-
-		add edi, eax //К началу видеопамяти прибавляем y + 1
-		dec ecx //Уменшаем кол. эл. на x - 1
-
-		shl esi, 2 //Узнаем кол. эл. по вертикали в байтах
-		add edi, 4 //Смещаем на x + 1, т.к. цвет имеет размер 4 байта
-		
-		mov edx, edi //Копируем аддрес первого эл. в видеопамяти
-		sub esi, 12 //Уменшаем кол. эл. по вертикали так чтобы при прибавлении к x+1 получался конечный аддресс - (iWidth - 1)
-
-		add edx, esi //Получаем конечный аддрес по вертикали - (iWidth - 1)
-		push esi
-
-L1:
-		//main loop===============
-		mov esi, edi
-		mov ebx, edi
-
-		sub esi, 4
-		sub ebx, 4
-
-		sub esi, eax
-		add ebx, eax
-
-		movups xmm0, [esi]
-		movups xmm4, [ebx]
-
-		pslldq xmm0, 4
-		add esi, eax
-
-		pslldq xmm4, 4
-		sub ebx, eax
-
-		movd xmm1, [esi]
-		add ebx, 8//12
-
-		movd xmm5, [ebx]
-
-		por xmm0, xmm1
-		por xmm4, xmm5
-
-		//new alg
-
-		movaps xmm1, xmm0
-		movaps xmm5, xmm4
-
-		movaps xmm2, xmm0
-		movaps xmm6, xmm4
-
-		movaps xmm3, xmm0
-		movaps xmm7, xmm4
-
-		psrld xmm0, 24
-		psrld xmm4, 24
-
-		psrld xmm1, 16
-		psrld xmm5, 16
-
-		psrld xmm2, 8
-		psrld xmm6, 8
-
-		pand xmm0, iMask
-		pand xmm4, iMask
-
-		pand xmm1, iMask
-		pand xmm5, iMask
-
-		pand xmm2, iMask
-		pand xmm6, iMask
-
-		pand xmm3, iMask
-		pand xmm7, iMask
-
-		paddd xmm0, xmm4 //xmm0 4 alpha components
-		paddd xmm1, xmm5 //xmm1 4 red components
-
-		paddd xmm2, xmm6 //xmm2 4 green components
-		paddd xmm3, xmm7 //xmm3 4 blue components
-
-		movhlps xmm4, xmm0
-		movhlps xmm5, xmm1
-
-		movhlps xmm6, xmm2
-		movhlps xmm7, xmm3
-
-		paddd xmm0, xmm4 //xmm0 2 alpha components
-		paddd xmm1, xmm5 //xmm1 2 red components
-
-		paddd xmm2, xmm6 //xmm2 2 green components
-		paddd xmm3, xmm7 //xmm3 2 blue components
-
-		movaps xmm4, xmm0
-		movaps xmm5, xmm1
-
-		movaps xmm6, xmm2
-		movaps xmm7, xmm3
-
-		psrldq xmm4, 4
-		psrldq xmm5, 4
-
-		psrldq xmm6, 4
-		psrldq xmm7, 4
-
-		paddd xmm0, xmm4
-		paddd xmm1, xmm5
-
-		paddd xmm2, xmm6
-		psrld xmm0, 3
-
-		paddd xmm3, xmm7
-		psrld xmm1, 3
-
-		psrld xmm2, 3
-		pslld xmm0, 24
-
-		psrld xmm3, 3
-		pslld xmm1, 16
-
-		por xmm0, xmm3
-		pslld xmm2, 8
-
-		por xmm0, xmm1
-
-		por xmm0, xmm2
-
-		//new alg
-
-		movd [edi], xmm0
-
-		//main loop===============
-		cmp edi, edx
-		jnz L_no_next_line
-
-		pop esi
-		add edx, eax
-
-		sub edi, esi
-		add edi, eax
-
-		push esi
-		sub ecx, 3
-		
-		jc L_end
-		jnz L1
-		
-		jz L_end
-L_no_next_line:
-		
-		add edi, 4
-
-		dec ecx 
-		jnz L1
-L_end:
-		pop esi
-		popad
-	}
+	// TODO rewrite with intrinsics and plain C/C++
+//	__asm{
+//		pushad
+//
+//
+//		mov eax, lpitch2 //Загружаем значение y + 1 для видеопамяти
+//		mov ecx, iMasSize //Загружаем количество эл. в виделпамяти y - 1
+//
+//		mov edi, vb;//_videoBuffer //Загружаем начало видеопамяти
+//		mov esi, iMasWidth //Загружаем кол. эл. по вертикали 
+//
+//		add edi, eax //К началу видеопамяти прибавляем y + 1
+//		dec ecx //Уменшаем кол. эл. на x - 1
+//
+//		shl esi, 2 //Узнаем кол. эл. по вертикали в байтах
+//		add edi, 4 //Смещаем на x + 1, т.к. цвет имеет размер 4 байта
+//		
+//		mov edx, edi //Копируем аддрес первого эл. в видеопамяти
+//		sub esi, 12 //Уменшаем кол. эл. по вертикали так чтобы при прибавлении к x+1 получался конечный аддресс - (iWidth - 1)
+//
+//		add edx, esi //Получаем конечный аддрес по вертикали - (iWidth - 1)
+//		push esi
+//
+//L1:
+//		//main loop===============
+//		mov esi, edi
+//		mov ebx, edi
+//
+//		sub esi, 4
+//		sub ebx, 4
+//
+//		sub esi, eax
+//		add ebx, eax
+//
+//		movups xmm0, [esi]
+//		movups xmm4, [ebx]
+//
+//		pslldq xmm0, 4
+//		add esi, eax
+//
+//		pslldq xmm4, 4
+//		sub ebx, eax
+//
+//		movd xmm1, [esi]
+//		add ebx, 8//12
+//
+//		movd xmm5, [ebx]
+//
+//		por xmm0, xmm1
+//		por xmm4, xmm5
+//
+//		//new alg
+//
+//		movaps xmm1, xmm0
+//		movaps xmm5, xmm4
+//
+//		movaps xmm2, xmm0
+//		movaps xmm6, xmm4
+//
+//		movaps xmm3, xmm0
+//		movaps xmm7, xmm4
+//
+//		psrld xmm0, 24
+//		psrld xmm4, 24
+//
+//		psrld xmm1, 16
+//		psrld xmm5, 16
+//
+//		psrld xmm2, 8
+//		psrld xmm6, 8
+//
+//		pand xmm0, iMask
+//		pand xmm4, iMask
+//
+//		pand xmm1, iMask
+//		pand xmm5, iMask
+//
+//		pand xmm2, iMask
+//		pand xmm6, iMask
+//
+//		pand xmm3, iMask
+//		pand xmm7, iMask
+//
+//		paddd xmm0, xmm4 //xmm0 4 alpha components
+//		paddd xmm1, xmm5 //xmm1 4 red components
+//
+//		paddd xmm2, xmm6 //xmm2 4 green components
+//		paddd xmm3, xmm7 //xmm3 4 blue components
+//
+//		movhlps xmm4, xmm0
+//		movhlps xmm5, xmm1
+//
+//		movhlps xmm6, xmm2
+//		movhlps xmm7, xmm3
+//
+//		paddd xmm0, xmm4 //xmm0 2 alpha components
+//		paddd xmm1, xmm5 //xmm1 2 red components
+//
+//		paddd xmm2, xmm6 //xmm2 2 green components
+//		paddd xmm3, xmm7 //xmm3 2 blue components
+//
+//		movaps xmm4, xmm0
+//		movaps xmm5, xmm1
+//
+//		movaps xmm6, xmm2
+//		movaps xmm7, xmm3
+//
+//		psrldq xmm4, 4
+//		psrldq xmm5, 4
+//
+//		psrldq xmm6, 4
+//		psrldq xmm7, 4
+//
+//		paddd xmm0, xmm4
+//		paddd xmm1, xmm5
+//
+//		paddd xmm2, xmm6
+//		psrld xmm0, 3
+//
+//		paddd xmm3, xmm7
+//		psrld xmm1, 3
+//
+//		psrld xmm2, 3
+//		pslld xmm0, 24
+//
+//		psrld xmm3, 3
+//		pslld xmm1, 16
+//
+//		por xmm0, xmm3
+//		pslld xmm2, 8
+//
+//		por xmm0, xmm1
+//
+//		por xmm0, xmm2
+//
+//		//new alg
+//
+//		movd [edi], xmm0
+//
+//		//main loop===============
+//		cmp edi, edx
+//		jnz L_no_next_line
+//
+//		pop esi
+//		add edx, eax
+//
+//		sub edi, esi
+//		add edi, eax
+//
+//		push esi
+//		sub ecx, 3
+//		
+//		jc L_end
+//		jnz L1
+//		
+//		jz L_end
+//L_no_next_line:
+//		
+//		add edi, 4
+//
+//		dec ecx 
+//		jnz L1
+//L_end:
+//		pop esi
+//		popad
+//	}
 
 	return 1;
 }
@@ -4340,8 +4342,8 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 	float tempf = 0;
 
 	int xi, yi;
-	int index_x, index_y;
-	int x, y;
+	/*int index_x, index_y;*/
+	/*int x, y;*/
 	int xstart, xend, ystart, yrestart, yend;
 	float dxdyl, xr, xl, dxdyr;
 	float x0, y0, tu0, tv0;
@@ -4351,7 +4353,7 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 	float r_base0, g_base0, b_base0;
 	float r_texel, g_texel, b_texel;
 
-	math3D::VECTOR2D vecUV;
+	/*math3D::VECTOR2D vecUV;*/
 	math3D::VECTOR2D vecUVi;
 	math3D::VECTOR2D vecDUV;
 	math3D::VECTOR2D vecUVL;
@@ -4415,22 +4417,22 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 
 	RGBFROM32BIT(face->lit_color[0], r_base0, g_base0, b_base0);
 
-	x0 = (int)(face->tvlist[v0].x + 0.5f);
-	y0 = (int)(face->tvlist[v0].y + 0.5f);
+	x0 = static_cast<float>((int)(face->tvlist[v0].x + 0.5f));
+	y0 = static_cast<float>((int)(face->tvlist[v0].y + 0.5f));
 	tu0 = face->tvlist[v0].u0;//(int)(face->tvlist[v0].u0 + 0.5f); 
 	tv0 = face->tvlist[v0].v0;//(int)(face->tvlist[v0].v0 + 0.5f);
 
-	x1 = (int)(face->tvlist[v1].x + 0.5f);
-	y1 = (int)(face->tvlist[v1].y + 0.5f);
+	x1 = static_cast<float>((int)(face->tvlist[v1].x + 0.5f));
+	y1 = static_cast<float>((int)(face->tvlist[v1].y + 0.5f));
 	tu1 = face->tvlist[v1].u0;//(int)(face->tvlist[v1].u0 + 0.5f); 
 	tv1 = face->tvlist[v1].v0;//(int)(face->tvlist[v1].v0 + 0.5f);
 
-	x2 = (int)(face->tvlist[v2].x + 0.5f);
-	y2 = (int)(face->tvlist[v2].y + 0.5f);
+	x2 = static_cast<float>((int)(face->tvlist[v2].x + 0.5f));
+	y2 = static_cast<float>((int)(face->tvlist[v2].y + 0.5f));
 	tu2 = face->tvlist[v2].u0;//(int)(face->tvlist[v2].u0 + 0.5f); 
 	tv2 = face->tvlist[v2].v0;//(int)(face->tvlist[v2].v0 + 0.5f);
 
-	yrestart = y1;
+	yrestart = static_cast<int>(y1);
 
 	if(tri_type & TRI_TYPE_FLAT_MASK)
 	{
@@ -4457,7 +4459,7 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 				vecUVR.x = vecDUVDYR.x * dy + tu1;
 				vecUVR.y = vecDUVDYR.y * dy + tv1;
 
-				ystart = this->minClipY;
+				ystart = static_cast<int>(this->minClipY);
 			}
 			else
 			{
@@ -4469,7 +4471,7 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 				vecUVR.x = tu1;
 				vecUVR.y = tv1;
 
-				ystart = y0;
+				ystart = static_cast<int>(y0);
 			}
 		}//if(tri_type == TRI_TYPE_FLAT_TOP)
 		else //tri_type == TRI_TYPE_FLAT_BOTTOM
@@ -4495,7 +4497,7 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 				vecUVR.x = vecDUVDYR.x * dy + tu0;
 				vecUVR.y = vecDUVDYR.y * dy + tv0;
 
-				ystart = this->minClipY;
+				ystart = static_cast<int>(this->minClipY);
 			}
 			else
 			{
@@ -4507,13 +4509,13 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 				vecUVR.x = tu0;
 				vecUVR.y = tv0;
 
-				ystart = y0;
+				ystart = static_cast<int>(y0);
 			}
 		}//else //tri_type == TRI_TYPE_FLAT_BOTTOM
 
-		if((yend = y2) > this->maxClipY)
+		if((yend = static_cast<int>(y2)) > this->maxClipY)
 		{
-			yend = this->maxClipY;
+			yend = static_cast<int>(this->maxClipY);
 		}
 
 		if((x0 < this->minClipX) || (x0 > this->maxClipX) || (x1 < this->minClipX) || (x1 > this->maxClipX) || (x2 < this->minClipX) || (x2 > this->maxClipX))
@@ -4522,13 +4524,13 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 
 			for(yi = ystart; yi <= yend; yi++)
 			{
-				xstart = (xl + 0.5f);
-				xend = (xr + 0.5f);
+				xstart = static_cast<int>(xl + 0.5f);
+				xend = static_cast<int>(xr + 0.5f);
 
 				vecUVi.x = vecUVL.x;//(ul + 0.5f);
 				vecUVi.y = vecUVL.y;//(vl + 0.5f);
 
-				if((dx = (xend - xstart)) > 0)
+				if((dx = static_cast<float>(xend - xstart)) > 0)
 				{
 					dx = 1.0f / dx;
 
@@ -4548,16 +4550,16 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 					vecUVi.x += dx * vecDUV.x;
 					vecUVi.y += dx * vecDUV.y;
 
-					xstart = this->minClipX;
+					xstart = static_cast<int>(this->minClipX);
 				}
 
 				if(xend > this->maxClipX)
-					xend = this->maxClipX;
+					xend = static_cast<int>(this->maxClipX);
 
 				for(xi = xstart; xi <= xend; xi++)
 				{
-					float ftx = fmod(vecUVi.x, 1) * face->texture->width;
-					float fty = fmod(vecUVi.y, 1) * face->texture->height;
+					float ftx = static_cast<float>(fmod(vecUVi.x, 1) * face->texture->width);
+					float fty = static_cast<float>(fmod(vecUVi.y, 1) * face->texture->height);
 
 					RGBFROM32BIT(textmap[(int)ftx + (int)fty * face->texture->width], r_texel, g_texel, b_texel);
 
@@ -4565,9 +4567,9 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 					g_texel *= g_base0;
 					b_texel *= b_base0;
 
-					int rFinal = r_texel;
-					int gFinal = g_texel;
-					int bFinal = b_texel;
+					int rFinal = static_cast<int>(r_texel);
+					int gFinal = static_cast<int>(g_texel);
+					int bFinal = static_cast<int>(b_texel);
 
 					rFinal >>= 8;
 					gFinal >>= 8;
@@ -4599,13 +4601,13 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 
 			for(yi = ystart; yi <= yend; yi++)
 			{
-				xstart = (xl + 0.5f);
-				xend = (xr + 0.5f);
+				xstart = static_cast<int>(xl + 0.5f);
+				xend = static_cast<int>(xr + 0.5f);
 
 				vecUVi.x = vecUVL.x;//(ul + 0.5f);
 				vecUVi.y = vecUVL.y;//(vl + 0.5f);
 
-				if((dx = (xend - xstart)) > 0)
+				if((dx = static_cast<float>(xend - xstart)) > 0)
 				{
 					dx = 1.0f / dx;
 
@@ -4620,8 +4622,8 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 
 				for(xi = xstart; xi <= xend; xi++)
 				{
-					float ftx = fmod(vecUVi.x, 1) * face->texture->width;
-					float fty = fmod(vecUVi.y, 1) * face->texture->height;
+					float ftx = static_cast<float>(fmod(vecUVi.x, 1) * face->texture->width);
+					float fty = static_cast<float>(fmod(vecUVi.y, 1) * face->texture->height);
 
 					RGBFROM32BIT(textmap[(int)ftx + (int)fty * face->texture->width], r_texel, g_texel, b_texel);
 
@@ -4629,9 +4631,9 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 					g_texel *= g_base0;
 					b_texel *= b_base0;
 
-					int rFinal = r_texel;
-					int gFinal = g_texel;
-					int bFinal = b_texel;
+					int rFinal = static_cast<int>(r_texel);
+					int gFinal = static_cast<int>(g_texel);
+					int bFinal = static_cast<int>(b_texel);
 
 					rFinal >>= 8;
 					gFinal >>= 8;
@@ -4659,8 +4661,8 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 	}//if(tri_type & TRI_TYPE_FLAT_MASK)
 	else if(tri_type == TRI_TYPE_GENERAL)
 	{
-		if((yend = y2) > this->maxClipY)
-			yend = this->maxClipY;
+		if((yend = static_cast<int>(y2)) > this->maxClipY)
+			yend = static_cast<int>(this->maxClipY);
 
 		if(y1 < this->minClipY)
 		{
@@ -4686,7 +4688,7 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 			vecUVR.x = vecDUVDYR.x * dyr + tu0;
 			vecUVR.y = vecDUVDYR.y * dyr + tv0;
 
-			ystart = this->minClipY;
+			ystart = static_cast<int>(this->minClipY);
 
 			if(dxdyr > dxdyl)
 			{
@@ -4725,7 +4727,7 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 			vecUVR.x = vecDUVDYR.x * dy + tu0;
 			vecUVR.y = vecDUVDYR.y * dy + tv0;
 
-			ystart = this->minClipY;
+			ystart = static_cast<int>(this->minClipY);
 
 			if(dxdyr < dxdyl)
 			{
@@ -4758,7 +4760,7 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 			vecUVL.x = vecUVR.x = tu0;
 			vecUVL.y = vecUVR.y = tv0;
 
-			ystart = y0;
+			ystart = static_cast<int>(y0);
 
 			if(dxdyr < dxdyl)
 			{
@@ -4782,12 +4784,12 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 
 			for(yi = ystart; yi <= yend; yi++)
 			{
-				xstart = (xl + 0.5f);
-				xend = (xr + 0.5f);
+				xstart = static_cast<int>(xl + 0.5f);
+				xend = static_cast<int>(xr + 0.5f);
 
 				vecCopy(&vecUVL, &vecUVi);
 
-				if((dx = xend - xstart) > 0)
+				if((dx = static_cast<float>(xend - xstart)) > 0)
 				{
 					dx = 1.0f / dx;
 
@@ -4811,15 +4813,15 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 					vecScale(dx, &vecDUV);
 					vecAdd(&vecUVi, &vecDUV, &vecUVi);
 
-					xstart = this->minClipX;
+					xstart = static_cast<int>(this->minClipX);
 				}
 				if(xend > this->maxClipX)
-					xend = this->maxClipX;
+					xend = static_cast<int>(this->maxClipX);
 
 				for(xi = xstart; xi <= xend; xi++)
 				{
-					float ftx = fmod(vecUVi.x, 1) * face->texture->width;
-					float fty = fmod(vecUVi.y, 1) * face->texture->height;
+					float ftx = static_cast<float>(fmod(vecUVi.x, 1) * face->texture->width);
+					float fty = static_cast<float>(fmod(vecUVi.y, 1) * face->texture->height);
 
 					RGBFROM32BIT(textmap[(int)ftx + (int)fty * face->texture->width], r_texel, g_texel, b_texel);
 
@@ -4827,9 +4829,9 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 					g_texel *= g_base0;
 					b_texel *= b_base0;
 
-					int rFinal = r_texel;
-					int gFinal = g_texel;
-					int bFinal = b_texel;
+					int rFinal = static_cast<int>(r_texel);
+					int gFinal = static_cast<int>(g_texel);
+					int bFinal = static_cast<int>(b_texel);
 
 					rFinal >>= 8;
 					gFinal >>= 8;
@@ -4901,12 +4903,12 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 
 			for(yi = ystart; yi <= yend; yi++)
 			{
-				xstart = (xl + 0.5f);
-				xend = (xr + 0.5f);
+				xstart = static_cast<int>(xl + 0.5f);
+				xend = static_cast<int>(xr + 0.5f);
 
 				vecCopy(&vecUVL, &vecUVi);
 
-				if((dx = xend - xstart) > 0)
+				if((dx = static_cast<float>(xend - xstart)) > 0)
 				{
 					dx = 1.0f / dx;
 
@@ -4920,8 +4922,8 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 
 				for(xi = xstart; xi <= xend; xi++)
 				{
-					float ftx = fmod(vecUVi.x, 1) * face->texture->width;
-					float fty = fmod(vecUVi.y, 1) * face->texture->height;
+					float ftx = static_cast<float>(fmod(vecUVi.x, 1) * face->texture->width);
+					float fty = static_cast<float>(fmod(vecUVi.y, 1) * face->texture->height);
 
 					RGBFROM32BIT(textmap[(int)ftx + (int)fty * face->texture->width], r_texel, g_texel, b_texel);
 
@@ -4929,9 +4931,9 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 					g_texel *= g_base0;
 					b_texel *= b_base0;
 
-					int rFinal = r_texel;
-					int gFinal = g_texel;
-					int bFinal = b_texel;
+					int rFinal = static_cast<int>(r_texel);
+					int gFinal = static_cast<int>(g_texel);
+					int bFinal = static_cast<int>(b_texel);
 
 					rFinal >>= 8;
 					gFinal >>= 8;
@@ -5016,11 +5018,11 @@ int Draw32BitStrategy::DrawRect(RECT *r, unsigned int color, void *videoMemory, 
 	if(r->left > this->maxClipX || r->right < this->minClipX || r->top > this->maxClipY || r->bottom < this->minClipY)
 		return 0;
 
-	if(r->left < this->minClipX) r->left = this->minClipX;
-	if(r->top < this->minClipY) r->top = this->minClipY;
+	if(r->left < this->minClipX) r->left = static_cast<LONG>(this->minClipX);
+	if(r->top < this->minClipY) r->top = static_cast<LONG>(this->minClipY);
 
-	if(r->bottom > this->maxClipY) r->bottom = this->maxClipY;
-	if(r->right > this->maxClipX) r->right = this->maxClipX;
+	if(r->bottom > this->maxClipY) r->bottom = static_cast<LONG>(this->maxClipY);
+	if(r->right > this->maxClipX) r->right = static_cast<LONG>(this->maxClipX);
 
 
 
@@ -5032,13 +5034,7 @@ int Draw32BitStrategy::DrawRect(RECT *r, unsigned int color, void *videoMemory, 
 	{
 		for(int i = 0; i < height; i++)
 		{
-			__asm
-			{
-				mov eax, color
-				mov edi, vb
-				mov ecx, width
-				rep stosd
-			}
+			std::fill(vb, vb + width, color);
 			vb += lpitch2;
 		}
 	}
@@ -5076,11 +5072,11 @@ int Draw32BitStrategy::clipLineCS(RECT *clippingRect, POINT4D *pt1, POINT4D *pt2
 	const int CLIP_CODE_NW = 0x0009;
 	const int CLIP_CODE_SW = 0x0005;
 
-	float minX = clippingRect->left;
-	float minY = clippingRect->top;
+	float minX = static_cast<float>(clippingRect->left);
+	float minY = static_cast<float>(clippingRect->top);
 
-	float maxX = clippingRect->right;
-	float maxY = clippingRect->bottom;
+	float maxX = static_cast<float>(clippingRect->right);
+	float maxY = static_cast<float>(clippingRect->bottom);
 
 	float t = 0;
 
@@ -5536,13 +5532,14 @@ int Draw32BitStrategy::DrawTriangle4(struct3D::POLYF4D_PTR poly, unsigned int *v
 
 inline int iround(float x)
 {
-  int t;
+  int t = static_cast<int>(x);
 
-  __asm
+  // TODO check fistp logic
+  /*__asm
   {
     fld  x
     fistp t
-  }
+  }*/
 
   return t;
 }
@@ -5675,13 +5672,13 @@ int Draw32BitStrategy::DrawTriangle5(struct3D::POLYF4D_PTR poly, unsigned int *v
 
 
 	// 48.16 fixed-point coordinates
-    const __int64 Y1 = (65536.0f * (double)poly->tvlist[v0].y);
-    const __int64 Y2 = (65536.0f * (double)poly->tvlist[v1].y);
-    const __int64 Y3 = (65536.0f * (double)poly->tvlist[v2].y);
+    const __int64 Y1 = static_cast<__int64>(65536.0f * (double)poly->tvlist[v0].y);
+    const __int64 Y2 = static_cast<__int64>(65536.0f * (double)poly->tvlist[v1].y);
+    const __int64 Y3 = static_cast<__int64>(65536.0f * (double)poly->tvlist[v2].y);
 
-    const __int64 X1 = (65536.0f * (double)poly->tvlist[v0].x);
-    const __int64 X2 = (65536.0f * (double)poly->tvlist[v1].x);
-    const __int64 X3 = (65536.0f * (double)poly->tvlist[v2].x);
+    const __int64 X1 = static_cast<__int64>(65536.0f * (double)poly->tvlist[v0].x);
+    const __int64 X2 = static_cast<__int64>(65536.0f * (double)poly->tvlist[v1].x);
+    const __int64 X3 = static_cast<__int64>(65536.0f * (double)poly->tvlist[v2].x);
 
     // Deltas
     const __int64 DX12 = X1 - X2;
@@ -5702,10 +5699,10 @@ int Draw32BitStrategy::DrawTriangle5(struct3D::POLYF4D_PTR poly, unsigned int *v
     const __int64 FDY31 = DY31 << 16;
 
     // Bounding rectangle
-    int minx = (min(X1, min(X2, X3)) + 0xFFFF) >> 16;
-    int maxx = (max(X1, max(X2, X3)) + 0xFFFF) >> 16;
-    int miny = (min(Y1, min(Y2, Y3)) + 0xFFFF) >> 16;
-    int maxy = (max(Y1, max(Y2, Y3)) + 0xFFFF) >> 16;
+    int minx = static_cast<int>((min(X1, min(X2, X3)) + 0xFFFF) >> 16);
+    int maxx = static_cast<int>((max(X1, max(X2, X3)) + 0xFFFF) >> 16);
+    int miny = static_cast<int>((min(Y1, min(Y2, Y3)) + 0xFFFF) >> 16);
+    int maxy = static_cast<int>((max(Y1, max(Y2, Y3)) + 0xFFFF) >> 16);
 
 	minx = max(minx, (int)this->minClipX);
 	miny = max(miny, (int)this->minClipY);
@@ -5900,7 +5897,7 @@ int Draw32BitStrategy::DrawTriangle6(struct3D::POLYF4D_PTR poly, unsigned int *v
 	const float flt_fix = 65536.0f;
 	float fx[3] = {poly->tvlist[v0].x, poly->tvlist[v1].x, poly->tvlist[v2].x};
 	float fy[3] = {poly->tvlist[v0].y, poly->tvlist[v1].y, poly->tvlist[v2].y};
-	__declspec(align(16)) __int64 X123[3], Y123[3], X3Y3[2]/*x3 - low part y3 - high part*/, X1Y1[2]/*x1 - low part y1 - high part*/;
+	__declspec(align(16)) __int64 X123[3], Y123[3]/*, X3Y3[2]*//*x3 - low part y3 - high part*//*, X1Y1[2]*//*x1 - low part y1 - high part*/;
 
 	X123[0] = __int64(fx[0] * flt_fix);
 	X123[1] = __int64(fx[1] * flt_fix);
@@ -5936,10 +5933,10 @@ int Draw32BitStrategy::DrawTriangle6(struct3D::POLYF4D_PTR poly, unsigned int *v
     const __int64 FDY31 = DY31 << 16;
 
     // Bounding rectangle
-    int minx = (min(X123[0], min(X123[1], X123[2])) + 0xFFFF) >> 16;
-    int maxx = (max(X123[0], max(X123[1], X123[2])) + 0xFFFF) >> 16;
-    int miny = (min(Y123[0], min(Y123[1], Y123[2])) + 0xFFFF) >> 16;
-    int maxy = (max(Y123[0], max(Y123[1], Y123[2])) + 0xFFFF) >> 16;
+    int minx = static_cast<int>((min(X123[0], min(X123[1], X123[2])) + 0xFFFF) >> 16);
+    int maxx = static_cast<int>((max(X123[0], max(X123[1], X123[2])) + 0xFFFF) >> 16);
+    int miny = static_cast<int>((min(Y123[0], min(Y123[1], Y123[2])) + 0xFFFF) >> 16);
+    int maxy = static_cast<int>((max(Y123[0], max(Y123[1], Y123[2])) + 0xFFFF) >> 16);
 
 	minx = max(minx, (int)this->minClipX);
 	miny = max(miny, (int)this->minClipY);
@@ -5996,365 +5993,368 @@ int Draw32BitStrategy::DrawTriangle6(struct3D::POLYF4D_PTR poly, unsigned int *v
 	return 1;
 }
 
+// TODO rewrite with intrinsics and plain C/C++
 int Draw32BitStrategy::DrawTriangle7_sse(struct3D::POLYF4D_PTR poly, unsigned int *videoMemory, int lpitch)
 {
-	int v0 = 0, v1 = 1, v2 = 2, tmp;
-	UINT lp = lpitch >> 2;
-	UINT *vb;
-
-	//сортировка сверху вниз
-	if(poly->tvlist[v1].y < poly->tvlist[v0].y)
-	{
-		SWAP(v1, v0, tmp);
-	}
-	if(poly->tvlist[v2].y < poly->tvlist[v0].y)
-	{
-		SWAP(v2, v0, tmp);
-	}
-	if(poly->tvlist[v2].y < poly->tvlist[v1].y)
-	{
-		SWAP(v2, v1, tmp);
-	}
-
-	//сортировка сверху по Х против часовой стрелки
-	if(poly->tvlist[v1].y == poly->tvlist[v0].y)//FLAT_TOP
-	{
-		if(poly->tvlist[v1].x > poly->tvlist[v0].x)
-			SWAP(v1, v0, tmp);
-	}
-	else if(poly->tvlist[v1].y == poly->tvlist[v2].y)//FLAT_BOTTOM
-	{
-		if(poly->tvlist[v1].x > poly->tvlist[v2].x)
-			SWAP(v1, v2, tmp);
-	}
-	else
-	{
-		float dxdyr = (poly->tvlist[v1].x - poly->tvlist[v0].x) / (poly->tvlist[v1].y - poly->tvlist[v0].y);
-		float dxdyl = (poly->tvlist[v2].x - poly->tvlist[v0].x) / (poly->tvlist[v2].y - poly->tvlist[v0].y);
-
-		if(dxdyr > dxdyl)//RHS
-		{
-			SWAP(v1, v2, tmp);
-		}
-	}
-
-		// 48.16 fixed-point coordinates
-	const float flt_fix = 65536.0f;
-	float fx[3] = {poly->tvlist[v0].x, poly->tvlist[v1].x, poly->tvlist[v2].x};
-	float fy[3] = {poly->tvlist[v0].y, poly->tvlist[v1].y, poly->tvlist[v2].y};
-	__declspec(align(16)) __int64 X123[3], Y123[3], X3Y3[2]/*x3 - low part y3 - high part*/, X1Y1[2]/*x1 - low part y1 - high part*/;
-
-	__asm
-	{
-		fld [fy + 8]	//st 6 = y2
-		fld [fy + 4]	//st 5 = y1
-		fld [fy + 0]	//st 4 = y0
-		fld [fx + 8]	//st 3 = x2
-		fld [fx + 4]	//st 2 = x1
-		fld [fx + 0]	//st 1 = x0
-		fld flt_fix		//st 0
-
-		fmul st(5), st(0)
-		fmul st(6), st(0)
-
-		fmul st(4), st(0)
-		fmul st(3), st(0)
-
-		fmul st(2), st(0)
-		fmulp st(1), st(0) //mul and pop flt_fix
-				
-		fisttp [X123]		//x0_fix
-		fisttp [X123 + 8]	//x1_fix
-
-		fisttp [X123 + 16]	//x2_fix
-		fisttp [Y123]		//y0_fix
-
-		movlps xmm0, [X123 + 16] //x3 to low part
-		movlps xmm1, [X123]		 //x1 to low part
-
-		fisttp [Y123 + 8]	//y1_fix
-		fisttp [Y123 + 16]	//y2_fix
-
-		movhps xmm1, [Y123]		 //y1 to high part
-		movhps xmm0, [Y123 + 16] //y3 to high part
-
-		movaps X1Y1, xmm1
-		movaps X3Y3, xmm0
-	}
-
-    // Deltas
-	__declspec(align(16)) __int64 DX12_23[2], FDX12_23[2];
-	__declspec(align(16)) __int64 DY12_23[2], FDY12_23[2];
-	__declspec(align(16)) __int64 DX31_DY31[2], FDX31_FDY31[2];
-
-	__asm
-	{
-		movaps xmm2, X123 //xmm2 = x1, x2
-		movaps xmm4, Y123 //xmm4 = y1, y2
-
-		movups xmm3, [X123 + 8] // xmm3 = x2, x3
-		movups xmm5, [Y123 + 8] // xmm5 = y2, y3
-
-		psubq xmm0, xmm1 // xmm0 = dx31, dy31
-		psubq xmm2, xmm3 // xmm2 = dx12, dx23
-
-		movaps DX31_DY31, xmm0
-		psubq xmm4, xmm5 // xmm4 = dy12, dy23
+	//int v0 = 0, v1 = 1, v2 = 2, tmp;
+	//UINT lp = lpitch >> 2;
+	//UINT *vb;
+
+	////сортировка сверху вниз
+	//if(poly->tvlist[v1].y < poly->tvlist[v0].y)
+	//{
+	//	SWAP(v1, v0, tmp);
+	//}
+	//if(poly->tvlist[v2].y < poly->tvlist[v0].y)
+	//{
+	//	SWAP(v2, v0, tmp);
+	//}
+	//if(poly->tvlist[v2].y < poly->tvlist[v1].y)
+	//{
+	//	SWAP(v2, v1, tmp);
+	//}
+
+	////сортировка сверху по Х против часовой стрелки
+	//if(poly->tvlist[v1].y == poly->tvlist[v0].y)//FLAT_TOP
+	//{
+	//	if(poly->tvlist[v1].x > poly->tvlist[v0].x)
+	//		SWAP(v1, v0, tmp);
+	//}
+	//else if(poly->tvlist[v1].y == poly->tvlist[v2].y)//FLAT_BOTTOM
+	//{
+	//	if(poly->tvlist[v1].x > poly->tvlist[v2].x)
+	//		SWAP(v1, v2, tmp);
+	//}
+	//else
+	//{
+	//	float dxdyr = (poly->tvlist[v1].x - poly->tvlist[v0].x) / (poly->tvlist[v1].y - poly->tvlist[v0].y);
+	//	float dxdyl = (poly->tvlist[v2].x - poly->tvlist[v0].x) / (poly->tvlist[v2].y - poly->tvlist[v0].y);
+
+	//	if(dxdyr > dxdyl)//RHS
+	//	{
+	//		SWAP(v1, v2, tmp);
+	//	}
+	//}
+
+	//// TODO rewrite with intrinsics and plain C/C++
+	//	// 48.16 fixed-point coordinates
+	//const float flt_fix = 65536.0f;
+	//float fx[3] = {poly->tvlist[v0].x, poly->tvlist[v1].x, poly->tvlist[v2].x};
+	//float fy[3] = {poly->tvlist[v0].y, poly->tvlist[v1].y, poly->tvlist[v2].y};
+	//__declspec(align(16)) __int64 X123[3], Y123[3], X3Y3[2]/*x3 - low part y3 - high part*/, X1Y1[2]/*x1 - low part y1 - high part*/;
+
+	//// TODO rewrite with intrinsics and plain C/C++
+	//__asm
+	//{
+	//	fld [fy + 8]	//st 6 = y2
+	//	fld [fy + 4]	//st 5 = y1
+	//	fld [fy + 0]	//st 4 = y0
+	//	fld [fx + 8]	//st 3 = x2
+	//	fld [fx + 4]	//st 2 = x1
+	//	fld [fx + 0]	//st 1 = x0
+	//	fld flt_fix		//st 0
+
+	//	fmul st(5), st(0)
+	//	fmul st(6), st(0)
+
+	//	fmul st(4), st(0)
+	//	fmul st(3), st(0)
+
+	//	fmul st(2), st(0)
+	//	fmulp st(1), st(0) //mul and pop flt_fix
+	//			
+	//	fisttp [X123]		//x0_fix
+	//	fisttp [X123 + 8]	//x1_fix
+
+	//	fisttp [X123 + 16]	//x2_fix
+	//	fisttp [Y123]		//y0_fix
+
+	//	movlps xmm0, [X123 + 16] //x3 to low part
+	//	movlps xmm1, [X123]		 //x1 to low part
+
+	//	fisttp [Y123 + 8]	//y1_fix
+	//	fisttp [Y123 + 16]	//y2_fix
+
+	//	movhps xmm1, [Y123]		 //y1 to high part
+	//	movhps xmm0, [Y123 + 16] //y3 to high part
+
+	//	movaps X1Y1, xmm1
+	//	movaps X3Y3, xmm0
+	//}
+
+ //   // Deltas
+	//__declspec(align(16)) __int64 DX12_23[2], FDX12_23[2];
+	//__declspec(align(16)) __int64 DY12_23[2], FDY12_23[2];
+	//__declspec(align(16)) __int64 DX31_DY31[2], FDX31_FDY31[2];
+
+	//__asm
+	//{
+	//	movaps xmm2, X123 //xmm2 = x1, x2
+	//	movaps xmm4, Y123 //xmm4 = y1, y2
+
+	//	movups xmm3, [X123 + 8] // xmm3 = x2, x3
+	//	movups xmm5, [Y123 + 8] // xmm5 = y2, y3
+
+	//	psubq xmm0, xmm1 // xmm0 = dx31, dy31
+	//	psubq xmm2, xmm3 // xmm2 = dx12, dx23
 
-		movaps DX12_23, xmm2
-		movaps DY12_23, xmm4
+	//	movaps DX31_DY31, xmm0
+	//	psubq xmm4, xmm5 // xmm4 = dy12, dy23
 
-		// Fixed-point deltas. extending to 32.32
+	//	movaps DX12_23, xmm2
+	//	movaps DY12_23, xmm4
 
-		psllq xmm0, 16 // xmm0 = fdx31, fdy31
-		psllq xmm2, 16 // xmm2 = fdx12, fdx23
+	//	// Fixed-point deltas. extending to 32.32
 
-		movaps FDX31_FDY31, xmm0
-		psllq xmm4, 16 // xmm4 = fdy12, fdy23
+	//	psllq xmm0, 16 // xmm0 = fdx31, fdy31
+	//	psllq xmm2, 16 // xmm2 = fdx12, fdx23
 
-		movaps FDX12_23, xmm2
-		movaps FDY12_23, xmm4
-	}
+	//	movaps FDX31_FDY31, xmm0
+	//	psllq xmm4, 16 // xmm4 = fdy12, fdy23
 
-    // Bounding rectangle
-	int min_xy[2];
-    /*int */min_xy[0] = (min(X123[0], min(X123[1], X123[2])) + 0xFFFF) >> 16;
-    int maxx = (max(X123[0], max(X123[1], X123[2])) + 0xFFFF) >> 16;
-    /*int */min_xy[1] = (min(Y123[0], min(Y123[1], Y123[2])) + 0xFFFF) >> 16;
-    int maxy = (max(Y123[0], max(Y123[1], Y123[2])) + 0xFFFF) >> 16;
+	//	movaps FDX12_23, xmm2
+	//	movaps FDY12_23, xmm4
+	//}
 
-	min_xy[0] = max(min_xy[0], (int)this->minClipX);
-	min_xy[1] = max(min_xy[1], (int)this->minClipY);
+ //   // Bounding rectangle
+	//int min_xy[2];
+ //   /*int */min_xy[0] = (min(X123[0], min(X123[1], X123[2])) + 0xFFFF) >> 16;
+ //   int maxx = (max(X123[0], max(X123[1], X123[2])) + 0xFFFF) >> 16;
+ //   /*int */min_xy[1] = (min(Y123[0], min(Y123[1], Y123[2])) + 0xFFFF) >> 16;
+ //   int maxy = (max(Y123[0], max(Y123[1], Y123[2])) + 0xFFFF) >> 16;
 
-	maxx = min(maxx, (int)this->maxClipX);
-	maxy = min(maxy, (int)this->maxClipY);
+	//min_xy[0] = max(min_xy[0], (int)this->minClipX);
+	//min_xy[1] = max(min_xy[1], (int)this->minClipY);
 
-    vb = videoMemory + min_xy[1] * lp;
+	//maxx = min(maxx, (int)this->maxClipX);
+	//maxy = min(maxy, (int)this->maxClipY);
 
-    // Half-edge constants in 32.32 fixp
-	__declspec(align(16)) __int64 C12[2];
-	__int64 C3;
-	/*__int64 C1 = DY12_23[0] * X123[0] - DX12_23[0] * Y123[0];
-    __int64 C2 = DY12_23[1] * X123[1] - DX12_23[1] * Y123[1];
-    __int64 C3 = DX31_DY31[1] * X123[2] - DX31_DY31[0] * Y123[2];*/
+ //   vb = videoMemory + min_xy[1] * lp;
 
-	__asm
-	{
-		//DY12_23[0] * X123[0]  and   DY12_23[1] * X123[1]
-		movaps xmm7, DY12_23 //low part a
-		movaps xmm1, X123 //low part b
+ //   // Half-edge constants in 32.32 fixp
+	//__declspec(align(16)) __int64 C12[2];
+	//__int64 C3;
+	///*__int64 C1 = DY12_23[0] * X123[0] - DX12_23[0] * Y123[0];
+ //   __int64 C2 = DY12_23[1] * X123[1] - DX12_23[1] * Y123[1];
+ //   __int64 C3 = DX31_DY31[1] * X123[2] - DX31_DY31[0] * Y123[2];*/
 
-		movaps xmm2, DY12_23 // low part a
-		movaps xmm3, X123 // low part b
+	//__asm
+	//{
+	//	//DY12_23[0] * X123[0]  and   DY12_23[1] * X123[1]
+	//	movaps xmm7, DY12_23 //low part a
+	//	movaps xmm1, X123 //low part b
 
-		movaps xmm4, X123 // high part, after shift b
-		movaps xmm5, DY12_23 // high part, after shift a
+	//	movaps xmm2, DY12_23 // low part a
+	//	movaps xmm3, X123 // low part b
 
-		psrlq xmm4, 32 // high part b
-		psrlq xmm5, 32 // high part a
+	//	movaps xmm4, X123 // high part, after shift b
+	//	movaps xmm5, DY12_23 // high part, after shift a
 
-		pmuludq xmm7, xmm1 // lp_a * lp_b
-		pmuludq xmm2, xmm4 // lp_a * hp_b
+	//	psrlq xmm4, 32 // high part b
+	//	psrlq xmm5, 32 // high part a
 
-		pmuludq xmm3, xmm5 // lp_b * hp_a
-		psllq xmm2, 32 // shift low parts of 2 64bit int's to high parts
+	//	pmuludq xmm7, xmm1 // lp_a * lp_b
+	//	pmuludq xmm2, xmm4 // lp_a * hp_b
 
-		paddq xmm7, xmm2 
-		psllq xmm3, 32 // shift low parts of 2 64bit int's to high parts
+	//	pmuludq xmm3, xmm5 // lp_b * hp_a
+	//	psllq xmm2, 32 // shift low parts of 2 64bit int's to high parts
 
-		paddq xmm7, xmm3
-		//DX12_23[0] * Y123[0]   and   DX12_23[1] * Y123[1]
-		movaps xmm6, DX12_23 //low part a
+	//	paddq xmm7, xmm2 
+	//	psllq xmm3, 32 // shift low parts of 2 64bit int's to high parts
 
-		movaps xmm1, Y123 //low part b
-		movaps xmm2, DX12_23 // low part a
+	//	paddq xmm7, xmm3
+	//	//DX12_23[0] * Y123[0]   and   DX12_23[1] * Y123[1]
+	//	movaps xmm6, DX12_23 //low part a
 
-		movaps xmm3, Y123 // low part b
-		movaps xmm4, Y123 // high part, after shift b
+	//	movaps xmm1, Y123 //low part b
+	//	movaps xmm2, DX12_23 // low part a
 
-		movaps xmm5, DX12_23 // high part, after shift a
-		psrlq xmm4, 32 // high part b
+	//	movaps xmm3, Y123 // low part b
+	//	movaps xmm4, Y123 // high part, after shift b
 
-		psrlq xmm5, 32 // high part a
-		pmuludq xmm6, xmm1 // lp_a * lp_b
+	//	movaps xmm5, DX12_23 // high part, after shift a
+	//	psrlq xmm4, 32 // high part b
 
-		pmuludq xmm2, xmm4 // lp_a * hp_b
-		pmuludq xmm3, xmm5 // lp_b * hp_a
+	//	psrlq xmm5, 32 // high part a
+	//	pmuludq xmm6, xmm1 // lp_a * lp_b
 
-		psllq xmm2, 32 // shift low parts of 2 64bit int's to high parts
-		movaps xmm0, DX31_DY31
+	//	pmuludq xmm2, xmm4 // lp_a * hp_b
+	//	pmuludq xmm3, xmm5 // lp_b * hp_a
 
-		paddq xmm6, xmm2
-		movlps xmm1, [Y123 + 16]
+	//	psllq xmm2, 32 // shift low parts of 2 64bit int's to high parts
+	//	movaps xmm0, DX31_DY31
 
-		psllq xmm3, 32 // shift low parts of 2 64bit int's to high parts
-		movhps xmm1, [X123 + 16]
+	//	paddq xmm6, xmm2
+	//	movlps xmm1, [Y123 + 16]
 
-		paddq xmm6, xmm3
-		movaps xmm2, DX31_DY31
+	//	psllq xmm3, 32 // shift low parts of 2 64bit int's to high parts
+	//	movhps xmm1, [X123 + 16]
 
-		psubq xmm7, xmm6
-		movaps xmm3, xmm1
+	//	paddq xmm6, xmm3
+	//	movaps xmm2, DX31_DY31
 
-		movaps C12, xmm7
-		movaps xmm4, xmm1
+	//	psubq xmm7, xmm6
+	//	movaps xmm3, xmm1
 
-		movaps xmm5, DX31_DY31
-		psrlq xmm4, 32 // high part b
+	//	movaps C12, xmm7
+	//	movaps xmm4, xmm1
 
-		psrlq xmm5, 32 // high part a
-		pmuludq xmm0, xmm1 // lp_a * lp_b
-		
-		pmuludq xmm2, xmm4 // lp_a * hp_b
-		pmuludq xmm3, xmm5 // lp_b * hp_a
+	//	movaps xmm5, DX31_DY31
+	//	psrlq xmm4, 32 // high part b
 
-		psllq xmm2, 32 // shift low parts of 2 64bit int's to high parts
-		paddq xmm0, xmm2 
+	//	psrlq xmm5, 32 // high part a
+	//	pmuludq xmm0, xmm1 // lp_a * lp_b
+	//	
+	//	pmuludq xmm2, xmm4 // lp_a * hp_b
+	//	pmuludq xmm3, xmm5 // lp_b * hp_a
 
-		psllq xmm3, 32 // shift low parts of 2 64bit int's to high parts
-		paddq xmm0, xmm3
+	//	psllq xmm2, 32 // shift low parts of 2 64bit int's to high parts
+	//	paddq xmm0, xmm2 
 
-		movhlps xmm1, xmm0
-		psubq xmm1, xmm0
+	//	psllq xmm3, 32 // shift low parts of 2 64bit int's to high parts
+	//	paddq xmm0, xmm3
 
-		movq C3, xmm1
-	}
+	//	movhlps xmm1, xmm0
+	//	psubq xmm1, xmm0
 
-    // Correct for fill convention
-    if(DY12_23[0] < 0 || (DY12_23[0] == 0 && DX12_23[0] > 0)) C12[0]++;
-    if(DY12_23[1] < 0 || (DY12_23[1] == 0 && DX12_23[1] > 0)) C12[1]++;
-    if(DX31_DY31[1] < 0 || (DX31_DY31[1] == 0 && DX31_DY31[0] > 0)) C3++;
+	//	movq C3, xmm1
+	//}
 
-	//DX# in 48.16! After calculations CY# is in 32.32 fixp
-   /* __int64 CY1 = C12[0] + DX12_23[0] * (miny << 16) - DY12_23[0] * (minx << 16);
-    __int64 CY2 = C12[1] + DX12_23[1] * (miny << 16) - DY12_23[1] * (minx << 16);
-    __int64 CY3 = C3 + DX31_DY31[0] * (miny << 16) - DX31_DY31[1] * (minx << 16);*/
-	__declspec(align(16)) __int64 CY_12[2];
-	__int64 CY3;
+ //   // Correct for fill convention
+ //   if(DY12_23[0] < 0 || (DY12_23[0] == 0 && DX12_23[0] > 0)) C12[0]++;
+ //   if(DY12_23[1] < 0 || (DY12_23[1] == 0 && DX12_23[1] > 0)) C12[1]++;
+ //   if(DX31_DY31[1] < 0 || (DX31_DY31[1] == 0 && DX31_DY31[0] > 0)) C3++;
 
-	__asm
-	{
-		movaps xmm0, DX12_23 // low part a
-		movaps xmm4, DY12_23 // low part a2
+	////DX# in 48.16! After calculations CY# is in 32.32 fixp
+ //  /* __int64 CY1 = C12[0] + DX12_23[0] * (miny << 16) - DY12_23[0] * (minx << 16);
+ //   __int64 CY2 = C12[1] + DX12_23[1] * (miny << 16) - DY12_23[1] * (minx << 16);
+ //   __int64 CY3 = C3 + DX31_DY31[0] * (miny << 16) - DX31_DY31[1] * (minx << 16);*/
+	//__declspec(align(16)) __int64 CY_12[2];
+	//__int64 CY3;
 
-		movq xmm1, qword ptr[min_xy]
-		movq xmm5, qword ptr[min_xy]
+	//__asm
+	//{
+	//	movaps xmm0, DX12_23 // low part a
+	//	movaps xmm4, DY12_23 // low part a2
 
-		movaps xmm2, DX12_23 // high part, after shift a
-		movaps xmm6, DY12_23 // high part, after shift a2
+	//	movq xmm1, qword ptr[min_xy]
+	//	movq xmm5, qword ptr[min_xy]
 
-		pshufd xmm1, xmm1, 01010101b //y,y,y,y
-		pshufd xmm5, xmm5, 00000000b //x,x,x,x
+	//	movaps xmm2, DX12_23 // high part, after shift a
+	//	movaps xmm6, DY12_23 // high part, after shift a2
 
-		psrlq xmm2, 32 // high part a
-		psrlq xmm6, 32 // high part a2
+	//	pshufd xmm1, xmm1, 01010101b //y,y,y,y
+	//	pshufd xmm5, xmm5, 00000000b //x,x,x,x
 
-		pslld xmm1, 16
-		pslld xmm5, 16
+	//	psrlq xmm2, 32 // high part a
+	//	psrlq xmm6, 32 // high part a2
 
-		pmuludq xmm0, xmm1
-		pmuludq xmm4, xmm5
+	//	pslld xmm1, 16
+	//	pslld xmm5, 16
 
-		pmuludq xmm2, xmm1
-		pmuludq xmm6, xmm5
+	//	pmuludq xmm0, xmm1
+	//	pmuludq xmm4, xmm5
 
-		psllq xmm2, 32
-		psllq xmm6, 32
+	//	pmuludq xmm2, xmm1
+	//	pmuludq xmm6, xmm5
 
-		paddq xmm0, xmm2
-		paddq xmm4, xmm6
+	//	psllq xmm2, 32
+	//	psllq xmm6, 32
 
-		psubq xmm0, xmm4
-		movaps xmm3, DX31_DY31 // low part a
+	//	paddq xmm0, xmm2
+	//	paddq xmm4, xmm6
 
-		movaps xmm7, C12
-		movlhps xmm1, xmm5 //x,x,y,y
+	//	psubq xmm0, xmm4
+	//	movaps xmm3, DX31_DY31 // low part a
 
-		paddq xmm7, xmm0
-		movaps xmm2, DX31_DY31 // high part, after shift a
+	//	movaps xmm7, C12
+	//	movlhps xmm1, xmm5 //x,x,y,y
 
-		movaps CY_12, xmm7
-		psrlq xmm2, 32 // high part a
+	//	paddq xmm7, xmm0
+	//	movaps xmm2, DX31_DY31 // high part, after shift a
 
-		pmuludq xmm2, xmm1
-		movq xmm5, C3
+	//	movaps CY_12, xmm7
+	//	psrlq xmm2, 32 // high part a
 
-		pmuludq xmm3, xmm1
-		psllq xmm2, 32
+	//	pmuludq xmm2, xmm1
+	//	movq xmm5, C3
 
-		paddq xmm3, xmm2
-		movhlps xmm6, xmm3
+	//	pmuludq xmm3, xmm1
+	//	psllq xmm2, 32
 
-		paddq xmm5, xmm3
-		psubq xmm5, xmm6
+	//	paddq xmm3, xmm2
+	//	movhlps xmm6, xmm3
 
-		movq CY3, xmm5
-	}
+	//	paddq xmm5, xmm3
+	//	psubq xmm5, xmm6
 
-	__declspec(align(16)) __int64 CX_12[2];
-	__int64 CX3;
+	//	movq CY3, xmm5
+	//}
 
-    for(int y = min_xy[1]; y < maxy; y++)
-    {
-       /* CX_12[0] = CY_12[0];
-        CX_12[1] = CY_12[1];
-        CX3 = CY3;*/
-		__asm
-		{
-			movaps xmm0, CY_12
-			movq xmm1, CY3
+	//__declspec(align(16)) __int64 CX_12[2];
+	//__int64 CX3;
 
-			movaps CX_12, xmm0
-			movq CX3, xmm1
-		}
+ //   for(int y = min_xy[1]; y < maxy; y++)
+ //   {
+ //      /* CX_12[0] = CY_12[0];
+ //       CX_12[1] = CY_12[1];
+ //       CX3 = CY3;*/
+	//	__asm
+	//	{
+	//		movaps xmm0, CY_12
+	//		movq xmm1, CY3
 
-        for(int x = min_xy[0]; x < maxx; x++)
-        {
-            if(CX_12[0] > 0 && CX_12[1] > 0 && CX3 > 0)
-			{
-                UINT color = ARGB32BIT(127,0,0,0);
-   		        this->_alphaBlender->AlphaBlend(&vb[x], &color, 1);
-            }
+	//		movaps CX_12, xmm0
+	//		movq CX3, xmm1
+	//	}
 
-            /*CX_12[0] -= FDY12_23[0];
-            CX_12[1] -= FDY12_23[1];
-            CX3 -= FDX31_FDY31[1];*/
-			__asm
-			{
-				movaps xmm0, CX_12
-				movaps xmm1, FDY12_23
+ //       for(int x = min_xy[0]; x < maxx; x++)
+ //       {
+ //           if(CX_12[0] > 0 && CX_12[1] > 0 && CX3 > 0)
+	//		{
+ //               UINT color = ARGB32BIT(127,0,0,0);
+ //  		        this->_alphaBlender->AlphaBlend(&vb[x], &color, 1);
+ //           }
 
-				movq xmm2, CX3
-				movq xmm3, [FDX31_FDY31 + 8]
+ //           /*CX_12[0] -= FDY12_23[0];
+ //           CX_12[1] -= FDY12_23[1];
+ //           CX3 -= FDX31_FDY31[1];*/
+	//		__asm
+	//		{
+	//			movaps xmm0, CX_12
+	//			movaps xmm1, FDY12_23
 
-				psubq xmm0, xmm1
-				psubq xmm2, xmm3
+	//			movq xmm2, CX3
+	//			movq xmm3, [FDX31_FDY31 + 8]
 
-				movaps CX_12, xmm0
-				movq CX3, xmm2
-			}
-        }
+	//			psubq xmm0, xmm1
+	//			psubq xmm2, xmm3
 
-        /*CY_12[0] += FDX12_23[0];
-        CY_12[1] += FDX12_23[1];
-        CY3 += FDX31_FDY31[0];*/
-		__asm
-		{
-			movaps xmm0, CY_12
-			movaps xmm1, FDX12_23
+	//			movaps CX_12, xmm0
+	//			movq CX3, xmm2
+	//		}
+ //       }
 
-			movq xmm2, CY3
-			movq xmm3, [FDX31_FDY31 + 0]
+ //       /*CY_12[0] += FDX12_23[0];
+ //       CY_12[1] += FDX12_23[1];
+ //       CY3 += FDX31_FDY31[0];*/
+	//	__asm
+	//	{
+	//		movaps xmm0, CY_12
+	//		movaps xmm1, FDX12_23
 
-			paddq xmm0, xmm1
-			paddq xmm2, xmm3
+	//		movq xmm2, CY3
+	//		movq xmm3, [FDX31_FDY31 + 0]
 
-			movaps CY_12, xmm0
-			movq CY3, xmm2
-		}
+	//		paddq xmm0, xmm1
+	//		paddq xmm2, xmm3
 
-        vb += lp;
-    }
+	//		movaps CY_12, xmm0
+	//		movq CY3, xmm2
+	//	}
+
+ //       vb += lp;
+ //   }
 
 	return 1;
 }

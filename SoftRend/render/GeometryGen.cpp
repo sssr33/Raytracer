@@ -838,7 +838,7 @@ int GeometryGen::generateShadowVolume(LIGHT_PTR l_in, int num_l_in, OBJECT4D_PTR
 
 	if(!objShadowCaster_in->adj) return 0;
 
-	if(objShadowCaster_in->num_polys > this->frontBackFace.size()) this->frontBackFace.resize(objShadowCaster_in->num_polys);
+	if(objShadowCaster_in->num_polys > static_cast<int>(this->frontBackFace.size())) this->frontBackFace.resize(objShadowCaster_in->num_polys);
 
 	if(this->frontBackFace[0] & 0x8000) this->frontBackFace.resize(this->frontBackFace.size(), 0); //Для правильной работы с атрибутами
 

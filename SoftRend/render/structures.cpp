@@ -1370,7 +1370,7 @@ void struct3D::SelectionSubject::Attach(Observer *o)
 }
 void struct3D::SelectionSubject::DetachAll()
 {
-	for(int i = 0; i < obs.size(); i++)
+	for(int i = 0; i < static_cast<int>(obs.size()); i++)
 	{
 		obs[i]->unsetSubject();
 	}
@@ -1380,7 +1380,7 @@ bool struct3D::SelectionSubject::IsObserverHere(Observer *o)
 {
 	bool result = false;
 
-	for(int i = 0; i < obs.size(); i++)
+	for(int i = 0; i < static_cast<int>(obs.size()); i++)
 	{
 		if(o == obs[i])
 		{
@@ -1401,7 +1401,7 @@ void struct3D::SelectionSubject::Notify()
 	swprintf(mas, L"%d", obs.size());
 	MessageBox(0,mas,0,0);*/
 
-	for(int i = 0; i < obs.size(); i++)
+	for(int i = 0; i < static_cast<int>(obs.size()); i++)
 	{
 		obs[i]->Update();
 	}
@@ -1983,7 +1983,7 @@ int struct3D::SubSelectionCollection::getMax()
 }
 void struct3D::SubSelectionCollection::reset()
 {
-	for(int i = 0; i < this->objects.size(); i++)
+	for(int i = 0; i < static_cast<int>(this->objects.size()); i++)
 	{
 		this->objects[i]->unselect();
 	}
@@ -2001,7 +2001,7 @@ void struct3D::SubSelectionCollection::move(float dx, float dy, float dz)
 	this->pWorld.y += dy;
 	this->pWorld.z += dz;
 
-	for(int i = 0; i < this->objects.size(); i++)
+	for(int i = 0; i < static_cast<int>(this->objects.size()); i++)
 	{
 		this->objects[i]->move(dx, dy, dz);
 	}
@@ -2017,7 +2017,7 @@ void struct3D::SubSelectionCollection::rotate(VECTOR4D_PTR vAngles)
 
 	mrot.Build_XYZ_Rotation_MATRIX4X4(vAngles->x, vAngles->y, vAngles->z);
 
-	for(int i = 0; i < this->objects.size(); i++)
+	for(int i = 0; i < static_cast<int>(this->objects.size()); i++)
 	{
 		this->objects[i]->rotate(vAngles, &pCenter2, &mrot);
 	}
@@ -2031,7 +2031,7 @@ void struct3D::SubSelectionCollection::rotate(MATRIX4X4_PTR mrot)
 
 	vecScale(size, &this->pCenter, &pCenter2);
 
-	for(int i = 0; i < this->objects.size(); i++)
+	for(int i = 0; i < static_cast<int>(this->objects.size()); i++)
 	{
 		this->objects[i]->rotate(0, &pCenter2, mrot);
 	}

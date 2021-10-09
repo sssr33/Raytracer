@@ -1,7 +1,9 @@
 #pragma once
+#include <Windows.h>
+// https://www.gamedev.net/forums/topic/116163-directinput_version-undefined-message/
+#define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 #include <locale.h>
-#include <Windows.h>
 
 enum MouseKeyNumber{
 	LeftButton, RightButton, MiddleButton

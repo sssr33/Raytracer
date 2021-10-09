@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "DrawLineStrategy.h"
 #include <math.h>
-
+#include <algorithm>
 
 int DrawSimpleLine32BitStrategy::DrawLine(int x0, int y0, int x1, int y1, unsigned int color, void *videoMemory, int lpitch, AlphaBlendStrategy *alphaBlender){
 
@@ -77,14 +77,13 @@ int DrawSimpleLine32BitStrategy::DrawLine(int x0, int y0, int x1, int y1, unsign
 	return 1;
 }
 
-#define SWAP(x, y, t) {t = y; y = x; x = t;}
 int DrawSoftLineSSE32BitStrategy::DrawLine(int x0, int y0, int x1, int y1, unsigned int color, void *videoMemory, int lpitch, AlphaBlendStrategy *alphaBlender){
 
 	float fTemp;
 	int dx = x1 - x0;
 	int dy = y1 - y0;
 	int alpha;
-	float alphaOrig = color >> 24;
+	float alphaOrig = static_cast<float>(color >> 24);
 	color &= 0x00FFFFFF;
 	bool cond = abs(dx) < abs(dy);
 	int lpitch2 = lpitch >> 2;
@@ -111,10 +110,10 @@ int DrawSoftLineSSE32BitStrategy::DrawLine(int x0, int y0, int x1, int y1, unsig
 	float gradient = (float)dy / (float)dx;
 
 	//first endpoint
-	float xend = Round(x0);
+	float xend = static_cast<float>(Round(static_cast<float>(x0)));
 	float yend = y0 + gradient * (xend - x0);
-	float xgap = rfPart(x0 + 0.5);
-	int xpxl1 = xend;
+	float xgap = rfPart(x0 + 0.5f);
+	int xpxl1 = static_cast<int>(xend);
 	int ypxl1 = iPart(yend);
 	//alpha = /*255.0f*/alphaOrig * (rfPart(yend) * xgap);
 	//PlotPixel(xpxl1, ypxl1, color | alpha << 24, vb, lpitch);
@@ -124,41 +123,41 @@ int DrawSoftLineSSE32BitStrategy::DrawLine(int x0, int y0, int x1, int y1, unsig
 	//
 
 	//second endpoint
-	xend = Round(x1);
+	xend = static_cast<float>(Round(static_cast<float>(x1)));
 	yend = y1 + gradient * (xend - x1);
-	xgap = fPart(x1 + 0.5);
-	int xpxl2 = xend;
+	xgap = fPart(x1 + 0.5f);
+	int xpxl2 = static_cast<int>(xend);
 	int ypxl2 = iPart(yend);
 	
 	if(!cond){
-		alpha = /*255.0f*/alphaOrig * (rfPart(yend) * xgap);
+		alpha = static_cast<int>(/*255.0f*/alphaOrig * (rfPart(yend) * xgap));
 		//PlotPixel(xpxl1, ypxl1, color | alpha << 24, vb, lpitch);
 
 //		vb[xpxl1 + ypxl1 * (lpitch >> 2)] = color | alpha << 24;
 
-		alpha = /*255.0f*/alphaOrig * (fPart(yend) * xgap);
+		alpha = static_cast<int>(/*255.0f*/alphaOrig * (fPart(yend) * xgap));
 		//PlotPixel(xpxl1, ypxl1 + 1, color | alpha << 24, vb, lpitch);
 //		vb[xpxl1 + ypxl1 * (lpitch >> 2)] = color | alpha << 24;
 
-		alpha = /*255*/alphaOrig * (rfPart(yend) * xgap);
+		alpha = static_cast<int>(/*255*/alphaOrig * (rfPart(yend) * xgap));
 		//PlotPixel(xpxl2, ypxl2, color | alpha << 24, vb, lpitch);
 //		vb[xpxl1 + ypxl1 * (lpitch >> 2)] = color | alpha << 24;
-		alpha = /*255*/alphaOrig * (fPart(yend) * xgap);
+		alpha = static_cast<int>(/*255*/alphaOrig * (fPart(yend) * xgap));
 		//PlotPixel(xpxl2, ypxl2 + 1, color | alpha << 24, vb, lpitch); 
 //		vb[xpxl1 + ypxl1 * (lpitch >> 2)] = color | alpha << 24;
 	}
 	else{
-		alpha = /*255.0f*/alphaOrig * (rfPart(yend) * xgap);
+		alpha = static_cast<int>(/*255.0f*/alphaOrig * (rfPart(yend) * xgap));
 		//PlotPixel(ypxl1, xpxl1, color | alpha << 24, vb, lpitch);
 //		vb[xpxl1 + ypxl1 * (lpitch >> 2)] = color | alpha << 24;
-		alpha = /*255.0f*/alphaOrig * (fPart(yend) * xgap);
+		alpha = static_cast<int>(/*255.0f*/alphaOrig * (fPart(yend) * xgap));
 		//PlotPixel(ypxl1 + 1, xpxl1, color | alpha << 24, vb, lpitch);
 //		vb[xpxl1 + ypxl1 * (lpitch >> 2)] = color | alpha << 24;
 
-		alpha = /*255*/alphaOrig * (rfPart(yend) * xgap);
+		alpha = static_cast<int>(/*255*/alphaOrig * (rfPart(yend) * xgap));
 		//PlotPixel(ypxl2, xpxl2, color | alpha << 24, vb, lpitch);
 //		vb[xpxl1 + ypxl1 * (lpitch >> 2)] = color | alpha << 24;
-		alpha = /*255*/alphaOrig * (fPart(yend) * xgap);
+		alpha = static_cast<int>(/*255*/alphaOrig * (fPart(yend) * xgap));
 		//PlotPixel(ypxl2 + 1, xpxl2, color | alpha << 24, vb, lpitch);
 //		vb[xpxl1 + ypxl1 * (lpitch >> 2)] = color | alpha << 24;
 	}
@@ -180,40 +179,41 @@ int DrawSoftLineSSE32BitStrategy::DrawLine(int x0, int y0, int x1, int y1, unsig
 		backColors[2] = vb[aY + lpitch2];
 		backColors[3] = vb[bY + lpitch2];
 
-		__asm{
-			movd xmm2, alphaOrig //alphas
-			movaps xmm5, fOne //fOne
-			
-			pshufd xmm2, xmm2, 0
-			movlps xmm6, interys //interys
+		// TODO rewrite with intrinsics and plain C/C++
+		//__asm{
+		//	movd xmm2, alphaOrig //alphas
+		//	movaps xmm5, fOne //fOne
+		//	
+		//	pshufd xmm2, xmm2, 0
+		//	movlps xmm6, interys //interys
 
-			//movlps oldInterys, xmm6
-			movlps xmm7, gradients //gradients
-			pshufd xmm3, xmm6, 44h//xmm_3 = {intreys[1], interys[0], intreys[1], interys[0]}
-			
-			addps xmm6, xmm7 //xmm6 = {interys[1] + gradients[1], interys[0] + gradients[0]}
-			cvttps2dq xmm1, xmm3
-			
-			movlps interys, xmm6 //saving new interys
-			cvtdq2ps xmm1, xmm1
+		//	//movlps oldInterys, xmm6
+		//	movlps xmm7, gradients //gradients
+		//	pshufd xmm3, xmm6, 44h//xmm_3 = {intreys[1], interys[0], intreys[1], interys[0]}
+		//	
+		//	addps xmm6, xmm7 //xmm6 = {interys[1] + gradients[1], interys[0] + gradients[0]}
+		//	cvttps2dq xmm1, xmm3
+		//	
+		//	movlps interys, xmm6 //saving new interys
+		//	cvtdq2ps xmm1, xmm1
 
-			movaps xmm0, colors
-			subps xmm3, xmm1//float parts of interys in xmm3
+		//	movaps xmm0, colors
+		//	subps xmm3, xmm1//float parts of interys in xmm3
 
-			movhlps xmm4, xmm3//xmm3 high part to xmm4 low part
-			subps xmm5, xmm4//1.0 - interys
-			movlhps xmm3, xmm5//xmm3 = {1 - intreys[1], 1 - interys[0], intreys[1], interys[0]}
-			
-			mulps xmm3, xmm2//xmm3 = {(1 - intreys[1]) * alphaOrig, (1 - interys[0]) * alphaOrig, intreys[1] * alphaOrig, interys[0] * alphaOrig}
-			cvttps2dq xmm3, xmm3
+		//	movhlps xmm4, xmm3//xmm3 high part to xmm4 low part
+		//	subps xmm5, xmm4//1.0 - interys
+		//	movlhps xmm3, xmm5//xmm3 = {1 - intreys[1], 1 - interys[0], intreys[1], interys[0]}
+		//	
+		//	mulps xmm3, xmm2//xmm3 = {(1 - intreys[1]) * alphaOrig, (1 - interys[0]) * alphaOrig, intreys[1] * alphaOrig, interys[0] * alphaOrig}
+		//	cvttps2dq xmm3, xmm3
 
-			pslld xmm3, 24
+		//	pslld xmm3, 24
 
-			por xmm0,xmm3
+		//	por xmm0,xmm3
 
-			movaps resColors, xmm0
+		//	movaps resColors, xmm0
 
-		}
+		//}
 
 		//MyAlphaBlend9(backColors, resColors);
 		alphaBlender->AlphaBlend(backColors, resColors, 4);
@@ -234,40 +234,41 @@ int DrawSoftLineSSE32BitStrategy::DrawLine(int x0, int y0, int x1, int y1, unsig
 		backColors[2] = vb[aY + /*lpitch2*/1];
 		backColors[3] = vb[bY + /*lpitch2*/1];
 
-		__asm{
-			movd xmm2, alphaOrig //alphas
-			movaps xmm5, fOne //fOne
-			
-			pshufd xmm2, xmm2, 0
-			movlps xmm6, interys //interys
+		// TODO rewrite with intrinsics and plain C/C++
+		//__asm{
+		//	movd xmm2, alphaOrig //alphas
+		//	movaps xmm5, fOne //fOne
+		//	
+		//	pshufd xmm2, xmm2, 0
+		//	movlps xmm6, interys //interys
 
-			//movlps oldInterys, xmm6
-			movlps xmm7, gradients //gradients
-			pshufd xmm3, xmm6, 44h//xmm_3 = {intreys[1], interys[0], intreys[1], interys[0]}
-			
-			addps xmm6, xmm7 //xmm6 = {interys[1] + gradients[1], interys[0] + gradients[0]}
-			cvttps2dq xmm1, xmm3
-			
-			movlps interys, xmm6 //saving new interys
-			cvtdq2ps xmm1, xmm1
+		//	//movlps oldInterys, xmm6
+		//	movlps xmm7, gradients //gradients
+		//	pshufd xmm3, xmm6, 44h//xmm_3 = {intreys[1], interys[0], intreys[1], interys[0]}
+		//	
+		//	addps xmm6, xmm7 //xmm6 = {interys[1] + gradients[1], interys[0] + gradients[0]}
+		//	cvttps2dq xmm1, xmm3
+		//	
+		//	movlps interys, xmm6 //saving new interys
+		//	cvtdq2ps xmm1, xmm1
 
-			movaps xmm0, colors
-			subps xmm3, xmm1//float parts of interys in xmm3
+		//	movaps xmm0, colors
+		//	subps xmm3, xmm1//float parts of interys in xmm3
 
-			movhlps xmm4, xmm3//xmm3 high part to xmm4 low part
-			subps xmm5, xmm4//1.0 - interys
-			movlhps xmm3, xmm5//xmm3 = {1 - intreys[1], 1 - interys[0], intreys[1], interys[0]}
-			
-			mulps xmm3, xmm2//xmm3 = {(1 - intreys[1]) * alphaOrig, (1 - interys[0]) * alphaOrig, intreys[1] * alphaOrig, interys[0] * alphaOrig}
-			cvttps2dq xmm3, xmm3
+		//	movhlps xmm4, xmm3//xmm3 high part to xmm4 low part
+		//	subps xmm5, xmm4//1.0 - interys
+		//	movlhps xmm3, xmm5//xmm3 = {1 - intreys[1], 1 - interys[0], intreys[1], interys[0]}
+		//	
+		//	mulps xmm3, xmm2//xmm3 = {(1 - intreys[1]) * alphaOrig, (1 - interys[0]) * alphaOrig, intreys[1] * alphaOrig, interys[0] * alphaOrig}
+		//	cvttps2dq xmm3, xmm3
 
-			pslld xmm3, 24
+		//	pslld xmm3, 24
 
-			por xmm0,xmm3
+		//	por xmm0,xmm3
 
-			movaps resColors, xmm0
+		//	movaps resColors, xmm0
 
-		}
+		//}
 
 		alphaBlender->AlphaBlend(backColors, resColors, 4);
 		//MyAlphaBlend9(backColors, resColors);
@@ -284,7 +285,7 @@ int DrawSoftLineSSE32BitStrategy::DrawLine(int x0, int y0, int x1, int y1, unsig
 
 int DrawSoftLineSSE32BitStrategy::DrawHLine(float x0, float x1, int y, unsigned int color, void *videoMemory, int lpitch, AlphaBlendStrategy *alphaBlender)
 {
-	int iLineLength = x1 - x0;
+	int iLineLength = static_cast<int>(x1 - x0);
 	unsigned int *vb = (unsigned int *)videoMemory;
 	lpitch >>= 2;
 	int colorAlpha = color >> 24;
@@ -348,13 +349,7 @@ int DrawSoftLineSSE32BitStrategy::DrawHLine(float x0, float x1, int y, unsigned 
 	}
 	else{
 		unsigned int *vb2 = vb + (int)x0 + y * lpitch;
-		__asm
-		{
-			mov eax, color
-			mov ecx, iLineLength
-			mov edi, vb2
-			rep stosd
-		}
+		std::fill(vb2, vb2 + iLineLength, color);
 	}
 
 	vb[(int)x0 + y * lpitch] = destColors[0];
@@ -367,10 +362,10 @@ int DrawSoftLineSSE32BitStrategy::DrawHLine(float x0, float x1, int y, unsigned 
 
 int DrawSoftLineSSE32BitStrategy::DrawHGradientLine(float x0, float x1, int y, unsigned int color,float startGrad, float endGrad, void *videoMemory, int lpitch, AlphaBlendStrategy *alphaBlender)
 {
-	int iLineLength = x1 - x0;
+	int iLineLength = static_cast<int>(x1 - x0);
 	unsigned int *vb = (unsigned int *)videoMemory;
 	lpitch >>= 2;
-	float colorAlpha = color >> 24;
+	float colorAlpha = static_cast<float>(color >> 24);
 	float t;
 	int i;
 
@@ -398,8 +393,8 @@ int DrawSoftLineSSE32BitStrategy::DrawHGradientLine(float x0, float x1, int y, u
 	else
 	{
 		endGrad+=2;
-		endGrad = (int)endGrad;
-		x1 = (int)x1;
+		endGrad = static_cast<float>((int)endGrad);
+		x1 = static_cast<float>((int)x1);
 		gradXend = 1.0f;
 		gradDec = 1.0f / endGrad;
 		//iAdd = 1;
@@ -413,7 +408,7 @@ int DrawSoftLineSSE32BitStrategy::DrawHGradientLine(float x0, float x1, int y, u
 	else
 	{
 		startGrad +=2;
-		startGrad = (int)startGrad;
+		startGrad = static_cast<float>((int)startGrad);
 		//x0 += 0.5f;
 		gradXst = 0.0f;
 		gradInc = 1.0f / startGrad;
@@ -429,7 +424,7 @@ int DrawSoftLineSSE32BitStrategy::DrawHGradientLine(float x0, float x1, int y, u
 		else return 0;
 	}*/
 
-	for(i = x0; i < (int)(x0 + startGrad); i++)
+	for(i = static_cast<int>(x0); i < (int)(x0 + startGrad); i++)
 	{
 		sourColors[0] = (color & 0x00FFFFFF) | ((int)(colorAlpha * gradXst) << 24);
 		alphaBlender->AlphaBlend((vb + i + y * lpitch), sourColors, 1);
@@ -439,12 +434,12 @@ int DrawSoftLineSSE32BitStrategy::DrawHGradientLine(float x0, float x1, int y, u
 
 	sourColors[0] = sourColors[1] = sourColors[2] = sourColors[3] = color;
 
-	for(i = x0 + startGrad; i < (int)(x1 - endGrad); i++)
+	for(i = static_cast<int>(x0 + startGrad); i < (int)(x1 - endGrad); i++)
 	{
 		alphaBlender->AlphaBlend((vb + i + y * lpitch), sourColors, 1);
 	}
 
-	for(i = x1 - endGrad; i < (int)x1; i++)
+	for(i = static_cast<int>(x1 - endGrad); i < (int)x1; i++)
 	{
 		sourColors[0] = (color & 0x00FFFFFF) | ((int)(colorAlpha * gradXend) << 24);
 		alphaBlender->AlphaBlend((vb + i + y * lpitch), sourColors, 1);
@@ -470,11 +465,7 @@ int DrawSoftLineSSE32BitStrategy::DrawHGradientLine2(float startGrad, float endG
 
 	if(iLineLength <= 0) return 0;
 
-	__asm
-	{
-		mov eax, color
-		mov ecx, iLineLength
-		mov edi, vb2
-		rep stosd
-	}
+	std::fill(vb2, vb2 + iLineLength, color);
+
+	return 1;
 }

@@ -30,7 +30,7 @@ public:
 	virtual int Initialize(_screenParams *params, HWND hWnd) = 0;
 	virtual void Release() = 0;
 	virtual int Resize(int newWidth, int newHeight) = 0;
-	~GraphicImp(void) {}
+	virtual ~GraphicImp(void) = default;
 
 	virtual int DrawBegin(bool bClearScreen) = 0;
 	virtual int DrawEnd() = 0;

@@ -5532,16 +5532,14 @@ int Draw32BitStrategy::DrawTriangle4(struct3D::POLYF4D_PTR poly, unsigned int *v
 
 inline int iround(float x)
 {
-  int t = static_cast<int>(x);
-
-  // TODO check fistp logic
-  /*__asm
-  {
-    fld  x
-    fistp t
-  }*/
-
-  return t;
+	// original code
+	// std::round is very close to fistp instruction but there are some differences in rounding near 0.5
+	//__asm
+	//{
+	//  fld  x
+	//  fistp t
+	//}
+	return static_cast<int>(std::round(x));
 }
 
 int Draw32BitStrategy::DrawTriangle5(struct3D::POLYF4D_PTR poly, unsigned int *videoMemory, int lpitch)

@@ -28,6 +28,7 @@
     <ClInclude Include="render\triInterpolation.h" />
     <ClInclude Include="render\zBuffer.h" />
     <ClInclude Include="render\fixp\fixsintab.h" />
+    <ClInclude Include="render\GraphicImpDirectDraw.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\fixp\fixed_func.cpp" />
@@ -40,7 +41,6 @@
     <ClCompile Include="render\FlipStrategy.cpp" />
     <ClCompile Include="render\FPSMeter.cpp" />
     <ClCompile Include="render\GeometryGen.cpp" />
-    <ClCompile Include="render\GraphicImp.cpp" />
     <ClCompile Include="render\Input.cpp" />
     <ClCompile Include="render\lineInterp.cpp" />
     <ClCompile Include="render\math3DFunc.cpp" />
@@ -54,5 +54,6 @@
     <ClCompile Include="render\triInterpIter.cpp" />
     <ClCompile Include="render\triInterpolation.cpp" />
     <ClCompile Include="render\zBuffer.cpp" />
+    <ClCompile Include="render\GraphicImpDirectDraw.cpp" />
   </ItemGroup>
 </Project>

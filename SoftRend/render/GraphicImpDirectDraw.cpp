@@ -1,19 +1,11 @@
 #include "StdAfx.h"
-#include "GraphicImp.h"
+#include "GraphicImpDirectDraw.h"
 
-
-GraphicImpDirectDraw::GraphicImpDirectDraw(){
-	_lpdd7 = 0;
-	_lpddsurf = 0;
-	_lpddbacksurf = 0;
-	_lpddclip = 0;
-}
-
-int GraphicImpDirectDraw::Initialize(_screenParams *params, HWND hWnd)
+int GraphicImpDirectDraw::Initialize(_screenParamsDirectDraw* params, HWND hWnd)
 {
 	//if(FAILED()) return 0;
 
-	memcpy(&_sp, params, sizeof(_screenParams));
+	memcpy(&_sp, params, sizeof(_screenParamsDirectDraw));
 
 	state.reset();
 
@@ -22,13 +14,13 @@ int GraphicImpDirectDraw::Initialize(_screenParams *params, HWND hWnd)
 	_hWnd = hWnd;
 	isBufferLocked = 0;
 
-	if(FAILED(DirectDrawCreateEx(NULL, (void **) &_lpdd7, IID_IDirectDraw7, NULL))) return 0;
+	if (FAILED(DirectDrawCreateEx(NULL, (void**)&_lpdd7, IID_IDirectDraw7, NULL))) return 0;
 
-	if(params->iFullScreen){
-		if(FAILED(_lpdd7->SetCooperativeLevel(_hWnd, DDSCL_ALLOWREBOOT | DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN))) return 0;
-		if(FAILED(_lpdd7->SetDisplayMode(params->iWidth, params->iHeight, params->iBitsPerPixel, 0, 0))) return 0;
+	if (params->iFullScreen) {
+		if (FAILED(_lpdd7->SetCooperativeLevel(_hWnd, DDSCL_ALLOWREBOOT | DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN))) return 0;
+		if (FAILED(_lpdd7->SetDisplayMode(params->iWidth, params->iHeight, params->iBitsPerPixel, 0, 0))) return 0;
 	}
-	else{
+	else {
 		/*RECT wndRect, clientRect;
 
 		GetWindowRect(_hWnd, &wndRect);
@@ -39,34 +31,34 @@ int GraphicImpDirectDraw::Initialize(_screenParams *params, HWND hWnd)
 
 		MoveWindow(_hWnd, wndRect.left, wndRect.top, iWinWidth, iWinHeight, 1);*/
 
-		if(FAILED(_lpdd7->SetCooperativeLevel(_hWnd, DDSCL_NORMAL))) return 0;
+		if (FAILED(_lpdd7->SetCooperativeLevel(_hWnd, DDSCL_NORMAL))) return 0;
 	}
 
 	ZeroMemory(&_ddsd, sizeof(_ddsd));
 	_ddsd.dwSize = sizeof(_ddsd);
 
-	if(params->iFullScreen){
+	if (params->iFullScreen) {
 		_ddsd.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
 		_ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE | DDSCAPS_COMPLEX | DDSCAPS_FLIP | DDSCAPS_SYSTEMMEMORY;
 		_ddsd.dwBackBufferCount = 1;
 	}
-	else{
+	else {
 		_ddsd.dwFlags = DDSD_CAPS;
 		_ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
 	}
 
-	if(FAILED(_lpdd7->CreateSurface(&_ddsd,&_lpddsurf,NULL))) return 0;
+	if (FAILED(_lpdd7->CreateSurface(&_ddsd, &_lpddsurf, NULL))) return 0;
 
-	if(params->iFullScreen){
+	if (params->iFullScreen) {
 		DDSCAPS2 ddsc;
 		ZeroMemory(&ddsc, sizeof(ddsc));
 		ddsc.dwCaps = DDSCAPS_BACKBUFFER;
-		if(FAILED(_lpddsurf->GetAttachedSurface(&ddsc, &_lpddbacksurf))) return 0;
+		if (FAILED(_lpddsurf->GetAttachedSurface(&ddsc, &_lpddbacksurf))) return 0;
 
 		_flipStrategy = new FlipFullscreenDDStrategy(_lpddsurf);
 		SetWindowLong(hWnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
 	}
-	else{
+	else {
 		ZeroMemory(&_ddsd, sizeof(_ddsd));
 		_ddsd.dwSize = sizeof(_ddsd);
 
@@ -75,11 +67,11 @@ int GraphicImpDirectDraw::Initialize(_screenParams *params, HWND hWnd)
 		_ddsd.dwHeight = params->iHeight;
 		_ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
 
-		if(FAILED(_lpdd7->CreateSurface(&_ddsd, &_lpddbacksurf, NULL))) return 0;
+		if (FAILED(_lpdd7->CreateSurface(&_ddsd, &_lpddbacksurf, NULL))) return 0;
 
-		if(FAILED(_lpdd7->CreateClipper(0, &_lpddclip, 0))) return 0;
-		if(FAILED(_lpddclip->SetHWnd(0, _hWnd))) return 0;
-		if(FAILED(_lpddsurf->SetClipper(_lpddclip))) return 0;
+		if (FAILED(_lpdd7->CreateClipper(0, &_lpddclip, 0))) return 0;
+		if (FAILED(_lpddclip->SetHWnd(0, _hWnd))) return 0;
+		if (FAILED(_lpddsurf->SetClipper(_lpddclip))) return 0;
 
 		_flipStrategy = new FlipWindowedDDStrategy(_lpddsurf, _lpddbacksurf, _hWnd, _sp.iWidth, _sp.iHeight);
 	}
@@ -87,29 +79,29 @@ int GraphicImpDirectDraw::Initialize(_screenParams *params, HWND hWnd)
 	this->ppObj3DMap = 0;
 	/*this->ppObj3DMap = new POLYF4D_PTR[params->iWidth * params->iHeight];
 	memset(this->ppObj3DMap, 0, sizeof(POLYF4D_PTR) * (params->iWidth * params->iHeight));*/
-	if(!InitializeDrawStrategies(params)) return 0;
+	if (!InitializeDrawStrategies(params)) return 0;
 
 	//3DInit:
-	POINT4D camPos = {0, 0, 0, 1};
-	VECTOR4D camDir = {0, 0, 0, 1};
-	POINT4D target = {0, 0, 1, 1};
+	POINT4D camPos = { 0, 0, 0, 1 };
+	VECTOR4D camDir = { 0, 0, 0, 1 };
+	POINT4D target = { 0, 0, 1, 1 };
 
-	mainCam.Init_CAM4D(struct3D::CAM_MODEL_EULER, &camPos, &camDir, &target, 10.0f, 100000.0f, 90.0f, static_cast<float>(params->iWidth), static_cast<float>(params->iHeight)); 
+	mainCam.Init_CAM4D(struct3D::CAM_MODEL_EULER, &camPos, &camDir, &target, 10.0f, 100000.0f, 90.0f, static_cast<float>(params->iWidth), static_cast<float>(params->iHeight));
 	//mainCam.Build_CAM4D_Matrix_Euler(struct3D::CAM_ROT_SEQ_ZYX);
 
 	return 1;
 }
 
-int GraphicImpDirectDraw::InitializeDrawStrategies(_screenParams *params){
+int GraphicImpDirectDraw::InitializeDrawStrategies(_screenParamsDirectDraw* params) {
 
-	if(params->iBitsPerPixel == 32)
+	if (params->iBitsPerPixel == 32)
 	{
 		_draw = new Draw32BitStrategy(params->iGraphicQuality);
 		_draw->setClipBorders(0.f, 0.f, static_cast<float>(params->iWidth), static_cast<float>(params->iHeight));
 		//_draw->setObj3DMap(this->ppObj3DMap, this->_sp.iWidth, this->_sp.iHeight);
 		_draw->setScreenSize(this->_sp.iWidth, this->_sp.iHeight);
 	}
-	else if(params->iBitsPerPixel == 16)
+	else if (params->iBitsPerPixel == 16)
 	{
 		_draw = new Draw16BitStrategy(params->iGraphicQuality);
 		_draw->setClipBorders(0.f, 0.f, static_cast<float>(params->iWidth), static_cast<float>(params->iHeight));
@@ -122,9 +114,9 @@ int GraphicImpDirectDraw::InitializeDrawStrategies(_screenParams *params){
 	return 1;
 }
 
-int GraphicImpDirectDraw::DrawBegin(bool bClearScreen){
+int GraphicImpDirectDraw::DrawBegin(bool bClearScreen) {
 
-	if(isBufferLocked){
+	if (isBufferLocked) {
 		DrawEnd();
 	}
 
@@ -133,17 +125,17 @@ int GraphicImpDirectDraw::DrawBegin(bool bClearScreen){
 
 	/*if(this->ppObj3DMap)
 		memset(this->ppObj3DMap, 0, sizeof(POLYF4D_PTR) * this->_sp.iWidth * this->_sp.iHeight);*/
-	
-	if(bClearScreen){
+
+	if (bClearScreen) {
 		ZeroMemory(&_ddblt, sizeof(_ddblt));
 		_ddblt.dwSize = sizeof(_ddblt);
 
-		_ddblt.dwFillColor = _ARGB32BIT(0,255,255,255);//0;//
+		_ddblt.dwFillColor = _ARGB32BIT(0, 255, 255, 255);//0;//
 
-		if(FAILED(_lpddbacksurf->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &_ddblt))) return 0;
+		if (FAILED(_lpddbacksurf->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &_ddblt))) return 0;
 	}
 
-	if(FAILED(_lpddbacksurf->Lock(NULL, &_ddsd, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT, NULL))) {
+	if (FAILED(_lpddbacksurf->Lock(NULL, &_ddsd, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT, NULL))) {
 		isBufferLocked = 0;
 		return 0;
 	}
@@ -156,9 +148,9 @@ int GraphicImpDirectDraw::DrawBegin(bool bClearScreen){
 	return 1;
 }
 
-int GraphicImpDirectDraw::DrawEnd(){
-	if(isBufferLocked){
-		if(FAILED(_lpddbacksurf->Unlock(NULL))){
+int GraphicImpDirectDraw::DrawEnd() {
+	if (isBufferLocked) {
+		if (FAILED(_lpddbacksurf->Unlock(NULL))) {
 			isBufferLocked = 1;
 			return 0;
 		}
@@ -174,29 +166,29 @@ int GraphicImpDirectDraw::DrawEnd(){
 	return 1;
 }
 
-int GraphicImpDirectDraw::DrawPixel(math3D::POINT2DI *pts, int numPts, unsigned int color)
+int GraphicImpDirectDraw::DrawPixel(math3D::POINT2DI* pts, int numPts, unsigned int color)
 {
-	return _draw->DrawPixel(pts, numPts, color, _videoBuffer,_lPitch);
+	return _draw->DrawPixel(pts, numPts, color, _videoBuffer, _lPitch);
 }
-int GraphicImpDirectDraw::DrawPixel(math3D::POINT2D *pts, int numPts, unsigned int color)
+int GraphicImpDirectDraw::DrawPixel(math3D::POINT2D* pts, int numPts, unsigned int color)
 {
-	return _draw->DrawPixel(pts, numPts, color, _videoBuffer,_lPitch);
+	return _draw->DrawPixel(pts, numPts, color, _videoBuffer, _lPitch);
 }
 
-int GraphicImpDirectDraw::DrawLine(int x0, int y0, int x1, int y1, unsigned int color){
-	if(isBufferLocked){
-		if(ClipLine(x0, y0, x1, y1, &_sp))
+int GraphicImpDirectDraw::DrawLine(int x0, int y0, int x1, int y1, unsigned int color) {
+	if (isBufferLocked) {
+		if (ClipLine(x0, y0, x1, y1, &_sp))
 		{
-			_draw->DrawLine(x0,y0,x1,y1,color,_videoBuffer,_lPitch);
+			_draw->DrawLine(x0, y0, x1, y1, color, _videoBuffer, _lPitch);
 		}
 		return 1;
 	}
 	return 0;
 }
 
-int GraphicImpDirectDraw::DrawText(TCHAR *tchTextString, int iStrLen, int iX, int iY, unsigned int iColor){
-	if(isBufferLocked){
-	
+int GraphicImpDirectDraw::DrawText(TCHAR* tchTextString, int iStrLen, int iX, int iY, unsigned int iColor) {
+	if (isBufferLocked) {
+
 		iColor = (iColor & 0x0000FF00) | ((iColor >> 16) & 0x000000FF) | ((iColor << 16) & 0x00FF0000);
 
 		_lpddbacksurf->GetDC(&_HDC);
@@ -204,7 +196,7 @@ int GraphicImpDirectDraw::DrawText(TCHAR *tchTextString, int iStrLen, int iX, in
 		SetBkMode(_HDC, TRANSPARENT);
 		SetTextColor(_HDC, iColor);
 		TextOut(_HDC, iX, iY, tchTextString, iStrLen);
-		
+
 		_lpddbacksurf->ReleaseDC(_HDC);
 
 		return 1;
@@ -212,7 +204,7 @@ int GraphicImpDirectDraw::DrawText(TCHAR *tchTextString, int iStrLen, int iX, in
 	return 0;
 }
 
-int GraphicImpDirectDraw::ClipLine( int &x1, int &y1, int &x2, int &y2, _screenParams *params){
+int GraphicImpDirectDraw::ClipLine(int& x1, int& y1, int& x2, int& y2, _screenParamsDirectDraw* params) {
 
 
 #define CLIP_CODE_C 0x0000
@@ -235,132 +227,132 @@ int GraphicImpDirectDraw::ClipLine( int &x1, int &y1, int &x2, int &y2, _screenP
 
 	int p1_code = 0, p2_code = 0;
 
-	if(y1 < MIN_CLIP_Y) p1_code |= CLIP_CODE_N;
-	else if(y1 > MAX_CLIP_Y) p1_code |= CLIP_CODE_S;
+	if (y1 < MIN_CLIP_Y) p1_code |= CLIP_CODE_N;
+	else if (y1 > MAX_CLIP_Y) p1_code |= CLIP_CODE_S;
 
-	if(x1 < MIN_CLIP_X) p1_code |= CLIP_CODE_W;
-	else if(x1 > MAX_CLIP_X) p1_code |= CLIP_CODE_E;
+	if (x1 < MIN_CLIP_X) p1_code |= CLIP_CODE_W;
+	else if (x1 > MAX_CLIP_X) p1_code |= CLIP_CODE_E;
 
-	if(y2 < MIN_CLIP_Y) p2_code |= CLIP_CODE_N;
-	else if(y2 > MAX_CLIP_Y) p2_code |= CLIP_CODE_S;
+	if (y2 < MIN_CLIP_Y) p2_code |= CLIP_CODE_N;
+	else if (y2 > MAX_CLIP_Y) p2_code |= CLIP_CODE_S;
 
-	if(x2 < MIN_CLIP_X) p2_code |= CLIP_CODE_W;
-	else if(x2 > MAX_CLIP_X) p2_code |= CLIP_CODE_E;
+	if (x2 < MIN_CLIP_X) p2_code |= CLIP_CODE_W;
+	else if (x2 > MAX_CLIP_X) p2_code |= CLIP_CODE_E;
 
-	if((p1_code & p2_code)) return 0;
-	
-	if(p1_code == 0 && p2_code == 0) return 1;
+	if ((p1_code & p2_code)) return 0;
 
-	switch(p1_code){
-		case CLIP_CODE_C: break;
+	if (p1_code == 0 && p2_code == 0) return 1;
 
-		case CLIP_CODE_N:
-			yc1 = MIN_CLIP_Y;
-			xc1 = static_cast<int>(x1 + 0.5 + (MIN_CLIP_Y - y1) * (x2 - x1) / (y2 - y1));
-			break;
-		case CLIP_CODE_S:
-			yc1 = MAX_CLIP_Y;
-			xc1 = static_cast<int>(x1 + 0.5 + (MAX_CLIP_Y - y1) * (x2 - x1) / (y2 - y1));
-			break;
-		case CLIP_CODE_W:
-			xc1 = MIN_CLIP_X;
-			yc1 = static_cast<int>(y1 + 0.5 + (MIN_CLIP_X - x1) * (y2 - y1) / (x2 - x1));
-			break;
-		case CLIP_CODE_E:
+	switch (p1_code) {
+	case CLIP_CODE_C: break;
+
+	case CLIP_CODE_N:
+		yc1 = MIN_CLIP_Y;
+		xc1 = static_cast<int>(x1 + 0.5 + (MIN_CLIP_Y - y1) * (x2 - x1) / (y2 - y1));
+		break;
+	case CLIP_CODE_S:
+		yc1 = MAX_CLIP_Y;
+		xc1 = static_cast<int>(x1 + 0.5 + (MAX_CLIP_Y - y1) * (x2 - x1) / (y2 - y1));
+		break;
+	case CLIP_CODE_W:
+		xc1 = MIN_CLIP_X;
+		yc1 = static_cast<int>(y1 + 0.5 + (MIN_CLIP_X - x1) * (y2 - y1) / (x2 - x1));
+		break;
+	case CLIP_CODE_E:
+		xc1 = MAX_CLIP_X;
+		yc1 = static_cast<int>(y1 + 0.5 + (MAX_CLIP_X - x1) * (y2 - y1) / (x2 - x1));
+		break;
+	case CLIP_CODE_NE:
+		yc1 = MIN_CLIP_Y;
+		xc1 = static_cast<int>(x1 + 0.5 + (MIN_CLIP_Y - y1) * (x2 - x1) / (y2 - y1));
+		if (xc1 < MIN_CLIP_X || xc1 > MAX_CLIP_X) {
 			xc1 = MAX_CLIP_X;
 			yc1 = static_cast<int>(y1 + 0.5 + (MAX_CLIP_X - x1) * (y2 - y1) / (x2 - x1));
-			break;
-		case CLIP_CODE_NE:
-			yc1 = MIN_CLIP_Y;
-			xc1 = static_cast<int>(x1 + 0.5 + (MIN_CLIP_Y - y1) * (x2 - x1) / (y2 - y1));
-			if(xc1 < MIN_CLIP_X || xc1 > MAX_CLIP_X){
-				xc1 = MAX_CLIP_X;
-				yc1 = static_cast<int>(y1 + 0.5 + (MAX_CLIP_X - x1) * (y2 - y1) / (x2 - x1));
-			}
-			break;
-		case CLIP_CODE_SE:
-			yc1 = MAX_CLIP_Y;
-			xc1 = static_cast<int>(x1 + 0.5 + (MAX_CLIP_Y - y1) * (x2 - x1) / (y2 - y1));
-			if(xc1 < MIN_CLIP_X || xc1 > MAX_CLIP_X){
-				xc1 = MAX_CLIP_X;
-				yc1 = static_cast<int>(y1 + 0.5 + (MAX_CLIP_X - x1) * (y2 - y1) / (x2 - x1));
-			}
-			break;
-		case CLIP_CODE_NW:
-			yc1 = MIN_CLIP_Y;
-			xc1 = static_cast<int>(x1 + 0.5 + (MIN_CLIP_Y - y1) * (x2 - x1) / (y2 - y1));
-			if(xc1 < MIN_CLIP_X || xc1 > MAX_CLIP_X){
-				xc1 = MIN_CLIP_X;
-				yc1 = static_cast<int>(y1 + 0.5 + (MIN_CLIP_X - x1) * (y2 - y1) / (x2 - x1));
-			}
-			break;
-		case CLIP_CODE_SW:
-			yc1 = MAX_CLIP_Y;
-			xc1 = static_cast<int>(x1 + 0.5 + (MAX_CLIP_Y - y1) * (x2 - x1) / (y2 - y1));
-			if(xc1 < MIN_CLIP_X || xc1 > MAX_CLIP_X){
-				xc1 = MIN_CLIP_X;
-				yc1 = static_cast<int>(y1 + 0.5 + (MIN_CLIP_X - x1) * (y2 - y1) / (x2 - x1));
-			}
-			break;
-		default : break;
+		}
+		break;
+	case CLIP_CODE_SE:
+		yc1 = MAX_CLIP_Y;
+		xc1 = static_cast<int>(x1 + 0.5 + (MAX_CLIP_Y - y1) * (x2 - x1) / (y2 - y1));
+		if (xc1 < MIN_CLIP_X || xc1 > MAX_CLIP_X) {
+			xc1 = MAX_CLIP_X;
+			yc1 = static_cast<int>(y1 + 0.5 + (MAX_CLIP_X - x1) * (y2 - y1) / (x2 - x1));
+		}
+		break;
+	case CLIP_CODE_NW:
+		yc1 = MIN_CLIP_Y;
+		xc1 = static_cast<int>(x1 + 0.5 + (MIN_CLIP_Y - y1) * (x2 - x1) / (y2 - y1));
+		if (xc1 < MIN_CLIP_X || xc1 > MAX_CLIP_X) {
+			xc1 = MIN_CLIP_X;
+			yc1 = static_cast<int>(y1 + 0.5 + (MIN_CLIP_X - x1) * (y2 - y1) / (x2 - x1));
+		}
+		break;
+	case CLIP_CODE_SW:
+		yc1 = MAX_CLIP_Y;
+		xc1 = static_cast<int>(x1 + 0.5 + (MAX_CLIP_Y - y1) * (x2 - x1) / (y2 - y1));
+		if (xc1 < MIN_CLIP_X || xc1 > MAX_CLIP_X) {
+			xc1 = MIN_CLIP_X;
+			yc1 = static_cast<int>(y1 + 0.5 + (MIN_CLIP_X - x1) * (y2 - y1) / (x2 - x1));
+		}
+		break;
+	default: break;
 	}
 
-	switch(p2_code){
-		case CLIP_CODE_C: break;
+	switch (p2_code) {
+	case CLIP_CODE_C: break;
 
-		case CLIP_CODE_N:
-			yc2 = MIN_CLIP_Y;
-			xc2 = static_cast<int>(x2 + 0.5 + (MIN_CLIP_Y - y2) * (x1 - x2) / (y1 - y2));
-			break;
-		case CLIP_CODE_S:
-			yc2 = MAX_CLIP_Y;
-			xc2 = static_cast<int>(x2 + 0.5 + (MAX_CLIP_Y - y2) * (x1 - x2) / (y1 - y2));
-			break;
-		case CLIP_CODE_W:
-			xc2 = MIN_CLIP_X;
-			yc2 = static_cast<int>(y2 + 0.5 + (MIN_CLIP_X - x2) * (y1 - y2) / (x1 - x2));
-			break;
-		case CLIP_CODE_E:
+	case CLIP_CODE_N:
+		yc2 = MIN_CLIP_Y;
+		xc2 = static_cast<int>(x2 + 0.5 + (MIN_CLIP_Y - y2) * (x1 - x2) / (y1 - y2));
+		break;
+	case CLIP_CODE_S:
+		yc2 = MAX_CLIP_Y;
+		xc2 = static_cast<int>(x2 + 0.5 + (MAX_CLIP_Y - y2) * (x1 - x2) / (y1 - y2));
+		break;
+	case CLIP_CODE_W:
+		xc2 = MIN_CLIP_X;
+		yc2 = static_cast<int>(y2 + 0.5 + (MIN_CLIP_X - x2) * (y1 - y2) / (x1 - x2));
+		break;
+	case CLIP_CODE_E:
+		xc2 = MAX_CLIP_X;
+		yc2 = static_cast<int>(y2 + 0.5 + (MAX_CLIP_X - x2) * (y1 - y2) / (x1 - x2));
+		break;
+	case CLIP_CODE_NE:
+		yc2 = MIN_CLIP_Y;
+		xc2 = static_cast<int>(x2 + 0.5 + (MIN_CLIP_Y - y2) * (x1 - x2) / (y1 - y2));
+		if (xc2 < MIN_CLIP_X || xc2 > MAX_CLIP_X) {
 			xc2 = MAX_CLIP_X;
 			yc2 = static_cast<int>(y2 + 0.5 + (MAX_CLIP_X - x2) * (y1 - y2) / (x1 - x2));
-			break;
-		case CLIP_CODE_NE:
-			yc2 = MIN_CLIP_Y;
-			xc2 = static_cast<int>(x2 + 0.5 + (MIN_CLIP_Y - y2) * (x1 - x2) / (y1 - y2));
-			if(xc2 < MIN_CLIP_X || xc2 > MAX_CLIP_X){
-				xc2 = MAX_CLIP_X;
-				yc2 = static_cast<int>(y2 + 0.5 + (MAX_CLIP_X - x2) * (y1 - y2) / (x1 - x2));
-			}
-			break;
-		case CLIP_CODE_SE:
-			yc2 = MAX_CLIP_Y;
-			xc2 = static_cast<int>(x2 + 0.5 + (MAX_CLIP_Y - y2) * (x1 - x2) / (y1 - y2));
-			if(xc2 < MIN_CLIP_X || xc2 > MAX_CLIP_X){
-				xc2 = MAX_CLIP_X;
-				yc2 = static_cast<int>(y2 + 0.5 + (MAX_CLIP_X - x2) * (y1 - y2) / (x1 - x2));
-			}
-			break;
-		case CLIP_CODE_NW:
-			yc2 = MIN_CLIP_Y;
-			xc2 = static_cast<int>(x2 + 0.5 + (MIN_CLIP_Y - y2) * (x1 - x2) / (y1 - y2));
-			if(xc2 < MIN_CLIP_X || xc1 > MAX_CLIP_X){
-				xc2 = MIN_CLIP_X;
-				yc2 = static_cast<int>(y2 + 0.5 + (MIN_CLIP_X - x2) * (y1 - y2) / (x1 - x2));
-			}
-			break;
-		case CLIP_CODE_SW:
-			yc2 = MAX_CLIP_Y;
-			xc2 = static_cast<int>(x2 + 0.5 + (MAX_CLIP_Y - y2) * (x1 - x2) / (y1 - y2));
-			if(xc2 < MIN_CLIP_X || xc2 > MAX_CLIP_X){
-				xc2 = MIN_CLIP_X;
-				yc2 = static_cast<int>(y2 + 0.5 + (MIN_CLIP_X - x2) * (y1 - y2) / (x1 - x2));
-			}
-			break;
-		default : break;
+		}
+		break;
+	case CLIP_CODE_SE:
+		yc2 = MAX_CLIP_Y;
+		xc2 = static_cast<int>(x2 + 0.5 + (MAX_CLIP_Y - y2) * (x1 - x2) / (y1 - y2));
+		if (xc2 < MIN_CLIP_X || xc2 > MAX_CLIP_X) {
+			xc2 = MAX_CLIP_X;
+			yc2 = static_cast<int>(y2 + 0.5 + (MAX_CLIP_X - x2) * (y1 - y2) / (x1 - x2));
+		}
+		break;
+	case CLIP_CODE_NW:
+		yc2 = MIN_CLIP_Y;
+		xc2 = static_cast<int>(x2 + 0.5 + (MIN_CLIP_Y - y2) * (x1 - x2) / (y1 - y2));
+		if (xc2 < MIN_CLIP_X || xc1 > MAX_CLIP_X) {
+			xc2 = MIN_CLIP_X;
+			yc2 = static_cast<int>(y2 + 0.5 + (MIN_CLIP_X - x2) * (y1 - y2) / (x1 - x2));
+		}
+		break;
+	case CLIP_CODE_SW:
+		yc2 = MAX_CLIP_Y;
+		xc2 = static_cast<int>(x2 + 0.5 + (MAX_CLIP_Y - y2) * (x1 - x2) / (y1 - y2));
+		if (xc2 < MIN_CLIP_X || xc2 > MAX_CLIP_X) {
+			xc2 = MIN_CLIP_X;
+			yc2 = static_cast<int>(y2 + 0.5 + (MIN_CLIP_X - x2) * (y1 - y2) / (x1 - x2));
+		}
+		break;
+	default: break;
 	}
 
 
-	if((xc1 < MIN_CLIP_X) || (xc1 > MAX_CLIP_X) || (yc1  < MIN_CLIP_Y) || (yc1 > MAX_CLIP_Y) || (xc2  < MIN_CLIP_X) || (xc2 > MAX_CLIP_X) || (yc2 < MIN_CLIP_Y) || (yc2 > MAX_CLIP_Y)) return 0;
+	if ((xc1 < MIN_CLIP_X) || (xc1 > MAX_CLIP_X) || (yc1 < MIN_CLIP_Y) || (yc1 > MAX_CLIP_Y) || (xc2 < MIN_CLIP_X) || (xc2 > MAX_CLIP_X) || (yc2 < MIN_CLIP_Y) || (yc2 > MAX_CLIP_Y)) return 0;
 
 	x1 = xc1;
 	x2 = xc2;
@@ -371,7 +363,7 @@ int GraphicImpDirectDraw::ClipLine( int &x1, int &y1, int &x2, int &y2, _screenP
 
 }
 
-void GraphicImpDirectDraw::ClearSurface(LPDIRECTDRAWSURFACE7 _lpSurf){
+void GraphicImpDirectDraw::ClearSurface(LPDIRECTDRAWSURFACE7 _lpSurf) {
 	ZeroMemory(&_ddblt, sizeof(_ddblt));
 	_ddblt.dwSize = sizeof(_ddblt);
 	_ddblt.dwFillColor = 0;
@@ -379,36 +371,36 @@ void GraphicImpDirectDraw::ClearSurface(LPDIRECTDRAWSURFACE7 _lpSurf){
 	_lpSurf->Blt(0, 0, 0, DDBLT_COLORFILL | DDBLT_WAIT, &_ddblt);
 }
 
-void GraphicImpDirectDraw::Release(){
+void GraphicImpDirectDraw::Release() {
 
-	if(_lpddclip){
+	if (_lpddclip) {
 		_lpddclip->Release();
 		_lpddclip = 0;
 	}
-	if(_lpddbacksurf){
+	if (_lpddbacksurf) {
 		_lpddbacksurf->Release();
 		_lpddbacksurf = 0;
 	}
-	if(_lpddsurf){
+	if (_lpddsurf) {
 		_lpddsurf->Release();
 		_lpddsurf = 0;
 	}
-	if(_lpdd7){
+	if (_lpdd7) {
 		_lpdd7->Release();
 		_lpdd7 = 0;
 	}
 
-	if(_flipStrategy){
+	if (_flipStrategy) {
 		delete _flipStrategy;
 		_flipStrategy = 0;
 	}
-	if(_draw){
+	if (_draw) {
 		//delete _draw;
 		_draw->Release();
 		delete _draw;
 		_draw = 0;
 	}
-	if(this->ppObj3DMap)
+	if (this->ppObj3DMap)
 	{
 		delete this->ppObj3DMap;
 		this->ppObj3DMap = 0;
@@ -424,7 +416,7 @@ int GraphicImpDirectDraw::DrawHLine(float x1, float x2, int y, unsigned int iCol
 
 int GraphicImpDirectDraw::DrawTriangle(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int iColor)
 {
-	_draw->DrawTriangle(x1, y1, x2, y2, x3, y3, iColor, (unsigned int *)_videoBuffer, _lPitch);
+	_draw->DrawTriangle(x1, y1, x2, y2, x3, y3, iColor, (unsigned int*)_videoBuffer, _lPitch);
 
 	return 1;
 }
@@ -433,11 +425,11 @@ void GraphicImpDirectDraw::DrawOBJECT4DWire(OBJECT4D_PTR obj)
 {
 	pipe.ModelToWorldOBJECT4D(obj);
 
-	if(!(obj->attr & struct3D::POLY4D_ATTR_2SIDED))
+	if (!(obj->attr & struct3D::POLY4D_ATTR_2SIDED))
 		pipe.RemoveBackfacesOBJECT4D(obj, &mainCam);
 	mainCam.Build_CAM4D_Matrix_Euler(struct3D::CAM_ROT_SEQ_ZYX);
 	pipe.WorldToCameraOBJECT4D(&mainCam, obj);
-	if(pipe.bLighting)
+	if (pipe.bLighting)
 	{
 		pipe.lights.transformLights(&mainCam.mcam);
 		pipe.LightOBJECT4D(obj, &mainCam);
@@ -445,9 +437,9 @@ void GraphicImpDirectDraw::DrawOBJECT4DWire(OBJECT4D_PTR obj)
 	pipe.CameraToPerspectiveOBJECT4D(obj, &mainCam);
 	pipe.PerspectiveToScreenOBJECT4D(obj, &mainCam);
 
-	for(int poly = 0; poly < obj->num_polys; poly++)
+	for (int poly = 0; poly < obj->num_polys; poly++)
 	{
-		if(!(obj->plist[poly].state & struct3D::POLY4D_STATE_ACTIVE) || (obj->plist[poly].state & struct3D::POLY4D_STATE_CLIPPED) || (obj->plist[poly].state & struct3D::POLY4D_STATE_BACKFACE)) continue;
+		if (!(obj->plist[poly].state & struct3D::POLY4D_STATE_ACTIVE) || (obj->plist[poly].state & struct3D::POLY4D_STATE_CLIPPED) || (obj->plist[poly].state & struct3D::POLY4D_STATE_BACKFACE)) continue;
 
 		int vindex0 = obj->plist[poly].vert[0];
 		int vindex1 = obj->plist[poly].vert[1];
@@ -462,22 +454,22 @@ void GraphicImpDirectDraw::DrawRENDERLIST4DWire(RENDERLIST4D_PTR rendList, POINT
 {
 	pipe.WorldToCamera_and_BackfaceRemoveRENDERLIST4D(rendList, &mainCam);
 	pipe.ClipPolysRENDERLIST4D(rendList, &mainCam, clipPoly::CLIP_POLY_XYZ_PLANES);
-	if(pipe.bLighting)
+	if (pipe.bLighting)
 	{
 		pipe.lights.transformLights(&mainCam.mcam);
 		pipe.LightRENDERLIST4D(rendList, &mainCam);
 	}
 	pipe.CameraToScreenRENDERLIST4D(rendList, &mainCam);
 
-	for(int poly = 0; poly < rendList->num_polys; poly++)
+	for (int poly = 0; poly < rendList->num_polys; poly++)
 	{
-		if(!(rendList->poly_ptrs[poly]->state & struct3D::POLY4D_STATE_ACTIVE) || (rendList->poly_ptrs[poly]->state & struct3D::POLY4D_STATE_CLIPPED) || (rendList->poly_ptrs[poly]->state & struct3D::POLY4D_STATE_BACKFACE)) continue;
+		if (!(rendList->poly_ptrs[poly]->state & struct3D::POLY4D_STATE_ACTIVE) || (rendList->poly_ptrs[poly]->state & struct3D::POLY4D_STATE_CLIPPED) || (rendList->poly_ptrs[poly]->state & struct3D::POLY4D_STATE_BACKFACE)) continue;
 
 		this->DrawLine(static_cast<int>(rendList->poly_ptrs[poly]->tvlist[0].x), static_cast<int>(rendList->poly_ptrs[poly]->tvlist[0].y), static_cast<int>(rendList->poly_ptrs[poly]->tvlist[1].x), static_cast<int>(rendList->poly_ptrs[poly]->tvlist[1].y), rendList->poly_ptrs[poly]->lit_color[0]);
 		this->DrawLine(static_cast<int>(rendList->poly_ptrs[poly]->tvlist[1].x), static_cast<int>(rendList->poly_ptrs[poly]->tvlist[1].y), static_cast<int>(rendList->poly_ptrs[poly]->tvlist[2].x), static_cast<int>(rendList->poly_ptrs[poly]->tvlist[2].y), rendList->poly_ptrs[poly]->lit_color[0]);
 		this->DrawLine(static_cast<int>(rendList->poly_ptrs[poly]->tvlist[2].x), static_cast<int>(rendList->poly_ptrs[poly]->tvlist[2].y), static_cast<int>(rendList->poly_ptrs[poly]->tvlist[0].x), static_cast<int>(rendList->poly_ptrs[poly]->tvlist[0].y), rendList->poly_ptrs[poly]->lit_color[0]);
 
-		if(this->state.checkFlag(RendState::RS_SHOWVERTEX))
+		if (this->state.checkFlag(RendState::RS_SHOWVERTEX))
 		{
 			RECT r;
 			int rSize = this->state.checkFlag(RendState::RS_VERTEXSIZE) * this->_sp.iHeight / this->_sp.iHeight;
@@ -489,9 +481,9 @@ void GraphicImpDirectDraw::DrawRENDERLIST4DWire(RENDERLIST4D_PTR rendList, POINT
 			r.right = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[0].x + rSize);
 			r.bottom = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[0].y + rSize);
 
-			iColor = ARGB32BIT(255,255,255,255);
-			if(rendList->poly_ptrs[poly]->tvlist[0].attr & struct3D::VERTEX4DT_ATTR_SELECTED)
-				iColor = ARGB32BIT(255,255,0,0);
+			iColor = ARGB32BIT(255, 255, 255, 255);
+			if (rendList->poly_ptrs[poly]->tvlist[0].attr & struct3D::VERTEX4DT_ATTR_SELECTED)
+				iColor = ARGB32BIT(255, 255, 0, 0);
 
 			this->_draw->DrawRect(&r, iColor, this->_videoBuffer, this->_lPitch);
 
@@ -501,9 +493,9 @@ void GraphicImpDirectDraw::DrawRENDERLIST4DWire(RENDERLIST4D_PTR rendList, POINT
 			r.right = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[1].x + rSize);
 			r.bottom = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[1].y + rSize);
 
-			iColor = ARGB32BIT(255,255,255,255);
-			if(rendList->poly_ptrs[poly]->tvlist[1].attr & struct3D::VERTEX4DT_ATTR_SELECTED)
-				iColor = ARGB32BIT(255,255,0,0);
+			iColor = ARGB32BIT(255, 255, 255, 255);
+			if (rendList->poly_ptrs[poly]->tvlist[1].attr & struct3D::VERTEX4DT_ATTR_SELECTED)
+				iColor = ARGB32BIT(255, 255, 0, 0);
 
 			this->_draw->DrawRect(&r, iColor, this->_videoBuffer, this->_lPitch);
 
@@ -513,9 +505,9 @@ void GraphicImpDirectDraw::DrawRENDERLIST4DWire(RENDERLIST4D_PTR rendList, POINT
 			r.right = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[2].x + rSize);
 			r.bottom = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[2].y + rSize);
 
-			iColor = ARGB32BIT(255,255,255,255);
-			if(rendList->poly_ptrs[poly]->tvlist[2].attr & struct3D::VERTEX4DT_ATTR_SELECTED)
-				iColor = ARGB32BIT(255,255,0,0);
+			iColor = ARGB32BIT(255, 255, 255, 255);
+			if (rendList->poly_ptrs[poly]->tvlist[2].attr & struct3D::VERTEX4DT_ATTR_SELECTED)
+				iColor = ARGB32BIT(255, 255, 0, 0);
 
 			this->_draw->DrawRect(&r, iColor, this->_videoBuffer, this->_lPitch);
 		}
@@ -529,7 +521,7 @@ void GraphicImpDirectDraw::DrawOBJECT4DSolid(OBJECT4D_PTR obj)
 	pipe.RemoveBackfacesOBJECT4D(obj, &mainCam);
 	mainCam.Build_CAM4D_Matrix_Euler(struct3D::CAM_ROT_SEQ_ZYX);
 	pipe.WorldToCameraOBJECT4D(&mainCam, obj);
-	if(pipe.bLighting)
+	if (pipe.bLighting)
 	{
 		pipe.lights.transformLights(&mainCam.mcam);
 		pipe.LightOBJECT4D(obj, &mainCam);
@@ -537,18 +529,18 @@ void GraphicImpDirectDraw::DrawOBJECT4DSolid(OBJECT4D_PTR obj)
 	pipe.CameraToPerspectiveOBJECT4D(obj, &mainCam);
 	pipe.PerspectiveToScreenOBJECT4D(obj, &mainCam);
 
-	for(int poly = 0; poly < obj->num_polys; poly++)
+	for (int poly = 0; poly < obj->num_polys; poly++)
 	{
-		if(!(obj->plist[poly].state & struct3D::POLY4D_STATE_ACTIVE) || (obj->plist[poly].state & struct3D::POLY4D_STATE_CLIPPED) || (obj->plist[poly].state & struct3D::POLY4D_STATE_BACKFACE)) continue;
+		if (!(obj->plist[poly].state & struct3D::POLY4D_STATE_ACTIVE) || (obj->plist[poly].state & struct3D::POLY4D_STATE_CLIPPED) || (obj->plist[poly].state & struct3D::POLY4D_STATE_BACKFACE)) continue;
 
 		int vindex0 = obj->plist[poly].vert[0];
 		int vindex1 = obj->plist[poly].vert[1];
 		int vindex2 = obj->plist[poly].vert[2];
 
-		if(obj->plist[poly].attr & struct3D::POLY4D_ATTR_SHADE_MODE_FLAT)
-			this->_draw->DrawTriangle(obj->vlist_trans[vindex0].x, obj->vlist_trans[vindex0].y, obj->vlist_trans[vindex1].x, obj->vlist_trans[vindex1].y, obj->vlist_trans[vindex2].x, obj->vlist_trans[vindex2].y, obj->plist[poly].lit_color[0], (unsigned int *)_videoBuffer, _lPitch);
-		else if(obj->plist[poly].attr & struct3D::POLY4D_ATTR_SHADE_MODE_GOURAUD)
-			this->_draw->DrawGouraudTriangle(obj->vlist_trans[vindex0].x, obj->vlist_trans[vindex0].y, obj->vlist_trans[vindex1].x, obj->vlist_trans[vindex1].y, obj->vlist_trans[vindex2].x, obj->vlist_trans[vindex2].y, obj->plist[poly].lit_color[0], obj->plist[poly].lit_color[1], obj->plist[poly].lit_color[2], (unsigned int *)_videoBuffer, _lPitch);
+		if (obj->plist[poly].attr & struct3D::POLY4D_ATTR_SHADE_MODE_FLAT)
+			this->_draw->DrawTriangle(obj->vlist_trans[vindex0].x, obj->vlist_trans[vindex0].y, obj->vlist_trans[vindex1].x, obj->vlist_trans[vindex1].y, obj->vlist_trans[vindex2].x, obj->vlist_trans[vindex2].y, obj->plist[poly].lit_color[0], (unsigned int*)_videoBuffer, _lPitch);
+		else if (obj->plist[poly].attr & struct3D::POLY4D_ATTR_SHADE_MODE_GOURAUD)
+			this->_draw->DrawGouraudTriangle(obj->vlist_trans[vindex0].x, obj->vlist_trans[vindex0].y, obj->vlist_trans[vindex1].x, obj->vlist_trans[vindex1].y, obj->vlist_trans[vindex2].x, obj->vlist_trans[vindex2].y, obj->plist[poly].lit_color[0], obj->plist[poly].lit_color[1], obj->plist[poly].lit_color[2], (unsigned int*)_videoBuffer, _lPitch);
 	}
 }
 void GraphicImpDirectDraw::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4D_PTR worldPos)
@@ -566,7 +558,7 @@ void GraphicImpDirectDraw::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POIN
 	pipe.ClipPolysRENDERLIST4D(rendList, &mainCam, clipPoly::CLIP_POLY_Z_PLANE);
 
 	//if(pipe.bLighting)
-	if(state.checkFlag(RendState::RS_LIGHTING))
+	if (state.checkFlag(RendState::RS_LIGHTING))
 	{
 		pipe.lights.transformLights(&mainCam.mcam);
 		pipe.LightRENDERLIST4D(rendList, &mainCam);
@@ -574,28 +566,28 @@ void GraphicImpDirectDraw::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POIN
 	//pipe.WorldToCameraLights(&mainCam);
 	pipe.SortRENDERLIST4D(rendList, sortMethod::SORT_POLYLIST_AVZG);
 
-	
+
 
 	pipe.CameraToPerspectiveRENDERLIST4D(rendList, &mainCam);
 	pipe.PerspectiveToScreenRENDERLIST4D(rendList, &mainCam);
 	//pipe.CameraToScreenRENDERLIST4D(rendList, &mainCam);
 
 	TCHAR mas[128];
-	if(KEYDOWN(VK_NUMPAD5))
+	if (KEYDOWN(VK_NUMPAD5))
 	{
-		swprintf(mas, std::size(mas), L"tri: %f %f %f | %f %f %f | %f %f %f %F", rendList->poly_data[idx].tvlist[0].x, rendList->poly_data[idx].tvlist[0].y, rendList->poly_data[idx].tvlist[0].z,  rendList->poly_data[idx].tvlist[1].x, rendList->poly_data[idx].tvlist[1].y, rendList->poly_data[idx].tvlist[1].z, rendList->poly_data[idx].tvlist[2].x, rendList->poly_data[idx].tvlist[2].y, rendList->poly_data[idx].tvlist[2].z, rendList->poly_data[idx].tvlist[2].z);
+		swprintf(mas, std::size(mas), L"tri: %f %f %f | %f %f %f | %f %f %f %F", rendList->poly_data[idx].tvlist[0].x, rendList->poly_data[idx].tvlist[0].y, rendList->poly_data[idx].tvlist[0].z, rendList->poly_data[idx].tvlist[1].x, rendList->poly_data[idx].tvlist[1].y, rendList->poly_data[idx].tvlist[1].z, rendList->poly_data[idx].tvlist[2].x, rendList->poly_data[idx].tvlist[2].y, rendList->poly_data[idx].tvlist[2].z, rendList->poly_data[idx].tvlist[2].z);
 		MessageBox(0, mas, 0, 0);
 	}
 
-	if(KEYDOWN(VK_NUMPAD2))
+	if (KEYDOWN(VK_NUMPAD2))
 	{
-		for(int i = 0; i < 3 ; i++)
+		for (int i = 0; i < 3; i++)
 		{
-			for(int j = 0; j < 3; j++)
+			for (int j = 0; j < 3; j++)
 			{
-				if((memcmp(&rendList->poly_data[idx].tvlist[i].x, &rendList->poly_data[idx2].tvlist[j].x, sizeof(float)) == 0) && (memcmp(&rendList->poly_data[idx].tvlist[i].y, &rendList->poly_data[idx2].tvlist[j].y, sizeof(float)) == 0) && (memcmp(&rendList->poly_data[idx].tvlist[i].z, &rendList->poly_data[idx2].tvlist[j].z, sizeof(float)) == 0))
+				if ((memcmp(&rendList->poly_data[idx].tvlist[i].x, &rendList->poly_data[idx2].tvlist[j].x, sizeof(float)) == 0) && (memcmp(&rendList->poly_data[idx].tvlist[i].y, &rendList->poly_data[idx2].tvlist[j].y, sizeof(float)) == 0) && (memcmp(&rendList->poly_data[idx].tvlist[i].z, &rendList->poly_data[idx2].tvlist[j].z, sizeof(float)) == 0))
 				{
-					
+
 					swprintf(mas, std::size(mas), L"%d %d == %d %d", idx, i, idx2, j);
 					MessageBox(0, mas, 0, 0);
 				}
@@ -605,7 +597,7 @@ void GraphicImpDirectDraw::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POIN
 
 	static int idx_old = -234;
 
-	if(KEYDOWN(VK_NUMPAD1))
+	if (KEYDOWN(VK_NUMPAD1))
 	{
 		//wxFile file;
 
@@ -632,9 +624,9 @@ void GraphicImpDirectDraw::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POIN
 		//}
 	}
 
-	for(int poly = 0; poly < rendList->num_polys; poly++)
+	for (int poly = 0; poly < rendList->num_polys; poly++)
 	{
-		if(!(rendList->poly_ptrs[poly]->state & struct3D::POLY4D_STATE_ACTIVE) || (rendList->poly_ptrs[poly]->state & struct3D::POLY4D_STATE_CLIPPED) || (rendList->poly_ptrs[poly]->state & struct3D::POLY4D_STATE_BACKFACE)) continue;
+		if (!(rendList->poly_ptrs[poly]->state & struct3D::POLY4D_STATE_ACTIVE) || (rendList->poly_ptrs[poly]->state & struct3D::POLY4D_STATE_CLIPPED) || (rendList->poly_ptrs[poly]->state & struct3D::POLY4D_STATE_BACKFACE)) continue;
 
 		/*if(rendList->poly_ptrs[poly]->attr & mat::MAT_ATTR_SHADE_MODE_TEXTURE)
 		{
@@ -649,24 +641,24 @@ void GraphicImpDirectDraw::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POIN
 
 		/*if(!this->state.checkFlag(RendState::RS_WIREFRAME) || (rendList->poly_ptrs[poly]->attr & POLY4D_ATTR_SELECTED))
 		{*/
-			if((rendList->poly_ptrs[poly]->attr & POLY4D_ATTR_SELECTED))
-			{
-				rendList->poly_ptrs[poly]->color = rendList->poly_ptrs[poly]->lit_color[0] = rendList->poly_ptrs[poly]->lit_color[1] = rendList->poly_ptrs[poly]->lit_color[2] = ARGB32BIT(255,255,0,0);
-			}
-		if(rendList->poly_ptrs[poly]->attr & struct3D::POLY4D_ATTR_SHADE_MODE_FLAT)
+		if ((rendList->poly_ptrs[poly]->attr & POLY4D_ATTR_SELECTED))
+		{
+			rendList->poly_ptrs[poly]->color = rendList->poly_ptrs[poly]->lit_color[0] = rendList->poly_ptrs[poly]->lit_color[1] = rendList->poly_ptrs[poly]->lit_color[2] = ARGB32BIT(255, 255, 0, 0);
+		}
+		if (rendList->poly_ptrs[poly]->attr & struct3D::POLY4D_ATTR_SHADE_MODE_FLAT)
 			//this->_draw->DrawTriangle(rendList->poly_ptrs[poly]->tvlist[0].x, rendList->poly_ptrs[poly]->tvlist[0].y, rendList->poly_ptrs[poly]->tvlist[1].x, rendList->poly_ptrs[poly]->tvlist[1].y, rendList->poly_ptrs[poly]->tvlist[2].x, rendList->poly_ptrs[poly]->tvlist[2].y, rendList->poly_ptrs[poly]->lit_color[0], (unsigned int *)_videoBuffer, _lPitch);
-			this->_draw->DrawTriangle2(rendList->poly_ptrs[poly], (unsigned int *)_videoBuffer, _lPitch);
-		else if(rendList->poly_ptrs[poly]->attr & struct3D::POLY4D_ATTR_SHADE_MODE_GOURAUD)
+			this->_draw->DrawTriangle2(rendList->poly_ptrs[poly], (unsigned int*)_videoBuffer, _lPitch);
+		else if (rendList->poly_ptrs[poly]->attr & struct3D::POLY4D_ATTR_SHADE_MODE_GOURAUD)
 			/*this->_draw->DrawGouraudTriangle3(rendList->poly_ptrs[poly], (unsigned int *)_videoBuffer, _lPitch);*/
 			/*this->_draw->DrawTriangle4(rendList->poly_ptrs[poly], (unsigned int *)_videoBuffer, _lPitch);*/
-			this->_draw->DrawTriangle7_sse(rendList->poly_ptrs[poly], (unsigned int *)_videoBuffer, _lPitch);
-		else if(rendList->poly_ptrs[poly]->attr & struct3D::POLY4D_ATTR_SHADE_MODE_PHONG)
-			this->_draw->DrawPhongTriangle2(&this->mainCam, &pipe.lights, rendList->poly_ptrs[poly], (unsigned int *)_videoBuffer, _lPitch);
-		else if(rendList->poly_ptrs[poly]->attr & struct3D::POLY4D_ATTR_SHADE_MODE_TEST)
-			this->_draw->DrawTriangle3(rendList->poly_ptrs[poly], (unsigned int *)_videoBuffer, _lPitch);
+			this->_draw->DrawTriangle7_sse(rendList->poly_ptrs[poly], (unsigned int*)_videoBuffer, _lPitch);
+		else if (rendList->poly_ptrs[poly]->attr & struct3D::POLY4D_ATTR_SHADE_MODE_PHONG)
+			this->_draw->DrawPhongTriangle2(&this->mainCam, &pipe.lights, rendList->poly_ptrs[poly], (unsigned int*)_videoBuffer, _lPitch);
+		else if (rendList->poly_ptrs[poly]->attr & struct3D::POLY4D_ATTR_SHADE_MODE_TEST)
+			this->_draw->DrawTriangle3(rendList->poly_ptrs[poly], (unsigned int*)_videoBuffer, _lPitch);
 		else
 		{
-			this->_draw->DrawTriangle(rendList->poly_ptrs[poly]->tvlist[0].x, rendList->poly_ptrs[poly]->tvlist[0].y, rendList->poly_ptrs[poly]->tvlist[1].x, rendList->poly_ptrs[poly]->tvlist[1].y, rendList->poly_ptrs[poly]->tvlist[2].x, rendList->poly_ptrs[poly]->tvlist[2].y, rendList->poly_ptrs[poly]->lit_color[0], (unsigned int *)_videoBuffer, _lPitch);
+			this->_draw->DrawTriangle(rendList->poly_ptrs[poly]->tvlist[0].x, rendList->poly_ptrs[poly]->tvlist[0].y, rendList->poly_ptrs[poly]->tvlist[1].x, rendList->poly_ptrs[poly]->tvlist[1].y, rendList->poly_ptrs[poly]->tvlist[2].x, rendList->poly_ptrs[poly]->tvlist[2].y, rendList->poly_ptrs[poly]->lit_color[0], (unsigned int*)_videoBuffer, _lPitch);
 		}
 
 		/*}
@@ -879,7 +871,7 @@ void GraphicImpDirectDraw::DrawOBJECT4DLINE(OBJECT4D_LINE_PTR obj)
 	this->pipe.LocalToCameraAndClipOBJECT4DLINE(obj, &this->mainCam);
 	this->pipe.CameraToScreenOBJECT4DLINE(obj, &this->mainCam);
 
-	for(int i = 0; i < obj->vtrans_curr; i++)
+	for (int i = 0; i < obj->vtrans_curr; i++)
 	{
 		//int x0, y0, x1, y1;
 
@@ -903,7 +895,7 @@ void GraphicImpDirectDraw::DrawOBJECT4DLINE(OBJECT4D_LINE_PTR obj)
 		r.right = _sp.iWidth - 2;
 		r.bottom = _sp.iHeight - 1;
 
-		if(this->_draw->clipLineCS(&r, &obj->vtrans[i].v0.v, &obj->vtrans[i].v1.v))
+		if (this->_draw->clipLineCS(&r, &obj->vtrans[i].v0.v, &obj->vtrans[i].v1.v))
 		{
 			this->_draw->DrawLine(&obj->vtrans[i].v0, &obj->vtrans[i].v1, obj->color, this->_videoBuffer, this->_lPitch);
 		}
@@ -951,7 +943,7 @@ int GraphicImpDirectDraw::DrawPOLYF4D2D(struct3D::POLYF4D_PTR face)
 		else if(face->attr & struct3D::POLY4D_ATTR_SHADE_MODE_GOURAUD)
 			this->_draw->DrawGouraudTriangle(face, (unsigned int *)_videoBuffer, _lPitch);*/
 
-	this->_draw->DrawTriangle5(face, (unsigned int *)_videoBuffer, _lPitch);
+	this->_draw->DrawTriangle5(face, (unsigned int*)_videoBuffer, _lPitch);
 
 	return 1;
 }
@@ -960,7 +952,7 @@ LIGHT_PTR GraphicImpDirectDraw::getLight(int index)
 {
 	LIGHT_PTR light = 0;
 
-	if(index >= 0 || index < this->pipe.lights.getNumLights())
+	if (index >= 0 || index < this->pipe.lights.getNumLights())
 	{
 		light = &this->pipe.lights.lights[index];
 	}
@@ -968,21 +960,21 @@ LIGHT_PTR GraphicImpDirectDraw::getLight(int index)
 	return light;
 }
 
-int GraphicImpDirectDraw::DrawTexture(mat::TEXTURE2D_PTR tex, RECT *rect)
+int GraphicImpDirectDraw::DrawTexture(mat::TEXTURE2D_PTR tex, RECT* rect)
 {
-	
+
 	int lp2 = this->_lPitch >> 2;
 	int texlp = tex->lpitch >> 2;
-	unsigned int *vb = (unsigned int *)this->_videoBuffer;
-	unsigned int *t = (unsigned int *)tex->buffer;
+	unsigned int* vb = (unsigned int*)this->_videoBuffer;
+	unsigned int* t = (unsigned int*)tex->buffer;
 
 	float texAR;// = tex->width / tex->height;
 	float xInc, yInc;
 	float fx = 0, fy = 0;
 
-	if(rect != 0)
+	if (rect != 0)
 	{
-		if(rect->bottom < rect->right)
+		if (rect->bottom < rect->right)
 		{
 			texAR = (float)tex->width / (float)tex->height;
 			float newH = static_cast<float>(rect->bottom);
@@ -1014,10 +1006,10 @@ int GraphicImpDirectDraw::DrawTexture(mat::TEXTURE2D_PTR tex, RECT *rect)
 
 	fx = fy = 0;
 
-	for(int y = 0; fy < (float)tex->height; y++)
+	for (int y = 0; fy < (float)tex->height; y++)
 	{
 		fx = 0;
-		for(int x = 0; fx < (float)tex->width; x++)
+		for (int x = 0; fx < (float)tex->width; x++)
 		{
 			vb[x + y * lp2] = t[(int)fx + (int)fy * texlp];
 			fx += xInc;
@@ -1030,22 +1022,22 @@ int GraphicImpDirectDraw::DrawTexture(mat::TEXTURE2D_PTR tex, RECT *rect)
 
 int GraphicImpDirectDraw::DrawTexTri(struct3D::POLYF4D_PTR face)
 {
-	if(!face) return 0;
+	if (!face) return 0;
 
-	this->_draw->DrawTriangleTex(face, (unsigned int *)this->_videoBuffer, this->_lPitch);
+	this->_draw->DrawTriangleTex(face, (unsigned int*)this->_videoBuffer, this->_lPitch);
 
 	return 1;
 }
 
 POLYF4D_PTR GraphicImpDirectDraw::getSelectedPoly(int x, int y)
 {
-	if(x < 0 || y < 0 || x > static_cast<int>(this->_sp.iWidth) || y > static_cast<int>(this->_sp.iHeight))
+	if (x < 0 || y < 0 || x > static_cast<int>(this->_sp.iWidth) || y > static_cast<int>(this->_sp.iHeight))
 		return 0;
 
 	return this->ppObj3DMap[x + y * this->_sp.iWidth];
 }
 
-int GraphicImpDirectDraw::DrawCircle(POINT2D *ptCenter, unsigned int iRadius, unsigned int iColor, bool bSmooth)
+int GraphicImpDirectDraw::DrawCircle(POINT2D* ptCenter, unsigned int iRadius, unsigned int iColor, bool bSmooth)
 {
 	POINT2D ptCurr[8];// = {0, 0};
 
@@ -1072,9 +1064,9 @@ int GraphicImpDirectDraw::DrawCircle(POINT2D *ptCenter, unsigned int iRadius, un
 	float R = static_cast<float>(iRadius);
 	float Z = 0, x = 0, y = R;
 
-	if(!bSmooth)
+	if (!bSmooth)
 	{
-		while(x <= y)
+		while (x <= y)
 		{
 			ptCurr[0].y = ptCenter->y - y;
 			ptCurr[0].x = ptCenter->x - x;
@@ -1102,7 +1094,7 @@ int GraphicImpDirectDraw::DrawCircle(POINT2D *ptCenter, unsigned int iRadius, un
 
 			this->DrawPixel(ptCurr, 8, iColor);
 
-			if (Z>0) { y--; Z -= y; Z -= y; }
+			if (Z > 0) { y--; Z -= y; Z -= y; }
 
 			x++; Z += x; Z += x;
 		}
@@ -1110,9 +1102,9 @@ int GraphicImpDirectDraw::DrawCircle(POINT2D *ptCenter, unsigned int iRadius, un
 	else
 	{
 		ptCurr[7].y = ptCurr[7].x = 0;
-		for(x = 0; x <= ptCurr[7].y; x++)
+		for (x = 0; x <= ptCurr[7].y; x++)
 		{
-			y = sqrt(R*R - x*x);
+			y = sqrt(R * R - x * x);
 
 			ptCurr[0].y = ptCenter->y - y;
 			ptCurr[0].x = ptCenter->x - x;
@@ -1140,61 +1132,61 @@ int GraphicImpDirectDraw::DrawCircle(POINT2D *ptCenter, unsigned int iRadius, un
 
 			this->DrawPixel(ptCurr, 8, iColor);
 
-			if(x*x >= (R*R - x*x)) break;
+			if (x * x >= (R * R - x * x)) break;
 		}
 	}
 
 	return 1;
 }
 
-float factorial (int num)
+float factorial(int num)
 {
- float result=1;
- for (int i=1; i<=num; ++i)
-    result=result*=i;
- return result;
+	float result = 1;
+	for (int i = 1; i <= num; ++i)
+		result = result *= i;
+	return result;
 }
 
-int GraphicImpDirectDraw::DrawSpline(std::vector<POINT2D> *pts)
+int GraphicImpDirectDraw::DrawSpline(std::vector<POINT2D>* pts)
 {
 	float t = 0;
 	POINT2D pt;
 
 	int numPts = static_cast<int>(pts->size());
 
-	if(numPts > 10 || numPts == 0) return 0;
+	if (numPts > 10 || numPts == 0) return 0;
 
 	float step = 1.0f / 400;
 
-	float *c = new float[numPts];
+	float* c = new float[numPts];
 	int m = numPts - 1;
 	float factM = factorial(m);
 
-	for(int i = 0; i < numPts; i++)
+	for (int i = 0; i < numPts; i++)
 	{
 		c[i] = factM / (factorial(i) * factorial(m - i));
 	}
 
-	for(t = 0; t < 1.0f; t+= step)
+	for (t = 0; t < 1.0f; t += step)
 	{
 		pt.x = 0;
 		pt.y = 0;
 
-		for(int i = 0; i < numPts; i++)
+		for (int i = 0; i < numPts; i++)
 		{
 			pt.x += static_cast<float>(c[i] * pow(t, i) * pow((1.0f - t), m - i) * pts->at(i).x);
 			pt.y += static_cast<float>(c[i] * pow(t, i) * pow((1.0f - t), m - i) * pts->at(i).y);
 		}
 
-		this->DrawPixel(&pt, 1, ARGB32BIT(255,0,255,0));
+		this->DrawPixel(&pt, 1, ARGB32BIT(255, 0, 255, 0));
 	}
 
-	for(int i = 0; i < numPts; i++)
+	for (int i = 0; i < numPts; i++)
 	{
 		pt.x = pts->at(i).x;
 		pt.y = pts->at(i).y;
 
-		this->DrawPixel(&pt, 1, ARGB32BIT(255,255,0,0));
+		this->DrawPixel(&pt, 1, ARGB32BIT(255, 255, 0, 0));
 	}
 
 	delete c;
@@ -1202,27 +1194,27 @@ int GraphicImpDirectDraw::DrawSpline(std::vector<POINT2D> *pts)
 	return 1;
 }
 
-int GraphicImpDirectDraw::DrawSmoothLine(POINT2D *pt0, POINT2D *pt1, unsigned int iColor)
+int GraphicImpDirectDraw::DrawSmoothLine(POINT2D* pt0, POINT2D* pt1, unsigned int iColor)
 {
-	POINT2D ptCurr = {0.0f, 0.0f};
+	POINT2D ptCurr = { 0.0f, 0.0f };
 
 	float dx = pt1->x - pt0->x;
 	float dy = pt1->y - pt0->y;
 
 	float interp = 0;
 
-	if(abs(dx) > abs(dy))
+	if (abs(dx) > abs(dy))
 	{
 		interp = dy / dx;
 
-		if(pt0->x > pt1->x)
+		if (pt0->x > pt1->x)
 		{
 			vecSwap(pt0, pt1);
 		}
 
 		ptCurr.y = pt0->y;
 
-		for(float x = pt0->x; x < pt1->x; x++)
+		for (float x = pt0->x; x < pt1->x; x++)
 		{
 			ptCurr.x = x;
 			ptCurr.y += interp;
@@ -1234,14 +1226,14 @@ int GraphicImpDirectDraw::DrawSmoothLine(POINT2D *pt0, POINT2D *pt1, unsigned in
 	{
 		interp = dx / dy;
 
-		if(pt0->y > pt1->y)
+		if (pt0->y > pt1->y)
 		{
 			vecSwap(pt0, pt1);
 		}
 
 		ptCurr.x = pt0->x;
 
-		for(float y = pt0->y; y < pt1->y; y++)
+		for (float y = pt0->y; y < pt1->y; y++)
 		{
 			ptCurr.x += interp;
 			ptCurr.y = y;
@@ -1277,7 +1269,7 @@ int GraphicImpDirectDraw::point2DTo3D(math3D::POINT2D_PTR pt2D, math3D::POINT4D_
 	pt3D->z = z;
 	//pt3D->z -= this->mainCam.pos.z;
 	//pt3D->z = this->mainCam.pos.z;
-	
+
 	//преобразование в мировые
 	vecMulMat(pt3D, &mCamInv, &pTmp);
 
@@ -1309,14 +1301,14 @@ int GraphicImpDirectDraw::point2DTo3D(math3D::POINT2D_PTR pt2D, math3D::POINT4D_
 	float dpMagic = vecDot(&n, &p1);
 
 	//
-	if(dpVN == 0.0f) return 0;
-	if((dpVN * dpMagic) > 0.0f) return 0;
+	if (dpVN == 0.0f) return 0;
+	if ((dpVN * dpMagic) > 0.0f) return 0;
 
 	t = (n.x * (p.x - p1.x) + n.y * (p.y - p1.y) + n.z * (p.z - p1.z)) / dpVN;//(n.x * (p2.x - p1.x) + n.y * (p2.y - p1.y) + n.z * (p2.z - p1.z));
 
 	//t также являеться длиной отрезка построенным между точкой на плоскости и позицией камеры.
 	//Так что не будем перемещять объект за дальнюю плоскость отсечения.
-	if(t > this->mainCam.far_clip_z /*|| t == numeric_limits<float>::infinity()*/) return 0;
+	if (t > this->mainCam.far_clip_z /*|| t == numeric_limits<float>::infinity()*/) return 0;
 
 	pt3D->x = p1.x + t * (p2.x - p1.x);
 	pt3D->y = p1.y + t * (p2.y - p1.y);
@@ -1354,16 +1346,16 @@ int GraphicImpDirectDraw::point2DToVector3D(math3D::POINT2D_PTR pt2D, math3D::VE
 	return 1;
 }
 
-int GraphicImpDirectDraw::DrawPolygon(std::vector<POINT2D> *pts, unsigned int iColor)
+int GraphicImpDirectDraw::DrawPolygon(std::vector<POINT2D>* pts, unsigned int iColor)
 {
 	int numPts = static_cast<int>(pts->size());
 	int lpitch = this->_lPitch >> 2;
-	unsigned int *vb = (unsigned int *)_videoBuffer;
+	unsigned int* vb = (unsigned int*)_videoBuffer;
 
-	if(numPts == 0) return 0;
-	if(numPts == 1)
+	if (numPts == 0) return 0;
+	if (numPts == 1)
 	{
-		int x,y;
+		int x, y;
 		x = static_cast<int>(pts->at(0).x);
 		y = static_cast<int>(pts->at(0).y);
 		vb[x + y * lpitch] = iColor;
@@ -1371,12 +1363,12 @@ int GraphicImpDirectDraw::DrawPolygon(std::vector<POINT2D> *pts, unsigned int iC
 		return 1;
 	}
 
-	for(int i = 0; i < numPts - 1; i++)
+	for (int i = 0; i < numPts - 1; i++)
 	{
 		this->DrawLine(static_cast<int>(pts->at(i).x), static_cast<int>(pts->at(i).y), static_cast<int>(pts->at(i + 1).x), static_cast<int>(pts->at(i + 1).y), iColor);
 	}
 
-	if(numPts > 2)
+	if (numPts > 2)
 	{
 		this->DrawLine(static_cast<int>(pts->at(0).x), static_cast<int>(pts->at(0).y), static_cast<int>(pts->at(numPts - 1).x), static_cast<int>(pts->at(numPts - 1).y), iColor);
 	}
@@ -1384,7 +1376,7 @@ int GraphicImpDirectDraw::DrawPolygon(std::vector<POINT2D> *pts, unsigned int iC
 	return 1;
 }
 
-int GraphicImpDirectDraw::createShadowProjection(OBJECT4D_PTR obj, POLYF4D_PTR proj, int numLines, int *createdLines)
+int GraphicImpDirectDraw::createShadowProjection(OBJECT4D_PTR obj, POLYF4D_PTR proj, int numLines, int* createdLines)
 {
 	PLANE4D plane;
 	VECTOR4D np;
@@ -1408,7 +1400,7 @@ int GraphicImpDirectDraw::createShadowProjection(OBJECT4D_PTR obj, POLYF4D_PTR p
 	vecZero(&np);
 	vecZero(&p0);
 
-	for(int poly = 0; poly < obj->num_polys; poly++)
+	for (int poly = 0; poly < obj->num_polys; poly++)
 	{
 		POLY4D_PTR currPoly = &obj->plist[poly];
 
@@ -1425,44 +1417,44 @@ int GraphicImpDirectDraw::createShadowProjection(OBJECT4D_PTR obj, POLYF4D_PTR p
 
 		VECTOR4D view, vecShProj;
 
-		for(int light = 0; light < this->pipe.lights.getNumLights(); light++)
+		for (int light = 0; light < this->pipe.lights.getNumLights(); light++)
 		{
-			if(pipe.lights.lights[light].attr & mat::LIGHT_ATTR_POINT)
+			if (pipe.lights.lights[light].attr & mat::LIGHT_ATTR_POINT)
 			{
 
 				view.VECTOR4D_Build(&obj->vlist_trans[vindex0].v, &pipe.lights.lights[light].pos);
 
 				float dp = n.VECTOR4D_Dot(&view);
 
-				if(dp < 0.0f)
+				if (dp < 0.0f)
 				{
 
 					isTriCorrect = 0;
-						for(int vertex = 0; vertex < 3; vertex++)
-						{
-							vecBuild(&pipe.lights.lights[light].pos, &obj->vlist_trans[currPoly->vert[vertex]].v, &vecShProj);
+					for (int vertex = 0; vertex < 3; vertex++)
+					{
+						vecBuild(&pipe.lights.lights[light].pos, &obj->vlist_trans[currPoly->vert[vertex]].v, &vecShProj);
 
-							if(planeGetIntersectPoint(&plane, &pipe.lights.lights[light].pos, &vecShProj, &pProj))
-							{
-								vecCopy(&pProj, &proj[cl].tvlist[vertex].v);
-								isTriCorrect++;
-							}
+						if (planeGetIntersectPoint(&plane, &pipe.lights.lights[light].pos, &vecShProj, &pProj))
+						{
+							vecCopy(&pProj, &proj[cl].tvlist[vertex].v);
+							isTriCorrect++;
 						}
-						if(isTriCorrect == 3)
-							{
-								proj[cl].attr = shadowAttr;
-								proj[cl].state = struct3D::POLY4D_STATE_ACTIVE;
-								proj[cl].lit_color[0] = ARGB32BIT(255,255,255,255);
-								proj[cl].color = ARGB32BIT(255,255,255,255);
-								cl++;
-							}
-						if(cl == numLines)
-							{
-								*createdLines = numLines;
-								return 1;
-							}
-							*createdLines = cl;
 					}
+					if (isTriCorrect == 3)
+					{
+						proj[cl].attr = shadowAttr;
+						proj[cl].state = struct3D::POLY4D_STATE_ACTIVE;
+						proj[cl].lit_color[0] = ARGB32BIT(255, 255, 255, 255);
+						proj[cl].color = ARGB32BIT(255, 255, 255, 255);
+						cl++;
+					}
+					if (cl == numLines)
+					{
+						*createdLines = numLines;
+						return 1;
+					}
+					*createdLines = cl;
+				}
 			}
 		}
 	}
@@ -1470,7 +1462,7 @@ int GraphicImpDirectDraw::createShadowProjection(OBJECT4D_PTR obj, POLYF4D_PTR p
 	return 1;
 }
 
-int GraphicImpDirectDraw::DrawRect(RECT *r, unsigned int iColor)
+int GraphicImpDirectDraw::DrawRect(RECT* r, unsigned int iColor)
 {
 	return this->_draw->DrawRect(r, iColor, this->_videoBuffer, this->_lPitch);
 }
@@ -1504,57 +1496,57 @@ int GraphicImpDirectDraw::Resize(int newWidth, int newHeight)
 	ZeroMemory(&_ddsd, sizeof(_ddsd));
 	_ddsd.dwSize = sizeof(_ddsd);
 
-	if(this->_lpddsurf)
+	if (this->_lpddsurf)
 	{
 		this->_lpddsurf->Release();
 		this->_lpddsurf = 0;
 	}
 
-	if(this->_sp.iFullScreen){
+	if (this->_sp.iFullScreen) {
 		_ddsd.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
 		_ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE | DDSCAPS_COMPLEX | DDSCAPS_FLIP | DDSCAPS_SYSTEMMEMORY;
 		_ddsd.dwBackBufferCount = 1;
 	}
-	else{
+	else {
 		_ddsd.dwFlags = DDSD_CAPS;
 		_ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
 	}
 
-	if(this->_lpddbacksurf)
+	if (this->_lpddbacksurf)
 	{
 		this->_lpddbacksurf->Release();
 		this->_lpddbacksurf = 0;
 	}
 
-	if(this->_lpddclip)
+	if (this->_lpddclip)
 	{
 		this->_lpddclip->Release();
 		this->_lpddclip = 0;
 	}
-	if(this->_flipStrategy)
+	if (this->_flipStrategy)
 	{
 		delete this->_flipStrategy;
 		this->_flipStrategy = 0;
 	}
-	if(this->_draw)
+	if (this->_draw)
 	{
 		this->_draw->Release();
 		delete this->_draw;
 		this->_draw = 0;
 	}
 
-	if(FAILED(_lpdd7->CreateSurface(&_ddsd,&_lpddsurf,NULL))) return 0;
+	if (FAILED(_lpdd7->CreateSurface(&_ddsd, &_lpddsurf, NULL))) return 0;
 
-	if(this->_sp.iFullScreen){
+	if (this->_sp.iFullScreen) {
 		DDSCAPS2 ddsc;
 		ZeroMemory(&ddsc, sizeof(ddsc));
 		ddsc.dwCaps = DDSCAPS_BACKBUFFER;
-		if(FAILED(_lpddsurf->GetAttachedSurface(&ddsc, &_lpddbacksurf))) return 0;
+		if (FAILED(_lpddsurf->GetAttachedSurface(&ddsc, &_lpddbacksurf))) return 0;
 
 		_flipStrategy = new FlipFullscreenDDStrategy(_lpddsurf);
 		SetWindowLong(_hWnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
 	}
-	else{
+	else {
 		ZeroMemory(&_ddsd, sizeof(_ddsd));
 		_ddsd.dwSize = sizeof(_ddsd);
 
@@ -1563,11 +1555,11 @@ int GraphicImpDirectDraw::Resize(int newWidth, int newHeight)
 		_ddsd.dwHeight = this->_sp.iHeight;
 		_ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
 
-		if(FAILED(_lpdd7->CreateSurface(&_ddsd, &_lpddbacksurf, NULL))) return 0;
+		if (FAILED(_lpdd7->CreateSurface(&_ddsd, &_lpddbacksurf, NULL))) return 0;
 
-		if(FAILED(_lpdd7->CreateClipper(0, &_lpddclip, 0))) return 0;
-		if(FAILED(_lpddclip->SetHWnd(0, _hWnd))) return 0;
-		if(FAILED(_lpddsurf->SetClipper(_lpddclip))) return 0;
+		if (FAILED(_lpdd7->CreateClipper(0, &_lpddclip, 0))) return 0;
+		if (FAILED(_lpddclip->SetHWnd(0, _hWnd))) return 0;
+		if (FAILED(_lpddsurf->SetClipper(_lpddclip))) return 0;
 
 		_flipStrategy = new FlipWindowedDDStrategy(_lpddsurf, _lpddbacksurf, _hWnd, _sp.iWidth, _sp.iHeight);
 	}
@@ -1575,12 +1567,12 @@ int GraphicImpDirectDraw::Resize(int newWidth, int newHeight)
 	/*this->ppObj3DMap = 0;
 	this->ppObj3DMap = new POLYF4D_PTR[params->iWidth * params->iHeight];
 	memset(this->ppObj3DMap, 0, sizeof(POLYF4D_PTR) * (params->iWidth * params->iHeight));*/
-	if(!InitializeDrawStrategies(&this->_sp)) return 0;
+	if (!InitializeDrawStrategies(&this->_sp)) return 0;
 
 	//3DInit:
-	POINT4D camPos = {0, 0, 0, 1};
-	VECTOR4D camDir = {0, 0, 0, 1};
-	POINT4D target = {0, 0, 1, 1};
+	POINT4D camPos = { 0, 0, 0, 1 };
+	VECTOR4D camDir = { 0, 0, 0, 1 };
+	POINT4D target = { 0, 0, 1, 1 };
 
 	mainCam.Init_CAM4D(struct3D::CAM_MODEL_EULER, &camPos, &camDir, &target, 10.0f, 100000.0f, 90.0f, static_cast<float>(this->_sp.iWidth), static_cast<float>(this->_sp.iHeight));
 
@@ -1589,10 +1581,10 @@ int GraphicImpDirectDraw::Resize(int newWidth, int newHeight)
 
 void GraphicImpDirectDraw::testAdj(POINT2D_PTR pt, OBJECT4D_PTR obj)
 {
-	for(int i = 0; i < obj->num_polys; i++)
+	for (int i = 0; i < obj->num_polys; i++)
 	{
 		obj->plist[i].attr &= ~POLY4D_ATTR_SELECTED;
-		obj->plist[i].color = ARGB32BIT(255,0,255,0);
+		obj->plist[i].color = ARGB32BIT(255, 0, 255, 0);
 	}
 
 	POINT4D p/*, v*/;
@@ -1602,17 +1594,17 @@ void GraphicImpDirectDraw::testAdj(POINT2D_PTR pt, OBJECT4D_PTR obj)
 
 	//v.z = 1;
 
-	for(int i = 0; i < obj->num_polys; i++)
+	for (int i = 0; i < obj->num_polys; i++)
 	{
 		vecSub(&this->mainCam.pos, &obj->world_pos, &p);
 
-		if(this->isInPoly(&p, &this->mainCam._look, &obj->plist[i], obj))
+		if (this->isInPoly(&p, &this->mainCam._look, &obj->plist[i], obj))
 		{
 			obj->plist[i].attr |= POLY4D_ATTR_SELECTED;
-			
-			obj->plist[obj->adj[i].adj[0]].color = ARGB32BIT(255,255,255,255);
-			obj->plist[obj->adj[i].adj[1]].color = ARGB32BIT(255,0,0,255);
-			obj->plist[obj->adj[i].adj[2]].color = ARGB32BIT(255,255,0,255);
+
+			obj->plist[obj->adj[i].adj[0]].color = ARGB32BIT(255, 255, 255, 255);
+			obj->plist[obj->adj[i].adj[1]].color = ARGB32BIT(255, 0, 0, 255);
+			obj->plist[obj->adj[i].adj[2]].color = ARGB32BIT(255, 255, 0, 255);
 		}
 	}
 }
@@ -1636,14 +1628,14 @@ bool GraphicImpDirectDraw::isInPoly(POINT4D_PTR p, VECTOR4D_PTR v, POLY4D_PTR po
 
 	float dp = n.VECTOR4D_Dot(&view);
 
-	if(dp > 0.0f)
+	if (dp > 0.0f)
 	{
 		PLANE4D plane;
 		POINT4D pRes;
 
 		planeInit(&plane, &obj->vlist_local[vindex0].v, &n, 1);
 
-		if(planeGetIntersectPoint(&plane, p, v, &pRes))
+		if (planeGetIntersectPoint(&plane, p, v, &pRes))
 		{
 			MATRIX4X4 mat;
 			VECTOR4D v1, v2, v3, vTmp;
@@ -1669,19 +1661,19 @@ bool GraphicImpDirectDraw::isInPoly(POINT4D_PTR p, VECTOR4D_PTR v, POLY4D_PTR po
 			//тесты на нахождение точки в положительном полупространстве
 
 			vecBuild(&pRes, &obj->vlist_local[vindex0].v, &vt1);
-			if(vecDot(&vt1, &v1) > 0.0f) hit++;
+			if (vecDot(&vt1, &v1) > 0.0f) hit++;
 
 			vecBuild(&pRes, &obj->vlist_local[vindex1].v, &vt2);
-			if(vecDot(&vt2, &v2) > 0.0f) hit++;
+			if (vecDot(&vt2, &v2) > 0.0f) hit++;
 
 			vecBuild(&pRes, &obj->vlist_local[vindex2].v, &vt3);
-			if(vecDot(&vt3, &v3) > 0.0f) hit++;
+			if (vecDot(&vt3, &v3) > 0.0f) hit++;
 
 			//TCHAR mas[128];
 			//swprintf(mas, L"%d", hit);
 			//MessageBox(0,mas,0,0);
 
-			if(hit == 3)
+			if (hit == 3)
 				return true;
 			else
 				return false;

@@ -25,59 +25,14 @@
 #include <MassiveCompute/Schedulers/EqualBlockScheduler.h>
 
 RayTraceWindowHandler::RayTraceWindowHandler()
-	: random(std::random_device()())
+	: RenderThreadWindowHandler()
+	, random(std::random_device()())
 	, perlinNoise(std::make_shared<PerlinNoiseTextureSampler>(4096))
 {
-	// 1 image for raytracing task
-	this->renderQueue.emplace();
-}
-
-RayTraceWindowHandler::~RayTraceWindowHandler()
-{
-	if (this->rayTraceTask.valid())
-	{
-		this->rayTraceTaskCancel = true;
-		this->rayTraceTask.wait();
-	}
-}
-
-void RayTraceWindowHandler::GameLoop(ISystemBackBuffer& backBuffer)
-{
-	this->OnRepaint(backBuffer);
-}
-
-void RayTraceWindowHandler::OnResize(const Helpers::Size2D<uint32_t>& newSize)
-{
-	this->currentSize = newSize;
-}
-
-void RayTraceWindowHandler::OnRepaint(ISystemBackBuffer& backBuffer)
-{
-	this->TryStartRayTraceTask();
-	this->TryFinishRayTraceTask();
-
-	SystemBackBufferLock bufLock(backBuffer);
-	ISystemBackBuffer::LockedData& data = bufLock.GetData();
-
-	if (!data.data)
-	{
-		return;
-	}
-
-	BGRA<uint8_t>* pixels = reinterpret_cast<BGRA<uint8_t>*>(data.data);
-	ImageView<BGRA<uint8_t>> imageView(data.size.width, data.size.height, pixels);
-
-	const size_t width = std::min(this->currentlyPresentingImage.GetWidth(), imageView.GetWidth());
-	const size_t height = std::min(this->currentlyPresentingImage.GetHeight(), imageView.GetHeight());
-
-	MassiveCompute::StealingBlockScheduler stealingScheduler;
-
-	stealingScheduler(imageView, MakeCopyImageFunctor(imageView, this->currentlyPresentingImage.MakeView(), width, height), imageView.GetWidth(), 1);
 }
 
 void RayTraceWindowHandler::OnMouseLeftPress(const Helpers::Point2D<float>& pt)
 {
-
 }
 
 void RayTraceWindowHandler::OnMouseLeftRelease(const Helpers::Point2D<float>& pt)
@@ -87,7 +42,6 @@ void RayTraceWindowHandler::OnMouseLeftRelease(const Helpers::Point2D<float>& pt
 
 void RayTraceWindowHandler::OnMouseRightPress(const Helpers::Point2D<float>& pt)
 {
-
 }
 
 void RayTraceWindowHandler::OnMouseRightRelease(const Helpers::Point2D<float>& pt)
@@ -97,60 +51,26 @@ void RayTraceWindowHandler::OnMouseRightRelease(const Helpers::Point2D<float>& p
 
 void RayTraceWindowHandler::OnMouseMiddlePress(const Helpers::Point2D<float>& pt)
 {
-
 }
 
 void RayTraceWindowHandler::OnMouseMiddleRelease(const Helpers::Point2D<float>& pt)
 {
-
 }
 
 void RayTraceWindowHandler::OnMouseMove(const Helpers::Point2D<float>& pt)
 {
-
 }
 
 void RayTraceWindowHandler::OnMouseWheel(float delta)
 {
-
 }
 
-void RayTraceWindowHandler::TryStartRayTraceTask()
+std::unique_ptr<IRenderThreadTask> RayTraceWindowHandler::MakeRenderTask(const Helpers::Size2D<uint32_t>& currentImageSize)
 {
-	if (this->rayTraceTask.valid() || this->renderQueue.empty() || this->currentSize.Empty())
-	{
-		return;
-	}
+	RayTraceFunctorParams rayTraceParams = this->MakeDefaultScene(currentImageSize);
+	//RayTraceFunctorParams rayTraceParams = this->MakeBook1Scene(currentImageSize);
 
-	Image<BGRA<uint8_t>> image = std::move(this->renderQueue.front());
-	this->renderQueue.pop();
-
-	if (image.GetWidth() != this->currentSize.width || image.GetHeight() != this->currentSize.height)
-	{
-		image = Image<BGRA<uint8_t>>::Resize(std::move(image), this->currentSize.width, this->currentSize.height);
-	}
-
-	RayTraceFunctorParams rayTraceParams = this->MakeDefaultScene();
-	//RayTraceFunctorParams rayTraceParams = this->MakeBook1Scene();
-
-	this->rayTraceTask = std::async(
-		std::launch::async,
-		&RayTraceWindowHandler::RayTraceMain,
-		std::move(rayTraceParams),
-		std::move(image),
-		std::ref(this->rayTraceTaskCancel)
-	);
-}
-
-void RayTraceWindowHandler::TryFinishRayTraceTask()
-{
-	if (!is_ready(this->rayTraceTask))
-	{
-		return;
-	}
-
-	this->renderQueue.push(std::move(this->currentlyPresentingImage));
-	this->currentlyPresentingImage = this->rayTraceTask.get();
+	return std::make_unique<RayTraceTask>(std::move(rayTraceParams));
 }
 
 float RayTraceWindowHandler::GetRandomFloat()
@@ -161,7 +81,7 @@ float RayTraceWindowHandler::GetRandomFloat()
 	return rnd;
 }
 
-RayTraceFunctorParams RayTraceWindowHandler::MakeDefaultScene()
+RayTraceFunctorParams RayTraceWindowHandler::MakeDefaultScene(const Helpers::Size2D<uint32_t>& currentImageSize)
 {
 	/*auto randomInUnitSphere =
 		std::make_shared<TextureRaySamplerRandomInUnitSphere>(
@@ -171,7 +91,7 @@ RayTraceFunctorParams RayTraceWindowHandler::MakeDefaultScene()
 					)
 				)
 			);*/
-	const vec2<float> imageSize(static_cast<float>(this->currentSize.width), static_cast<float>(this->currentSize.height));
+	const vec2<float> imageSize(static_cast<float>(currentImageSize.width), static_cast<float>(currentImageSize.height));
 
 	CameraFovSettings camSettings;
 
@@ -281,7 +201,7 @@ RayTraceFunctorParams RayTraceWindowHandler::MakeDefaultScene()
 	return params;
 }
 
-RayTraceFunctorParams RayTraceWindowHandler::MakeBook1Scene()
+RayTraceFunctorParams RayTraceWindowHandler::MakeBook1Scene(const Helpers::Size2D<uint32_t>& currentImageSize)
 {
 	/*auto randomInUnitSphere =
 		std::make_shared<TextureRaySamplerRandomInUnitSphere>(
@@ -298,7 +218,7 @@ RayTraceFunctorParams RayTraceWindowHandler::MakeBook1Scene()
 		this->book1Scene = Book1Scene()();
 	}
 
-	const vec2<float> imageSize(static_cast<float>(this->currentSize.width), static_cast<float>(this->currentSize.height));
+	const vec2<float> imageSize(static_cast<float>(currentImageSize.width), static_cast<float>(currentImageSize.height));
 
 	CameraFovSettings camSettings;
 
@@ -325,11 +245,11 @@ RayTraceFunctorParams RayTraceWindowHandler::MakeBook1Scene()
 	return params;
 }
 
-Image<BGRA<uint8_t>> RayTraceWindowHandler::RayTraceMain(
-	RayTraceFunctorParams rayTraceParams,
-	Image<BGRA<uint8_t>> resultImage,
-	std::atomic<bool>& /*cancel*/
-)
+RayTraceWindowHandler::RayTraceTask::RayTraceTask(RayTraceFunctorParams params)
+	: rayTraceParams(std::move(params))
+{}
+
+Image<BGRA<uint8_t>> RayTraceWindowHandler::RayTraceTask::Render(Image<BGRA<uint8_t>> resultImage, std::atomic<bool>& cancel)
 {
 	ImageView<BGRA<uint8_t>> imageView(resultImage.GetWidth(), resultImage.GetHeight(), resultImage.GetData());
 	MassiveCompute::StealingBlockScheduler stealingScheduler;
@@ -342,7 +262,7 @@ Image<BGRA<uint8_t>> RayTraceWindowHandler::RayTraceMain(
 
 	//cbs(imageView, RayTraceFunctor(imageView, std::move(rayTraceParams)), imageView.GetWidth(), 1);
 
-	stealingScheduler(imageView, RayTraceFunctor(imageView, std::move(rayTraceParams)), imageView.GetWidth(), 1);
+	stealingScheduler(imageView, RayTraceFunctor(imageView, std::move(this->rayTraceParams)), imageView.GetWidth(), 1);
 
 	// single thread, for test
 	/*MassiveCompute::Block block;

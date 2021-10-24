@@ -1,26 +1,15 @@
 #pragma once
-#include "IGameWindowHandler.h"
-#include "Image/Image.h"
-#include "Image/BGRA.h"
+#include "RenderThreadWindowHandler.h"
 #include "Render/Functor/RayTraceFunctorParams.h"
 #include "Render/Sampler/ITextureSampler.h"
 #include "Render/Hitable/IHitable.h"
 
-#include <queue>
-#include <future>
-#include <atomic>
 #include <random>
 
-class RayTraceWindowHandler : public IGameWindowHandler
+class RayTraceWindowHandler : public RenderThreadWindowHandler
 {
 public:
 	RayTraceWindowHandler();
-	~RayTraceWindowHandler();
-
-	void GameLoop(ISystemBackBuffer& backBuffer) override;
-
-	void OnResize(const Helpers::Size2D<uint32_t>& newSize) override;
-	void OnRepaint(ISystemBackBuffer& backBuffer) override;
 
 	void OnMouseLeftPress(const Helpers::Point2D<float>& pt) override;
 	void OnMouseLeftRelease(const Helpers::Point2D<float>& pt) override;
@@ -34,37 +23,28 @@ public:
 	void OnMouseMove(const Helpers::Point2D<float>& pt) override;
 	void OnMouseWheel(float delta) override;
 
+protected:
+	std::unique_ptr<IRenderThreadTask> MakeRenderTask(const Helpers::Size2D<uint32_t>& currentImageSize) override;
+
 private:
-	void TryStartRayTraceTask();
-	void TryFinishRayTraceTask();
+	class RayTraceTask : public IRenderThreadTask
+	{
+	public:
+		RayTraceTask(RayTraceFunctorParams params);
+
+		Image<BGRA<uint8_t>> Render(Image<BGRA<uint8_t>> resultImage, std::atomic<bool>& cancel) override;
+
+	private:
+		RayTraceFunctorParams rayTraceParams;
+	};
+
 	float GetRandomFloat();
 
-	RayTraceFunctorParams MakeDefaultScene();
-	RayTraceFunctorParams MakeBook1Scene();
-
-	static Image<BGRA<uint8_t>> RayTraceMain(
-		RayTraceFunctorParams rayTraceParams,
-		Image<BGRA<uint8_t>> resultImage,
-		std::atomic<bool>& cancel
-	);
+	RayTraceFunctorParams MakeDefaultScene(const Helpers::Size2D<uint32_t>& currentImageSize);
+	RayTraceFunctorParams MakeBook1Scene(const Helpers::Size2D<uint32_t>& currentImageSize);
 
 	std::mt19937 random;
-
-	Helpers::Size2D<uint32_t> currentSize;
-
-	// Images from <renderQueue> are submitted to render task.
-	std::queue<Image<BGRA<uint8_t>>> renderQueue;
-	// Images from <renderQueue> popped to <currentlyPresentingImage>.
-	// <currentlyPresentingImage> contains the image that is rendered on every repaint.
-	// When new image from <renderQueue> arrives, <currentlyPresentingImage> pushed to <renderQueue>
-	Image<BGRA<uint8_t>> currentlyPresentingImage;
-
-	std::atomic<bool> rayTraceTaskCancel = false;
-	std::future<Image<BGRA<uint8_t>>> rayTraceTask;
-
 	std::shared_ptr<ITextureSampler<float>> perlinNoise;
-
 	float cameraX = 0.f;
-
 	std::shared_ptr<IHitable> book1Scene;
 };

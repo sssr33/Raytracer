@@ -30,6 +30,7 @@
     <ClCompile Include="Render\Hitable\MovingSphere.cpp" />
     <ClCompile Include="Math\aabb.cpp" />
     <ClCompile Include="Render\Hitable\BvhNode.cpp" />
+    <ClCompile Include="RenderThreadWindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -89,5 +90,7 @@
     <ClInclude Include="Render\Hitable\MovingSphere.h" />
     <ClInclude Include="Math\aabb.h" />
     <ClInclude Include="Render\Hitable\BvhNode.h" />
+    <ClInclude Include="RenderThreadWindowHandler.h" />
+    <ClInclude Include="IRenderThreadTask.h" />
   </ItemGroup>
 </Project>

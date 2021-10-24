@@ -195,6 +195,7 @@
     <ClCompile Include="Render\Random\RandomFunctions.cpp" />
     <ClCompile Include="Render\Random\TextureRaySamplerRandomInUnitSphere.cpp" />
     <ClCompile Include="Render\Scenes\Book1Scene.cpp" />
+    <ClCompile Include="SoftRendWindowHandler.cpp" />
     <ClCompile Include="SystemBackBufferLock.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -267,6 +268,7 @@
     <ClInclude Include="Render\Sampler\TextureRaySampler.h" />
     <ClInclude Include="Render\Sampler\TextureSamplerWithOffset.h" />
     <ClInclude Include="Render\Scenes\Book1Scene.h" />
+    <ClInclude Include="SoftRendWindowHandler.h" />
     <ClInclude Include="SystemBackBufferLock.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>

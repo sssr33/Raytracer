@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "GameWindow.h"
 #include "RayTraceWindowHandler.h"
+#include "SoftRendWindowHandler.h"
 #include "Math/MathTest.h"
 
 #include <iostream>
@@ -15,9 +16,10 @@ int main()
     //MathTest();
     //MassiveComputeTest();
 
-    RayTraceWindowHandler rayTraceHandler;
+    //RayTraceWindowHandler rayTraceHandler;
+    SoftRendWindowHandler softRendHandler;
     // https://devblogs.microsoft.com/oldnewthing/20050217-00/?p=36423
-    GameWindow wnd(rayTraceHandler, L"Raytracer");
+    GameWindow wnd(/*rayTraceHandler*/softRendHandler, L"Raytracer");
 
     while (!is<Window::Quit>(wnd.ProcessMessages()))
     {

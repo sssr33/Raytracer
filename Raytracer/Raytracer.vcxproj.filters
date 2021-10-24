@@ -31,6 +31,7 @@
     <ClCompile Include="Math\aabb.cpp" />
     <ClCompile Include="Render\Hitable\BvhNode.cpp" />
     <ClCompile Include="RenderThreadWindowHandler.cpp" />
+    <ClCompile Include="SoftRendWindowHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
@@ -92,5 +93,6 @@
     <ClInclude Include="Render\Hitable\BvhNode.h" />
     <ClInclude Include="RenderThreadWindowHandler.h" />
     <ClInclude Include="IRenderThreadTask.h" />
+    <ClInclude Include="SoftRendWindowHandler.h" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,9 @@
 #include "SoftRendWindowHandler.h"
 
+SoftRendWindowHandler::SoftRendWindowHandler()
+    : softRend(CreateISoftRend())
+{}
+
 void SoftRendWindowHandler::OnMouseLeftPress(const Helpers::Point2D<float>& pt) {}
 
 void SoftRendWindowHandler::OnMouseLeftRelease(const Helpers::Point2D<float>& pt) {}

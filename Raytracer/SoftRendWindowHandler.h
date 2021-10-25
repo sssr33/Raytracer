@@ -1,9 +1,13 @@
 #pragma once
 #include "RenderThreadWindowHandler.h"
 
+#include <SoftRend/ISoftRend.h>
+
 class SoftRendWindowHandler : public RenderThreadWindowHandler
 {
 public:
+	SoftRendWindowHandler();
+
 	void OnMouseLeftPress(const Helpers::Point2D<float>& pt) override;
 	void OnMouseLeftRelease(const Helpers::Point2D<float>& pt) override;
 
@@ -27,4 +31,6 @@ private:
 
 		Image<BGRA<uint8_t>> Render(Image<BGRA<uint8_t>> resultImage, std::atomic<bool>& cancel) override;
 	};
+
+	std::unique_ptr<ISoftRend> softRend;
 };

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ISoftRend.h" />
     <ClInclude Include="render\AlphaBlendStrategy.h" />
     <ClInclude Include="render\Clipper.h" />
     <ClInclude Include="render\ColorOp.h" />
@@ -49,6 +50,7 @@
     <ClInclude Include="render\zBuffer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ISoftRend.cpp" />
     <ClCompile Include="render\AlphaBlendStrategy.cpp" />
     <ClCompile Include="render\Clipper.cpp" />
     <ClCompile Include="render\ColorOp.cpp" />

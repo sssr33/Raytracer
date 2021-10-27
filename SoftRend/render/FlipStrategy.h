@@ -6,7 +6,7 @@
 class FlipDDStrategy
 {
 public:
-	~FlipDDStrategy(void) {}
+	virtual ~FlipDDStrategy(void) {}
 	virtual int Flip(bool bFitToWindow = false) = 0;
 protected:
 	FlipDDStrategy(void) {}

@@ -30,6 +30,7 @@
     <ClInclude Include="render\fixp\fixsintab.h" />
     <ClInclude Include="render\GraphicImpDirectDraw.h" />
     <ClInclude Include="ISoftRend.h" />
+    <ClInclude Include="render\GraphicImpInMemory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\fixp\fixed_func.cpp" />
@@ -57,5 +58,6 @@
     <ClCompile Include="render\zBuffer.cpp" />
     <ClCompile Include="render\GraphicImpDirectDraw.cpp" />
     <ClCompile Include="ISoftRend.cpp" />
+    <ClCompile Include="render\GraphicImpInMemory.cpp" />
   </ItemGroup>
 </Project>

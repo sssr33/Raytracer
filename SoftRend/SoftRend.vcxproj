@@ -34,6 +34,7 @@
     <ClInclude Include="render\GeometryGen.h" />
     <ClInclude Include="render\GraphicImp.h" />
     <ClInclude Include="render\GraphicImpDirectDraw.h" />
+    <ClInclude Include="render\GraphicImpInMemory.h" />
     <ClInclude Include="render\Input.h" />
     <ClInclude Include="render\lineInterp.h" />
     <ClInclude Include="render\math3DFunc.h" />
@@ -62,6 +63,7 @@
     <ClCompile Include="render\FPSMeter.cpp" />
     <ClCompile Include="render\GeometryGen.cpp" />
     <ClCompile Include="render\GraphicImpDirectDraw.cpp" />
+    <ClCompile Include="render\GraphicImpInMemory.cpp" />
     <ClCompile Include="render\Input.cpp" />
     <ClCompile Include="render\lineInterp.cpp" />
     <ClCompile Include="render\math3DFunc.cpp" />

@@ -14,7 +14,7 @@ using namespace fixedpoint;
 class DrawStrategy
 {
 public:
-	~DrawStrategy(void);
+	virtual ~DrawStrategy(void);
 	virtual int Release() = 0;
 	virtual int DrawLine(int x0, int y0, int x1, int y1, unsigned int color, void *videoMemory, int lpitch) = 0;
 	virtual int DrawLine(VERTEX4DT_PTR v0, VERTEX4DT_PTR v1, unsigned int color, void *videoMemory, int lpitch) = 0;

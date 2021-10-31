@@ -128,7 +128,6 @@ private:
 class Draw16BitStrategy : public DrawStrategy
 {
 public:
-	~Draw16BitStrategy();
 	Draw16BitStrategy(unsigned int graphicQuality){}
 	int Release(){return 0;}
 	int DrawLine(int x0, int y0, int x1, int y1, unsigned int color, void *videoMemory, int lpitch){return 0;}

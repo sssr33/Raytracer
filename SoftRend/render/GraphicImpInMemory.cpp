@@ -40,6 +40,11 @@ int GraphicImpInMemory::Resize(int newWidth, int newHeight)
 	uint32_t width = static_cast<uint32_t>(newWidth);
 	uint32_t height = static_cast<uint32_t>(newHeight);
 
+	if (this->draw && width == this->screenParams.width && height == this->screenParams.height)
+	{
+		return 1;
+	}
+
 	this->screenParams.width = width;
 	this->screenParams.height = height;
 
@@ -47,7 +52,10 @@ int GraphicImpInMemory::Resize(int newWidth, int newHeight)
 
 	this->videoBuffer.resize(static_cast<size_t>(this->videoBufferPitch) * height);
 
-	if (!this->InitializeDrawStrategies()) return 0;
+	if (!this->InitializeDrawStrategies())
+	{
+		return 0;
+	}
 
 	//3DInit:
 	POINT4D camPos = { 0, 0, 0, 1 };
@@ -66,7 +74,7 @@ int GraphicImpInMemory::DrawBegin(bool bClearScreen)
 {
 	if (bClearScreen)
 	{
-		uint32_t clearColor = _ARGB32BIT(0, 255, 255, 255);
+		uint32_t clearColor = _ARGB32BIT(255, 0, 0, 0);
 		uint32_t* begin = reinterpret_cast<uint32_t*>(this->videoBuffer.data());
 		uint32_t* end = reinterpret_cast<uint32_t*>(this->videoBuffer.data() + this->videoBuffer.size());
 
@@ -1365,7 +1373,28 @@ int GraphicImpInMemory::ClipLine(int& x1, int& y1, int& x2, int& y2)
 
 void GraphicImpInMemory::FlipVideoBuffer()
 {
-	// TODO impl
+	if (!this->dstFlipParams.dstMemory)
+	{
+		return;
+	}
+
+	const uint8_t* src = this->videoBuffer.data();
+	uint8_t* dst = static_cast<uint8_t *>(this->dstFlipParams.dstMemory);
+
+	if (this->dstFlipParams.dstMemoryByteWidth == this->videoBufferPitch)
+	{
+		uint32_t memSize = this->videoBufferPitch * this->screenParams.height;
+		std::copy(src, src + memSize, dst);
+	}
+	else
+	{
+		uint32_t byteWidth = (std::min)(this->videoBufferPitch, this->dstFlipParams.dstMemoryByteWidth);
+
+		for (uint32_t y = 0; y < this->screenParams.height; ++y, src += this->videoBufferPitch, dst += this->dstFlipParams.dstMemoryByteWidth)
+		{
+			std::copy(src, src + byteWidth, dst);
+		}
+	}
 }
 
 bool GraphicImpInMemory::isInPoly(POINT4D_PTR p, VECTOR4D_PTR v, POLY4D_PTR poly, OBJECT4D_PTR obj)

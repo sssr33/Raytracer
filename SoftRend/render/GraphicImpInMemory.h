@@ -9,7 +9,6 @@ struct DstFlipParams
 {
 	void* dstMemory = nullptr;
 	uint32_t dstMemoryByteWidth = 0;
-	uint32_t dstMemoryHeight = 0;
 };
 
 struct ScreenParamsInMemory {
@@ -17,7 +16,6 @@ struct ScreenParamsInMemory {
 	uint32_t height = 0;
 	uint32_t bitsPerPixel = 0;
 	uint32_t graphicQuality = 0;
-	bool fullScreen = false;
 };
 
 class GraphicImpInMemory : public GraphicImp

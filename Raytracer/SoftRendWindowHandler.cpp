@@ -22,13 +22,19 @@ void SoftRendWindowHandler::OnMouseWheel(float delta) {}
 
 std::unique_ptr<IRenderThreadTask> SoftRendWindowHandler::MakeRenderTask(const Helpers::Size2D<uint32_t>& currentImageSize)
 {
-    return std::make_unique<SoftRendTask>();
+    return std::make_unique<SoftRendTask>(*this->softRend);
 }
 
-SoftRendWindowHandler::SoftRendTask::SoftRendTask()
+SoftRendWindowHandler::SoftRendTask::SoftRendTask(ISoftRend& render)
+    : render(render)
 {}
 
 Image<BGRA<uint8_t>> SoftRendWindowHandler::SoftRendTask::Render(Image<BGRA<uint8_t>> resultImage, std::atomic<bool>& cancel)
 {
+    this->render.Render(
+        static_cast<uint32_t>(resultImage.GetWidth()),
+        static_cast<uint32_t>(resultImage.GetHeight()),
+        resultImage.GetData());
+
     return resultImage;
 }

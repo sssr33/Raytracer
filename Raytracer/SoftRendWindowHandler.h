@@ -27,9 +27,12 @@ private:
 	class SoftRendTask : public IRenderThreadTask
 	{
 	public:
-		SoftRendTask();
+		SoftRendTask(ISoftRend& render);
 
 		Image<BGRA<uint8_t>> Render(Image<BGRA<uint8_t>> resultImage, std::atomic<bool>& cancel) override;
+
+	private:
+		ISoftRend& render;
 	};
 
 	std::unique_ptr<ISoftRend> softRend;

@@ -1,9 +1,8 @@
 #pragma once
 class AlphaBlendStrategy{
 public:
+	virtual ~AlphaBlendStrategy() = default;
 	virtual void AlphaBlend(void *destination, void *source, unsigned int numPixels) = 0;
-protected:
-	AlphaBlendStrategy(){}
 };
 
 class AlphaBlendSSE32BitStrategy : public AlphaBlendStrategy{
@@ -24,10 +23,19 @@ private:
 
 class AlphaBlendSlow32BitStrategy : public AlphaBlendStrategy{
 public:
-	AlphaBlendSlow32BitStrategy(){}
-	void AlphaBlend(void *destination, void *source, unsigned int numPixels) {}
+	void AlphaBlend(void* destination, void* source, unsigned int numPixels);
+
 private:
-	void Blend4Pixels(unsigned int *destination, unsigned int *source);
-	void Blend2Pixels(unsigned int *destination, unsigned int *source){}
-	void Blend1Pixel(unsigned int *destination, unsigned int *source);
+	struct ColorFlt
+	{
+		ColorFlt() = default;
+		explicit ColorFlt(unsigned int color);
+
+		unsigned int As32BitColor() const;
+
+		float blue = 0.f;
+		float green = 0.f;
+		float red = 0.f;
+		float alpha = 0.f;
+	};
 };

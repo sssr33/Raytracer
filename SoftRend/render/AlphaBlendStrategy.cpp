@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "AlphaBlendStrategy.h"
 
+#include <algorithm>
 
 void MyAlphaBlend10(unsigned int *dstColor, unsigned int *srcColor);
 
@@ -268,4 +269,43 @@ void MyAlphaBlend10(unsigned int *dstColor, unsigned int *srcColor){
 
 	//	movups [edi], xmm1
 	//}
+}
+
+void AlphaBlendSlow32BitStrategy::AlphaBlend(void* destination, void* source, unsigned int numPixels)
+{
+	uint32_t* dst = static_cast<uint32_t*>(destination);
+	const uint32_t* src = static_cast<const uint32_t*>(source);
+
+	for (uint32_t i = 0; i < numPixels; ++i)
+	{
+		ColorFlt a(src[i]);
+		ColorFlt b(dst[i]);
+		ColorFlt res;
+
+		// https://en.wikipedia.org/wiki/Alpha_compositing
+		res.alpha = a.alpha + b.alpha * (1.f - a.alpha);
+
+		res.blue = (a.blue * a.alpha + b.blue * b.alpha * (1.f - a.alpha)) / res.alpha;
+		res.green = (a.green * a.alpha + b.green * b.alpha * (1.f - a.alpha)) / res.alpha;
+		res.red = (a.red * a.alpha + b.red * b.alpha * (1.f - a.alpha)) / res.alpha;
+
+		dst[i] = res.As32BitColor();
+	}
+}
+
+AlphaBlendSlow32BitStrategy::ColorFlt::ColorFlt(unsigned int color)
+	: blue(static_cast<float>(color & 0x000000FF) / 255.f)
+	, green(static_cast<float>((color >> 8) & 0x000000FF) / 255.f)
+	, red(static_cast<float>((color >> 16) & 0x000000FF) / 255.f)
+	, alpha(static_cast<float>((color >> 24) & 0x000000FF) / 255.f)
+{}
+
+unsigned int AlphaBlendSlow32BitStrategy::ColorFlt::As32BitColor() const
+{
+	uint32_t bluePart = static_cast<uint32_t>(std::clamp(this->blue, 0.f, 1.f) * 255.f);
+	uint32_t greenPart = static_cast<uint32_t>(std::clamp(this->green, 0.f, 1.f) * 255.f) << 8;
+	uint32_t redPart = static_cast<uint32_t>(std::clamp(this->red, 0.f, 1.f) * 255.f) << 16;
+	uint32_t alphaPart = static_cast<uint32_t>(std::clamp(this->alpha, 0.f, 1.f) * 255.f) << 24;
+
+	return bluePart | greenPart | redPart | alphaPart;
 }

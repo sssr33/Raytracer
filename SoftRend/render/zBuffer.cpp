@@ -10,6 +10,7 @@ zBuffer::zBuffer(void)
 
 zBuffer::~zBuffer(void)
 {
+	this->release();
 }
 
 int zBuffer::initialize(int width, int height, int attr)
@@ -51,7 +52,7 @@ int zBuffer::release()
 {
 	if(this->zbuffer)
 	{
-		delete this->zbuffer;
+		delete[] this->zbuffer;
 		this->zbuffer = 0;
 	}
 

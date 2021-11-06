@@ -303,6 +303,11 @@ int struct3D::RENDERLIST4D_TYP::selectionVertex(RECT *r, VERTEX4DT_PTR *verts, i
 	return 1;
 }
 
+struct3D::OBJECT4D_TYP::~OBJECT4D_TYP()
+{
+	this->Destroy();
+}
+
 float struct3D::OBJECT4D_TYP::Compute_OBJECT4D_Radius()
 {
 	this->avg_radius[this->curr_frame] = 0;
@@ -546,20 +551,26 @@ int struct3D::OBJECT4D_TYP::SetFrame(int frame)
 
 int struct3D::OBJECT4D_TYP::Destroy()
 {
+	if (this->vlist_local)
+	{
+		delete[] this->vlist_local;
+	}
+
+	if (this->vlist_trans)
+	{
+		free(this->vlist_trans);
+	}
+
 	if(this->scr_pts)
 		free(this->scr_pts);
-
-	if(this->head_vlist_local)
-		free(this->head_vlist_local);
-
-	if(this->head_vlist_trans)
-		free(this->head_vlist_trans);
 
 	if(this->tlist)
 		free(this->tlist);
 
-	if(this->plist)
-		free(this->plist);
+	if (this->plist)
+	{
+		delete[] this->plist;
+	}
 
 	if(this->avg_radius)
 		free(this->avg_radius);

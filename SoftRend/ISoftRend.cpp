@@ -1,5 +1,6 @@
 #include "ISoftRend.h"
 #include "render/GraphicImpInMemory.h"
+#include "render/GeometryGen.h"
 
 class SoftRend : public ISoftRend
 {
@@ -29,6 +30,18 @@ private:
         this->graphics->DrawLine(0, 0, 20, 100, _ARGB32BIT(255, 0, 255, 0));
         this->graphics->DrawLine(0, 0, 80, 100, _ARGB32BIT(255, 255, 0, 0));
         this->graphics->DrawLine(0, 0, 100, 80, _ARGB32BIT(255, 255, 0, 0));
+
+        GeometryGen geomGen;
+        std::unique_ptr<OBJECT4D> sphere = std::make_unique<OBJECT4D>();
+        math3D::POINT4D spherePos = {};
+
+        spherePos.z = 10.f;
+        spherePos.y = 3.f;
+        spherePos.w = 1.f;
+
+        geomGen.generateSphere(32, 1.f, sphere.get(), &spherePos, _ARGB32BIT(255, 255, 255, 255));
+
+        this->graphics->DrawOBJECT4DWire(sphere.get());
     }
 
     void CheckGrapics(uint32_t width, uint32_t height, void* dstMemory)

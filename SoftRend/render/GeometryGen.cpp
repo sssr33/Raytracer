@@ -57,7 +57,7 @@ int GeometryGen::generateRotationForm(POINT4D_PTR pts, int numPts, int numSides,
 	float rotAngle = -360.0f / ((float)numSides + 1.0f);
 	int polyAttr = struct3D::POLY4D_ATTR_RGB24 | struct3D::POLY4D_ATTR_SHADE_MODE_GOURAUD | struct3D::POLY4D_ATTR_DISABLE_MATERIAL;
 	int vertAttr = struct3D::VERTEX4DT_ATTR_NORMAL | struct3D::VERTEX4DT_ATTR_POINT;
-	int polyState = struct3D::POLY4D_STATE_ACTIVE | struct3D::OBJECT4D_STATE_VISIBLE;
+	int polyState = struct3D::POLY4D_STATE_ACTIVE;// | struct3D::OBJECT4D_STATE_VISIBLE;
 	int polyColor = iColor;
 	MATRIX4X4 mrot;
 
@@ -376,7 +376,7 @@ int GeometryGen::generateSphere(int numSegs, float radius, OBJECT4D_PTR obj, POI
 
 	this->generateRotationForm(pts, numPts, numSegs, obj, worldPos, iColor);
 
-	delete pts;
+	delete[] pts;
 
 	return 1;
 }

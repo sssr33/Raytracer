@@ -338,9 +338,9 @@ const int VERTEX4DT_ATTR_GENERATED = 0x0010;
 		VECTOR4D r;
 	} BBox, *BBox_PTR;
 
-	enum ObjectType
+	enum class ObjectType
 	{
-		Sphere, Box, Cylinder, Cone, EditableMesh
+		Unknown, Sphere, Box, Cylinder, Cone, EditableMesh
 	};
 
 	class Observer;
@@ -391,50 +391,52 @@ const int VERTEX4DT_ATTR_GENERATED = 0x0010;
 
 	typedef struct OBJECT4D_TYP : public SelectionSubject
 	{
-		ObjectType type;
-		float typeData[10];
-		BBox boundingBox;
+		~OBJECT4D_TYP();
 
-		int id;
-		char name[64];
+		ObjectType type = ObjectType::Unknown;
+		float typeData[10] = {};
+		BBox boundingBox = {};
+
+		int id = 0;
+		char name[64] = {};
 		std::string strName;
-		int color;
-		int state;
-		int attr;
-		int mati;
+		int color = 0;
+		int state = 0;
+		int attr = 0;
+		int mati = 0;
 
-		float *avg_radius;
-		float *max_radius;
+		float *avg_radius = nullptr;
+		float *max_radius = nullptr;
 
-		POINT4D world_pos;
+		POINT4D world_pos = {};
 
-		VECTOR4D dir;
-		VECTOR4D ux, uy, uz;
+		VECTOR4D dir = {};
+		VECTOR4D ux = {}, uy = {}, uz = {};
 
-		int num_vertices;
-		int num_frames;
-		int total_vertices;
-		int curr_frame;
+		int num_vertices = 0;
+		int num_frames = 0;
+		int total_vertices = 0;
+		int curr_frame = 0;
 		/*POINT4D vlist_local[OBJECT4D_MAX_VERTICES];
 		POINT4D vlist_trans[OBJECT4D_MAX_VERTICES];*/
 
 		
-		VERTEX4DT_PTR vlist_local;
-		VERTEX4DT_PTR vlist_trans;
+		VERTEX4DT_PTR vlist_local = nullptr;
+		VERTEX4DT_PTR vlist_trans = nullptr;
 
-		POINT2D_PTR scr_pts;
+		POINT2D_PTR scr_pts = nullptr;
 
-		VERTEX4DT_PTR head_vlist_local;
-		VERTEX4DT_PTR head_vlist_trans;
+		VERTEX4DT_PTR head_vlist_local = nullptr;
+		VERTEX4DT_PTR head_vlist_trans = nullptr;
 		
 
-		POINT2D_PTR tlist;
+		POINT2D_PTR tlist = nullptr;
 		//mat::BITMAP_IMAGE_PTR texture;
-		mat::TEXTURE2D *texture;
+		mat::TEXTURE2D *texture = nullptr;
 
-		int num_polys;
-		POLY4D_PTR plist;
-		AdjacencyPoly *adj;
+		int num_polys = 0;
+		POLY4D_PTR plist = nullptr;
+		AdjacencyPoly *adj = nullptr;
 
 	//funstions:
 		float Compute_OBJECT4D_Radius();

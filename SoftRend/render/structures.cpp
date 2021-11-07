@@ -1918,6 +1918,11 @@ void struct3D::POLY4D_TYP::unselect()
 	this->isSelected = false;
 }
 
+void struct3D::POLY4D_TYP::SetLitColor(int color)
+{
+	std::fill(this->lit_color, this->lit_color + std::size(this->lit_color), color);
+}
+
 void struct3D::POLY4D_TYP::rotate(VECTOR4D_PTR vAngles, POINT4D_PTR pAround, MATRIX4X4_PTR mrot)
 {
 	MATRIX4X4 mrot2;

@@ -158,7 +158,8 @@ int GeometryGen::generateRotationForm(POINT4D_PTR pts, int numPts, int numSides,
 				obj->plist[currPoly].vlist = obj->vlist_local;
 				obj->plist[currPoly].attr = polyAttr;
 				obj->plist[currPoly].state = polyState;
-				obj->plist[currPoly].color = obj->plist[currPoly].lit_color[0] = polyColor;
+				obj->plist[currPoly].color = polyColor;
+				obj->plist[currPoly].SetLitColor(obj->plist[currPoly].color);
 
 				obj->plist[currPoly + 1].vert[0] = (currVert - k - 1) - numGenVertsPerIteration;
 				obj->plist[currPoly + 1].vert[1] = (currVert - k - 1) - numGenVertsPerIteration - 1;
@@ -167,7 +168,8 @@ int GeometryGen::generateRotationForm(POINT4D_PTR pts, int numPts, int numSides,
 				obj->plist[currPoly + 1].vlist = obj->vlist_local;
 				obj->plist[currPoly + 1].attr = polyAttr;
 				obj->plist[currPoly + 1].state = polyState;
-				obj->plist[currPoly + 1].color = obj->plist[currPoly + 1].lit_color[0] = polyColor;
+				obj->plist[currPoly + 1].color = polyColor;
+				obj->plist[currPoly + 1].SetLitColor(obj->plist[currPoly + 1].color);
 
 				currPoly += 2;
 		}
@@ -181,7 +183,8 @@ int GeometryGen::generateRotationForm(POINT4D_PTR pts, int numPts, int numSides,
 		obj->plist[currPoly].vlist = obj->vlist_local;
 		obj->plist[currPoly].attr = polyAttr;
 		obj->plist[currPoly].state = polyState;
-		obj->plist[currPoly].color = obj->plist[currPoly].lit_color[0] = polyColor;
+		obj->plist[currPoly].color = polyColor;
+		obj->plist[currPoly].SetLitColor(obj->plist[currPoly].color);
 
 		//нижний
 		obj->plist[currPoly + 1].vert[0] = (currVert - 1);
@@ -191,7 +194,8 @@ int GeometryGen::generateRotationForm(POINT4D_PTR pts, int numPts, int numSides,
 		obj->plist[currPoly + 1].vlist = obj->vlist_local;
 		obj->plist[currPoly + 1].attr = polyAttr;
 		obj->plist[currPoly + 1].state = polyState;
-		obj->plist[currPoly + 1].color = obj->plist[currPoly + 1].lit_color[0] = polyColor;
+		obj->plist[currPoly + 1].color = polyColor;
+		obj->plist[currPoly + 1].SetLitColor(obj->plist[currPoly + 1].color);
 
 		currPoly += 2;
 	}
@@ -209,7 +213,8 @@ int GeometryGen::generateRotationForm(POINT4D_PTR pts, int numPts, int numSides,
 				obj->plist[currPoly].vlist = obj->vlist_local;
 				obj->plist[currPoly].attr = polyAttr;
 				obj->plist[currPoly].state = polyState;
-				obj->plist[currPoly].color = obj->plist[currPoly].lit_color[0] = polyColor;
+				obj->plist[currPoly].color = polyColor;
+				obj->plist[currPoly].SetLitColor(obj->plist[currPoly].color);
 
 				obj->plist[currPoly + 1].vert[0] = (currVert - k - 1);
 				obj->plist[currPoly + 1].vert[1] = (currVert - k - 1) - 1;
@@ -218,7 +223,8 @@ int GeometryGen::generateRotationForm(POINT4D_PTR pts, int numPts, int numSides,
 				obj->plist[currPoly + 1].vlist = obj->vlist_local;
 				obj->plist[currPoly + 1].attr = polyAttr;
 				obj->plist[currPoly + 1].state = polyState;
-				obj->plist[currPoly + 1].color = obj->plist[currPoly + 1].lit_color[0] = polyColor;
+				obj->plist[currPoly + 1].color = polyColor;
+				obj->plist[currPoly + 1].SetLitColor(obj->plist[currPoly + 1].color);
 
 				currPoly += 2;
 		}
@@ -232,7 +238,8 @@ int GeometryGen::generateRotationForm(POINT4D_PTR pts, int numPts, int numSides,
 	obj->plist[currPoly].vlist = obj->vlist_local;
 	obj->plist[currPoly].attr = polyAttr;
 	obj->plist[currPoly].state = polyState;
-	obj->plist[currPoly].color = obj->plist[currPoly].lit_color[0] = polyColor;
+	obj->plist[currPoly].color = polyColor;
+	obj->plist[currPoly].SetLitColor(obj->plist[currPoly].color);
 
 	//нижний
 	obj->plist[currPoly + 1].vert[0] = (numPts - 1);
@@ -242,7 +249,8 @@ int GeometryGen::generateRotationForm(POINT4D_PTR pts, int numPts, int numSides,
 	obj->plist[currPoly + 1].vlist = obj->vlist_local;
 	obj->plist[currPoly + 1].attr = polyAttr;
 	obj->plist[currPoly + 1].state = polyState;
-	obj->plist[currPoly + 1].color = obj->plist[currPoly + 1].lit_color[0] = polyColor;
+	obj->plist[currPoly + 1].color = polyColor;
+	obj->plist[currPoly + 1].SetLitColor(obj->plist[currPoly + 1].color);
 
 	currPoly += 2;
 
@@ -601,7 +609,8 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 		{
 			obj->plist[currPoly].attr = polyAttr;
 			obj->plist[currPoly].state = polyState;
-			obj->plist[currPoly].color = obj->plist[currPoly].lit_color[0] = polyColor;
+			obj->plist[currPoly].color = polyColor;
+			obj->plist[currPoly].SetLitColor(obj->plist[currPoly].color);
 			obj->plist[currPoly].vlist = obj->vlist_local;
 
 			obj->plist[currPoly].vert[0] = btIdx[j];
@@ -612,7 +621,8 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 
 			obj->plist[currPoly].attr = polyAttr;
 			obj->plist[currPoly].state = polyState;
-			obj->plist[currPoly].color = obj->plist[currPoly].lit_color[0] = polyColor;
+			obj->plist[currPoly].color = polyColor;
+			obj->plist[currPoly].SetLitColor(obj->plist[currPoly].color);
 			obj->plist[currPoly].vlist = obj->vlist_local;
 
 			obj->plist[currPoly].vert[0] = btIdx[j];
@@ -638,7 +648,8 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 		{
 			obj->plist[currPoly].attr = polyAttr;
 			obj->plist[currPoly].state = polyState;
-			obj->plist[currPoly].color = obj->plist[currPoly].lit_color[0] = polyColor;
+			obj->plist[currPoly].color = polyColor;
+			obj->plist[currPoly].SetLitColor(obj->plist[currPoly].color);
 			obj->plist[currPoly].vlist = obj->vlist_local;
 
 			obj->plist[currPoly].vert[0] = btIdx[j];
@@ -649,7 +660,8 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 
 			obj->plist[currPoly].attr = polyAttr;
 			obj->plist[currPoly].state = polyState;
-			obj->plist[currPoly].color = obj->plist[currPoly].lit_color[0] = polyColor;
+			obj->plist[currPoly].color = polyColor;
+			obj->plist[currPoly].SetLitColor(obj->plist[currPoly].color);
 			obj->plist[currPoly].vlist = obj->vlist_local;
 
 			obj->plist[currPoly].vert[0] = btIdx[j];
@@ -680,7 +692,8 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 		{
 			obj->plist[currPoly].attr = polyAttr;
 			obj->plist[currPoly].state = polyState;
-			obj->plist[currPoly].color = obj->plist[currPoly].lit_color[0] = polyColor;
+			obj->plist[currPoly].color = polyColor;
+			obj->plist[currPoly].SetLitColor(obj->plist[currPoly].color);
 			obj->plist[currPoly].vlist = obj->vlist_local;
 
 			obj->plist[currPoly].vert[0] = shapeIdx[j];
@@ -691,7 +704,8 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 
 			obj->plist[currPoly].attr = polyAttr;
 			obj->plist[currPoly].state = polyState;
-			obj->plist[currPoly].color = obj->plist[currPoly].lit_color[0] = polyColor;
+			obj->plist[currPoly].color = polyColor;
+			obj->plist[currPoly].SetLitColor(obj->plist[currPoly].color);
 			obj->plist[currPoly].vlist = obj->vlist_local;
 
 			obj->plist[currPoly].vert[0] = shapeIdx[j];
@@ -703,7 +717,8 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 
 		obj->plist[currPoly].attr = polyAttr;
 		obj->plist[currPoly].state = polyState;
-		obj->plist[currPoly].color = obj->plist[currPoly].lit_color[0] = polyColor;
+		obj->plist[currPoly].color = polyColor;
+		obj->plist[currPoly].SetLitColor(obj->plist[currPoly].color);
 		obj->plist[currPoly].vlist = obj->vlist_local;
 
 		obj->plist[currPoly].vert[0] = shapeIdx[pm];
@@ -714,7 +729,8 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 
 		obj->plist[currPoly].attr = polyAttr;
 		obj->plist[currPoly].state = polyState;
-		obj->plist[currPoly].color = obj->plist[currPoly].lit_color[0] = polyColor;
+		obj->plist[currPoly].color = polyColor;
+		obj->plist[currPoly].SetLitColor(obj->plist[currPoly].color);
 		obj->plist[currPoly].vlist = obj->vlist_local;
 
 		obj->plist[currPoly].vert[0] = shapeIdx[pm];
@@ -759,7 +775,8 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 		{
 			obj->plist[currPoly].attr = polyAttr;
 			obj->plist[currPoly].state = polyState;
-			obj->plist[currPoly].color = obj->plist[currPoly].lit_color[0] = polyColor;
+			obj->plist[currPoly].color = polyColor;
+			obj->plist[currPoly].SetLitColor(obj->plist[currPoly].color);
 			obj->plist[currPoly].vlist = obj->vlist_local;
 
 			obj->plist[currPoly].vert[0] = btIdx[j + 1];
@@ -770,7 +787,8 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 
 			obj->plist[currPoly].attr = polyAttr;
 			obj->plist[currPoly].state = polyState;
-			obj->plist[currPoly].color = obj->plist[currPoly].lit_color[0] = polyColor;
+			obj->plist[currPoly].color = polyColor;
+			obj->plist[currPoly].SetLitColor(obj->plist[currPoly].color);
 			obj->plist[currPoly].vlist = obj->vlist_local;
 
 			obj->plist[currPoly].vert[0] = btIdx[j + 1];
@@ -796,7 +814,8 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 		{
 			obj->plist[currPoly].attr = polyAttr;
 			obj->plist[currPoly].state = polyState;
-			obj->plist[currPoly].color = obj->plist[currPoly].lit_color[0] = polyColor;
+			obj->plist[currPoly].color = polyColor;
+			obj->plist[currPoly].SetLitColor(obj->plist[currPoly].color);
 			obj->plist[currPoly].vlist = obj->vlist_local;
 
 			obj->plist[currPoly].vert[0] = btIdx[j + 1];
@@ -807,7 +826,8 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 
 			obj->plist[currPoly].attr = polyAttr;
 			obj->plist[currPoly].state = polyState;
-			obj->plist[currPoly].color = obj->plist[currPoly].lit_color[0] = polyColor;
+			obj->plist[currPoly].color = polyColor;
+			obj->plist[currPoly].SetLitColor(obj->plist[currPoly].color);
 			obj->plist[currPoly].vlist = obj->vlist_local;
 
 			obj->plist[currPoly].vert[0] = btIdx[j + 1];

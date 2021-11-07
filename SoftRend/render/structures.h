@@ -258,26 +258,28 @@ const int VERTEX4DT_ATTR_GENERATED = 0x0010;
 
 	typedef struct POLY4D_TYP : public SubSelection
 	{
-		int state;
-		int attr;
-		int color;
-		int lit_color[3];
+		int state = 0;
+		int attr = 0;
+		int color = 0;
+		int lit_color[3] = {};
 
-		mat::TEXTURE2D_PTR texture;
-		int mati;
+		mat::TEXTURE2D_PTR texture = nullptr;
+		int mati = 0;
 
-		VERTEX4DT_PTR vlist;
-		POINT2D_PTR tlist;
-		int vert[3];
-		int text[3];
-		float nlength;
-		unsigned int objID;//ID объекта к которому принадлежит полигон
+		VERTEX4DT_PTR vlist = nullptr;
+		POINT2D_PTR tlist = nullptr;
+		int vert[3] = {};
+		int text[3] = {};
+		float nlength = 0.f;
+		unsigned int objID = 0;//ID объекта к которому принадлежит полигон
 
 		void move(float dx, float dy, float dz);
 		void rotate(VECTOR4D_PTR vAngles, POINT4D_PTR pAround, MATRIX4X4_PTR mrot = 0);
 		void getPos(POINT4D_PTR p = 0);
 		void select();
 		void unselect();
+
+		void SetLitColor(int color);
 	} POLY4D, *POLY4D_PTR;
 
 	typedef struct POLYF4D_TYP

@@ -41,7 +41,7 @@ private:
 
         geomGen.generateSphere(32, 1.f, sphere.get(), &spherePos, _ARGB32BIT(255, 255, 255, 255));
 
-        this->graphics->DrawOBJECT4DWire(sphere.get());
+        this->graphics->DrawOBJECT4DSolid(sphere.get());
     }
 
     void CheckGrapics(uint32_t width, uint32_t height, void* dstMemory)

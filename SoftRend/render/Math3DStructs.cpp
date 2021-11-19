@@ -1,3 +1,4 @@
+﻿// 🐚
 #include "StdAfx.h"
 #include "Math3DStructs.h"
 #include <math.h>

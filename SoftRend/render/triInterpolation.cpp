@@ -1,3 +1,4 @@
+ï»¿// ğŸš
 #include "triInterpolation.h"
 
 
@@ -18,7 +19,7 @@ void triInterpolation::setTriangle(POLYF4D_PTR poly)
 	d_correction = 1;
 	x_idx = y_idx = y_prev_idx = FLT_MIN;
 
-	//ñîğòèğîâêà ñâåğõó âíèç
+	//ÑĞ¾Ñ€Ñ‚Ğ¸Ñ€Ğ¾Ğ²ĞºĞ° ÑĞ²ĞµÑ€Ñ…Ñƒ Ğ²Ğ½Ğ¸Ğ·
 	if(poly->tvlist[v1].y < poly->tvlist[v0].y)
 	{
 		SWAP(v1, v0, tmp);
@@ -32,7 +33,7 @@ void triInterpolation::setTriangle(POLYF4D_PTR poly)
 		SWAP(v2, v1, tmp);
 	}
 
-	//Îïğåäåëåíèå òèïà òğåóãîëüíèêà
+	//ĞĞ¿Ñ€ĞµĞ´ĞµĞ»ĞµĞ½Ğ¸Ğµ Ñ‚Ğ¸Ğ¿Ğ° Ñ‚Ñ€ĞµÑƒĞ³Ğ¾Ğ»ÑŒĞ½Ğ¸ĞºĞ°
 	if(poly->tvlist[v1].y == poly->tvlist[v0].y)//FLAT_TOP
 	{
 		if(poly->tvlist[v1].x < poly->tvlist[v0].x)
@@ -199,7 +200,7 @@ void triInterpolation::intiForGeneral()
 
 	if(dxdyl > dxdyr)
 	{
-		d_correction = -1;//â ıòîì ñëó÷àå êîîğäèíàòû âûäàşòüñÿ ñ ïğàâà íà ëåâî, ÷òî áû íå âûïîëíÿòü ïåğåñòàíîâêó
+		d_correction = -1;//Ğ² ÑÑ‚Ğ¾Ğ¼ ÑĞ»ÑƒÑ‡Ğ°Ğµ ĞºĞ¾Ğ¾Ñ€Ğ´Ğ¸Ğ½Ğ°Ñ‚Ñ‹ Ğ²Ñ‹Ğ´Ğ°ÑÑ‚ÑŒÑÑ Ñ Ğ¿Ñ€Ğ°Ğ²Ğ° Ğ½Ğ° Ğ»ĞµĞ²Ğ¾, Ñ‡Ñ‚Ğ¾ Ğ±Ñ‹ Ğ½Ğµ Ğ²Ñ‹Ğ¿Ğ¾Ğ»Ğ½ÑÑ‚ÑŒ Ğ¿ĞµÑ€ĞµÑÑ‚Ğ°Ğ½Ğ¾Ğ²ĞºÑƒ
 	}
 }
 
@@ -209,8 +210,8 @@ void triInterpolation::setIndexY(int y_idx)
 
 	if(this->y_idx != this->y_prev_idx)
 	{
-		//if((tri[0]->y + y_idx) > y_restart)//Â ñëó÷àå îáùåãî è ñ ïëîñêèì âåğõîì òğåóãîëüíèêà
-		if((vlist[0].y + y_idx) > y_restart)//Â ñëó÷àå îáùåãî è ñ ïëîñêèì âåğõîì òğåóãîëüíèêà
+		//if((tri[0]->y + y_idx) > y_restart)//Ğ’ ÑĞ»ÑƒÑ‡Ğ°Ğµ Ğ¾Ğ±Ñ‰ĞµĞ³Ğ¾ Ğ¸ Ñ Ğ¿Ğ»Ğ¾ÑĞºĞ¸Ğ¼ Ğ²ĞµÑ€Ñ…Ğ¾Ğ¼ Ñ‚Ñ€ĞµÑƒĞ³Ğ¾Ğ»ÑŒĞ½Ğ¸ĞºĞ°
+		if((vlist[0].y + y_idx) > y_restart)//Ğ’ ÑĞ»ÑƒÑ‡Ğ°Ğµ Ğ¾Ğ±Ñ‰ĞµĞ³Ğ¾ Ğ¸ Ñ Ğ¿Ğ»Ğ¾ÑĞºĞ¸Ğ¼ Ğ²ĞµÑ€Ñ…Ğ¾Ğ¼ Ñ‚Ñ€ĞµÑƒĞ³Ğ¾Ğ»ÑŒĞ½Ğ¸ĞºĞ°
 		{
 			/*float idx_for_l = (y_idx - (tri[1]->y - tri[0]->y));
 			xl = idx_for_l * dxdyl2 + tri[1]->x;
@@ -257,7 +258,7 @@ void triInterpolation::setIndexY(int y_idx)
 				dc.M[2] = ((cr.M[2] * d_correction) - (cl.M[2] * d_correction));
 			}
 		}
-		else//Â ñëó÷àå îáùåãî è ñ ïëîñêèì íèçîì òğåóãîëüíèêà
+		else//Ğ’ ÑĞ»ÑƒÑ‡Ğ°Ğµ Ğ¾Ğ±Ñ‰ĞµĞ³Ğ¾ Ğ¸ Ñ Ğ¿Ğ»Ğ¾ÑĞºĞ¸Ğ¼ Ğ½Ğ¸Ğ·Ğ¾Ğ¼ Ñ‚Ñ€ĞµÑƒĞ³Ğ¾Ğ»ÑŒĞ½Ğ¸ĞºĞ°
 		{
 			/*xl = y_idx * dxdyl + tri[0]->x;
 			xr = y_idx * dxdyr + tri[0]->x;*/

@@ -1,3 +1,4 @@
+п»ї// рџђљ
 #include "StdAfx.h"
 #include "DrawStrategy.h"
 #include "Math3DStructs.h"
@@ -313,7 +314,7 @@ void Draw32BitStrategy::DrawTopTri(float x1, float y1, float x2, float y2, float
 
 	//vb = videoMemory + (int)y1 * lpitch2;
 
-	/*//new Пропуск одной линии для предотвращения вывода на уже нарисованый треугольник. Если этого не сделать будет видна разделяющая линия между нижним и верхним треуголиником.
+	/*//new РџСЂРѕРїСѓСЃРє РѕРґРЅРѕР№ Р»РёРЅРёРё РґР»СЏ РїСЂРµРґРѕС‚РІСЂР°С‰РµРЅРёСЏ РІС‹РІРѕРґР° РЅР° СѓР¶Рµ РЅР°СЂРёСЃРѕРІР°РЅС‹Р№ С‚СЂРµСѓРіРѕР»СЊРЅРёРє. Р•СЃР»Рё СЌС‚РѕРіРѕ РЅРµ СЃРґРµР»Р°С‚СЊ Р±СѓРґРµС‚ РІРёРґРЅР° СЂР°Р·РґРµР»СЏСЋС‰Р°СЏ Р»РёРЅРёСЏ РјРµР¶РґСѓ РЅРёР¶РЅРёРј Рё РІРµСЂС…РЅРёРј С‚СЂРµСѓРіРѕР»РёРЅРёРєРѕРј.
 	xs += dx_left;
 	xe += dx_right;
 	y1++;
@@ -572,9 +573,9 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 	const int INTERP_LHS = 0;
 	const int INTERP_RHS = 1;
 
-	int v0 = 0, v1 = 1, v2 = 2, /*индексы вершин. ипользуються для того чтобы не менять местами вершины в массиве face->tvlist, а менять только индексы вершин*/
-		temp = 0, /*переменная для обмена индексов вершин*/
-		tri_type = TRI_TYPE_NONE, /*тип треугольника*/
+	int v0 = 0, v1 = 1, v2 = 2, /*РёРЅРґРµРєСЃС‹ РІРµСЂС€РёРЅ. РёРїРѕР»СЊР·СѓСЋС‚СЊСЃСЏ РґР»СЏ С‚РѕРіРѕ С‡С‚РѕР±С‹ РЅРµ РјРµРЅСЏС‚СЊ РјРµСЃС‚Р°РјРё РІРµСЂС€РёРЅС‹ РІ РјР°СЃСЃРёРІРµ face->tvlist, Р° РјРµРЅСЏС‚СЊ С‚РѕР»СЊРєРѕ РёРЅРґРµРєСЃС‹ РІРµСЂС€РёРЅ*/
+		temp = 0, /*РїРµСЂРµРјРµРЅРЅР°СЏ РґР»СЏ РѕР±РјРµРЅР° РёРЅРґРµРєСЃРѕРІ РІРµСЂС€РёРЅ*/
+		tri_type = TRI_TYPE_NONE, /*С‚РёРї С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°*/
 		irestart = INTERP_LHS;
 	float dx, dy, dyl, dyr;
 	float tempf = 0;
@@ -605,13 +606,13 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 		(face->tvlist[0].y > this->maxClipY) && (face->tvlist[1].y > this->maxClipY) && (face->tvlist[2].y > this->maxClipY) ||
 		(face->tvlist[0].x < this->minClipX) && (face->tvlist[1].x < this->minClipX) && (face->tvlist[2].x < this->minClipX) ||
 		(face->tvlist[0].x > this->maxClipX) && (face->tvlist[1].x > this->maxClipX) && (face->tvlist[2].x > this->maxClipX))
-		return 0; //Треугольник вне экрана
+		return 0; //РўСЂРµСѓРіРѕР»СЊРЅРёРє РІРЅРµ СЌРєСЂР°РЅР°
 
 	if(((face->tvlist[0].x == face->tvlist[1].x) && (face->tvlist[1].x == face->tvlist[2].x)) ||
 		((face->tvlist[0].y == face->tvlist[1].y) && (face->tvlist[1].y == face->tvlist[2].y)))
 		return 0;
 
-	/*сортируем индексы вершин в порядке v0.y <= v1.y <= v2.y, т.е. сверху вниз. положительная ось x направлена вправо, y - вниз*/
+	/*СЃРѕСЂС‚РёСЂСѓРµРј РёРЅРґРµРєСЃС‹ РІРµСЂС€РёРЅ РІ РїРѕСЂСЏРґРєРµ v0.y <= v1.y <= v2.y, С‚.Рµ. СЃРІРµСЂС…Сѓ РІРЅРёР·. РїРѕР»РѕР¶РёС‚РµР»СЊРЅР°СЏ РѕСЃСЊ x РЅР°РїСЂР°РІР»РµРЅР° РІРїСЂР°РІРѕ, y - РІРЅРёР·*/
 	if(face->tvlist[v1].y < face->tvlist[v0].y)
 		SWAP(v0, v1, temp);
 
@@ -625,7 +626,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 	{
 		tri_type = TRI_TYPE_FLAT_TOP;
 
-		//Сортируем вершины слева направо, т.е. v0 будет слева
+		//РЎРѕСЂС‚РёСЂСѓРµРј РІРµСЂС€РёРЅС‹ СЃР»РµРІР° РЅР°РїСЂР°РІРѕ, С‚.Рµ. v0 Р±СѓРґРµС‚ СЃР»РµРІР°
 		if(face->tvlist[v1].x < face->tvlist[v0].x)
 			SWAP(v1, v0, temp);
 	}
@@ -633,7 +634,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 	{
 		tri_type = TRI_TYPE_FLAT_BOTTOM;
 
-		//Сортируем вершины слева направо, т.е. v1 будет слева
+		//РЎРѕСЂС‚РёСЂСѓРµРј РІРµСЂС€РёРЅС‹ СЃР»РµРІР° РЅР°РїСЂР°РІРѕ, С‚.Рµ. v1 Р±СѓРґРµС‚ СЃР»РµРІР°
 		if(face->tvlist[v2].x < face->tvlist[v1].x)
 			SWAP(v2, v1, temp);
 	}
@@ -642,7 +643,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 		tri_type = TRI_TYPE_GENERAL;
 	}
 
-	//Используеться 32 битный цвет
+	//РСЃРїРѕР»СЊР·СѓРµС‚СЊСЃСЏ 32 Р±РёС‚РЅС‹Р№ С†РІРµС‚
 
 	RGBFROM32BIT(face->lit_color[v0], r_base0, g_base0, b_base0);
 	RGBFROM32BIT(face->lit_color[v1], r_base1, g_base1, b_base1);
@@ -669,7 +670,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 	{
 		if(tri_type == TRI_TYPE_FLAT_TOP)
 		{
-			dy = 1.0f / (y2 - y0);//Используем обратную величину чтобы не использовать деление
+			dy = 1.0f / (y2 - y0);//РСЃРїРѕР»СЊР·СѓРµРј РѕР±СЂР°С‚РЅСѓСЋ РІРµР»РёС‡РёРЅСѓ С‡С‚РѕР±С‹ РЅРµ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґРµР»РµРЅРёРµ
 			dxdyl = (x2 - x0) * dy;
 			dudyl = (tu2 - tu0) * dy;
 			dvdyl = (tv2 - tv0) * dy;
@@ -713,7 +714,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 		}//if(tri_type == TRI_TYPE_FLAT_TOP)
 		else //tri_type == TRI_TYPE_FLAT_BOTTOM
 		{
-			dy = 1.0f / (y1 - y0);//Используем обратную величину чтобы не использовать деление
+			dy = 1.0f / (y1 - y0);//РСЃРїРѕР»СЊР·СѓРµРј РѕР±СЂР°С‚РЅСѓСЋ РІРµР»РёС‡РёРЅСѓ С‡С‚РѕР±С‹ РЅРµ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґРµР»РµРЅРёРµ
 			dxdyl = (x1 - x0) * dy;
 			dudyl = (tu1 - tu0) * dy;
 			dvdyl = (tv1 - tv0) * dy;
@@ -824,7 +825,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(struct3D::POLYF4D_PTR face, unsigned 
 
 				screen_ptr += lpitch;
 			}//for(yi = ystart; yi <= yend; yi++)
-		}//if с отсечением по x
+		}//if СЃ РѕС‚СЃРµС‡РµРЅРёРµРј РїРѕ x
 		else
 		{
 			screen_ptr = dest_buffer + (ystart * lpitch);
@@ -1235,7 +1236,7 @@ int Draw32BitStrategy::DrawGouraudTriangle2(struct3D::POLYF4D_PTR face, unsigned
 		(face->tvlist[0].y > this->maxClipY) && (face->tvlist[1].y > this->maxClipY) && (face->tvlist[2].y > this->maxClipY) ||
 		(face->tvlist[0].x < this->minClipX) && (face->tvlist[1].x < this->minClipX) && (face->tvlist[2].x < this->minClipX) ||
 		(face->tvlist[0].x > this->maxClipX) && (face->tvlist[1].x > this->maxClipX) && (face->tvlist[2].x > this->maxClipX))
-		return 0; //Треугольник вне экрана
+		return 0; //РўСЂРµСѓРіРѕР»СЊРЅРёРє РІРЅРµ СЌРєСЂР°РЅР°
 
 	if(((face->tvlist[0].x == face->tvlist[1].x) && (face->tvlist[1].x == face->tvlist[2].x)) ||
 		((face->tvlist[0].y == face->tvlist[1].y) && (face->tvlist[1].y == face->tvlist[2].y)))
@@ -1358,7 +1359,7 @@ int Draw32BitStrategy::DrawGouraudTriangle3(struct3D::POLYF4D_PTR face, unsigned
 		(face->tvlist[0].y > this->maxClipY) && (face->tvlist[1].y > this->maxClipY) && (face->tvlist[2].y > this->maxClipY) ||
 		(face->tvlist[0].x < this->minClipX) && (face->tvlist[1].x < this->minClipX) && (face->tvlist[2].x < this->minClipX) ||
 		(face->tvlist[0].x > this->maxClipX) && (face->tvlist[1].x > this->maxClipX) && (face->tvlist[2].x > this->maxClipX))
-		return 0; //Треугольник вне экрана
+		return 0; //РўСЂРµСѓРіРѕР»СЊРЅРёРє РІРЅРµ СЌРєСЂР°РЅР°
 
 	if(((face->tvlist[0].x == face->tvlist[1].x) && (face->tvlist[1].x == face->tvlist[2].x)) ||
 		((face->tvlist[0].y == face->tvlist[1].y) && (face->tvlist[1].y == face->tvlist[2].y)))
@@ -1507,7 +1508,7 @@ int Draw32BitStrategy::DrawTriangle2(struct3D::POLYF4D_PTR face, unsigned int *v
 		(face->tvlist[0].y > this->maxClipY) && (face->tvlist[1].y > this->maxClipY) && (face->tvlist[2].y > this->maxClipY) ||
 		(face->tvlist[0].x < this->minClipX) && (face->tvlist[1].x < this->minClipX) && (face->tvlist[2].x < this->minClipX) ||
 		(face->tvlist[0].x > this->maxClipX) && (face->tvlist[1].x > this->maxClipX) && (face->tvlist[2].x > this->maxClipX))
-		return 0; //Треугольник вне экрана
+		return 0; //РўСЂРµСѓРіРѕР»СЊРЅРёРє РІРЅРµ СЌРєСЂР°РЅР°
 
 	if(((face->tvlist[0].x == face->tvlist[1].x) && (face->tvlist[1].x == face->tvlist[2].x)) ||
 		((face->tvlist[0].y == face->tvlist[1].y) && (face->tvlist[1].y == face->tvlist[2].y)))
@@ -1631,7 +1632,7 @@ int Draw32BitStrategy::DrawTriangle3(struct3D::POLYF4D_PTR face, unsigned int *v
 		(face->tvlist[0].y > this->maxClipY) && (face->tvlist[1].y > this->maxClipY) && (face->tvlist[2].y > this->maxClipY) ||
 		(face->tvlist[0].x < this->minClipX) && (face->tvlist[1].x < this->minClipX) && (face->tvlist[2].x < this->minClipX) ||
 		(face->tvlist[0].x > this->maxClipX) && (face->tvlist[1].x > this->maxClipX) && (face->tvlist[2].x > this->maxClipX))
-		return 0; //Треугольник вне экрана
+		return 0; //РўСЂРµСѓРіРѕР»СЊРЅРёРє РІРЅРµ СЌРєСЂР°РЅР°
 
 	if(((face->tvlist[0].x == face->tvlist[1].x) && (face->tvlist[1].x == face->tvlist[2].x)) ||
 		((face->tvlist[0].y == face->tvlist[1].y) && (face->tvlist[1].y == face->tvlist[2].y)))
@@ -1755,9 +1756,9 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 	const int INTERP_LHS = 0;
 	const int INTERP_RHS = 1;
 
-	int //v0 = 0, v1 = 1, v2 = 2, /*индексы вершин. ипользуються для того чтобы не менять местами вершины в массиве face->tvlist, а менять только индексы вершин*/
-		//temp = 0, /*переменная для обмена индексов вершин*/
-		tri_type = TRI_TYPE_NONE, /*тип треугольника*/
+	int //v0 = 0, v1 = 1, v2 = 2, /*РёРЅРґРµРєСЃС‹ РІРµСЂС€РёРЅ. РёРїРѕР»СЊР·СѓСЋС‚СЊСЃСЏ РґР»СЏ С‚РѕРіРѕ С‡С‚РѕР±С‹ РЅРµ РјРµРЅСЏС‚СЊ РјРµСЃС‚Р°РјРё РІРµСЂС€РёРЅС‹ РІ РјР°СЃСЃРёРІРµ face->tvlist, Р° РјРµРЅСЏС‚СЊ С‚РѕР»СЊРєРѕ РёРЅРґРµРєСЃС‹ РІРµСЂС€РёРЅ*/
+		//temp = 0, /*РїРµСЂРµРјРµРЅРЅР°СЏ РґР»СЏ РѕР±РјРµРЅР° РёРЅРґРµРєСЃРѕРІ РІРµСЂС€РёРЅ*/
+		tri_type = TRI_TYPE_NONE, /*С‚РёРї С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°*/
 		irestart = INTERP_LHS;
 	float dx, dy, dyl, dyr;
 	float tempf = 0;
@@ -1789,13 +1790,13 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 		(y0 > this->maxClipY) && (y1 > this->maxClipY) && (y2 > this->maxClipY) ||
 		(x0 < this->minClipX) && (x1 < this->minClipX) && (x2 < this->minClipX) ||
 		(x0 > this->maxClipX) && (x1 > this->maxClipX) && (x2 > this->maxClipX))
-		return 0; //Треугольник вне экрана
+		return 0; //РўСЂРµСѓРіРѕР»СЊРЅРёРє РІРЅРµ СЌРєСЂР°РЅР°
 
 	if(((x0 == x1) && (x1 == x2)) ||
 		((y0 == y1) && (y1 == y2)))
 		return 0;
 
-	/*сортируем индексы вершин в порядке v0.y <= v1.y <= v2.y, т.е. сверху вниз. положительная ось x направлена вправо, y - вниз*/
+	/*СЃРѕСЂС‚РёСЂСѓРµРј РёРЅРґРµРєСЃС‹ РІРµСЂС€РёРЅ РІ РїРѕСЂСЏРґРєРµ v0.y <= v1.y <= v2.y, С‚.Рµ. СЃРІРµСЂС…Сѓ РІРЅРёР·. РїРѕР»РѕР¶РёС‚РµР»СЊРЅР°СЏ РѕСЃСЊ x РЅР°РїСЂР°РІР»РµРЅР° РІРїСЂР°РІРѕ, y - РІРЅРёР·*/
 	if(y1 < y0)
 	{
 		SWAP(y0, y1, tempf);
@@ -1821,7 +1822,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 	{
 		tri_type = TRI_TYPE_FLAT_TOP;
 
-		//Сортируем вершины слева направо, т.е. v0 будет слева
+		//РЎРѕСЂС‚РёСЂСѓРµРј РІРµСЂС€РёРЅС‹ СЃР»РµРІР° РЅР°РїСЂР°РІРѕ, С‚.Рµ. v0 Р±СѓРґРµС‚ СЃР»РµРІР°
 		if(x1 < x0)
 		{
 			//SWAP(y1, y0, tempf);
@@ -1833,7 +1834,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 	{
 		tri_type = TRI_TYPE_FLAT_BOTTOM;
 
-		//Сортируем вершины слева направо, т.е. v1 будет слева
+		//РЎРѕСЂС‚РёСЂСѓРµРј РІРµСЂС€РёРЅС‹ СЃР»РµРІР° РЅР°РїСЂР°РІРѕ, С‚.Рµ. v1 Р±СѓРґРµС‚ СЃР»РµРІР°
 		if(x2 < x1)
 		{
 			//SWAP(y2, y1, tempf);
@@ -1846,7 +1847,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 		tri_type = TRI_TYPE_GENERAL;
 	}
 
-	//Используеться 32 битный цвет
+	//РСЃРїРѕР»СЊР·СѓРµС‚СЊСЃСЏ 32 Р±РёС‚РЅС‹Р№ С†РІРµС‚
 
 	RGBFROM32BIT(V0color, r_base0, g_base0, b_base0);
 	RGBFROM32BIT(V1color, r_base1, g_base1, b_base1);
@@ -1873,7 +1874,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 	{
 		if(tri_type == TRI_TYPE_FLAT_TOP)
 		{
-			dy = 1.0f / (y2 - y0);//Используем обратную величину чтобы не использовать деление
+			dy = 1.0f / (y2 - y0);//РСЃРїРѕР»СЊР·СѓРµРј РѕР±СЂР°С‚РЅСѓСЋ РІРµР»РёС‡РёРЅСѓ С‡С‚РѕР±С‹ РЅРµ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґРµР»РµРЅРёРµ
 			dxdyl = (x2 - x0) * dy;
 			dudyl = (tu2 - tu0) * dy;
 			dvdyl = (tv2 - tv0) * dy;
@@ -1917,7 +1918,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 		}//if(tri_type == TRI_TYPE_FLAT_TOP)
 		else //tri_type == TRI_TYPE_FLAT_BOTTOM
 		{
-			dy = 1.0f / (y1 - y0);//Используем обратную величину чтобы не использовать деление
+			dy = 1.0f / (y1 - y0);//РСЃРїРѕР»СЊР·СѓРµРј РѕР±СЂР°С‚РЅСѓСЋ РІРµР»РёС‡РёРЅСѓ С‡С‚РѕР±С‹ РЅРµ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґРµР»РµРЅРёРµ
 			dxdyl = (x1 - x0) * dy;
 			dudyl = (tu1 - tu0) * dy;
 			dvdyl = (tv1 - tv0) * dy;
@@ -2028,7 +2029,7 @@ int Draw32BitStrategy::DrawGouraudTriangle(float x0, float y0, float x1, float y
 
 				screen_ptr += lpitch;
 			}//for(yi = ystart; yi <= yend; yi++)
-		}//if с отсечением по x
+		}//if СЃ РѕС‚СЃРµС‡РµРЅРёРµРј РїРѕ x
 		else
 		{
 			screen_ptr = dest_buffer + (ystart * lpitch);
@@ -2432,7 +2433,7 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 	if(!face) return 0;
 
 	/*
-	!!!! НУЖНО ПРОВЕРИТЬ ВЫВОД ВЕРХНЕГО И НИЖНЕГО ТРЕУГОЛЬНИКА !!!!
+	!!!! РќРЈР–РќРћ РџР РћР’Р•Р РРўР¬ Р’Р«Р’РћР” Р’Р•Р РҐРќР•Р“Рћ Р РќРР–РќР•Р“Рћ РўР Р•РЈР“РћР›Р¬РќРРљРђ !!!!
 	*/
 
 	const int TRI_TYPE_NONE = 0;
@@ -2444,9 +2445,9 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 	const int INTERP_LHS = 0;
 	const int INTERP_RHS = 1;
 
-	int v0 = 0, v1 = 1, v2 = 2, /*индексы вершин. ипользуються для того чтобы не менять местами вершины в массиве face->tvlist, а менять только индексы вершин*/
-		temp = 0, /*переменная для обмена индексов вершин*/
-		tri_type = TRI_TYPE_NONE, /*тип треугольника*/
+	int v0 = 0, v1 = 1, v2 = 2, /*РёРЅРґРµРєСЃС‹ РІРµСЂС€РёРЅ. РёРїРѕР»СЊР·СѓСЋС‚СЊСЃСЏ РґР»СЏ С‚РѕРіРѕ С‡С‚РѕР±С‹ РЅРµ РјРµРЅСЏС‚СЊ РјРµСЃС‚Р°РјРё РІРµСЂС€РёРЅС‹ РІ РјР°СЃСЃРёРІРµ face->tvlist, Р° РјРµРЅСЏС‚СЊ С‚РѕР»СЊРєРѕ РёРЅРґРµРєСЃС‹ РІРµСЂС€РёРЅ*/
+		temp = 0, /*РїРµСЂРµРјРµРЅРЅР°СЏ РґР»СЏ РѕР±РјРµРЅР° РёРЅРґРµРєСЃРѕРІ РІРµСЂС€РёРЅ*/
+		tri_type = TRI_TYPE_NONE, /*С‚РёРї С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°*/
 		irestart = INTERP_LHS;
 	float dx, dy, dyl, dyr;
 	float tempf = 0;
@@ -2458,11 +2459,11 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 	/*int x, y;*/
 	int xstart, xend, ystart, yrestart, yend;
 	float dxdyl, xr, xl, dxdyr, dnxdyl, nxl, dnydyl, nyl, dnzdyl, nzl, dnxdyr, nxr, dnydyr, nyr, dnzdyr, nzr;
-	float dzdyl, zr, zl, dzdyr, zi, dz;//Интерполяция Z для вычисление вектора от пикселя к точечному источнику света.
+	float dzdyl, zr, zl, dzdyr, zi, dz;//РРЅС‚РµСЂРїРѕР»СЏС†РёСЏ Z РґР»СЏ РІС‹С‡РёСЃР»РµРЅРёРµ РІРµРєС‚РѕСЂР° РѕС‚ РїРёРєСЃРµР»СЏ Рє С‚РѕС‡РµС‡РЅРѕРјСѓ РёСЃС‚РѕС‡РЅРёРєСѓ СЃРІРµС‚Р°.
 	/*float dxwdyl, xwr, xwl, dxwdyr, xwi, dxw;
 	float dywdyl, ywr, ywl, dywdyr, ywi, dyw;
 	float dzwdyl, zwr, zwl, dzwdyr, zwi, dzw;*/
-	VECTOR4D wdyl, wdyr, wr, wl, wi, dw; //Интерполяция мировых координат
+	VECTOR4D wdyl, wdyr, wr, wl, wi, dw; //РРЅС‚РµСЂРїРѕР»СЏС†РёСЏ РјРёСЂРѕРІС‹С… РєРѕРѕСЂРґРёРЅР°С‚
 	float x0, y0, z0, tnx0, tny0, tnz0;
 	float x1, y1, z1, tnx1, tny1, tnz1;
 	float x2, y2, z2, tnx2, tny2, tnz2;
@@ -2488,13 +2489,13 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 		(face->tvlist[0].y > this->maxClipY) && (face->tvlist[1].y > this->maxClipY) && (face->tvlist[2].y > this->maxClipY) ||
 		(face->tvlist[0].x < this->minClipX) && (face->tvlist[1].x < this->minClipX) && (face->tvlist[2].x < this->minClipX) ||
 		(face->tvlist[0].x > this->maxClipX) && (face->tvlist[1].x > this->maxClipX) && (face->tvlist[2].x > this->maxClipX))
-		return 0; //Треугольник вне экрана
+		return 0; //РўСЂРµСѓРіРѕР»СЊРЅРёРє РІРЅРµ СЌРєСЂР°РЅР°
 
 	if(((face->tvlist[0].x == face->tvlist[1].x) && (face->tvlist[1].x == face->tvlist[2].x)) ||
 		((face->tvlist[0].y == face->tvlist[1].y) && (face->tvlist[1].y == face->tvlist[2].y)))
 		return 0;
 
-	/*сортируем индексы вершин в порядке v0.y <= v1.y <= v2.y, т.е. сверху вниз. положительная ось x направлена вправо, y - вниз*/
+	/*СЃРѕСЂС‚РёСЂСѓРµРј РёРЅРґРµРєСЃС‹ РІРµСЂС€РёРЅ РІ РїРѕСЂСЏРґРєРµ v0.y <= v1.y <= v2.y, С‚.Рµ. СЃРІРµСЂС…Сѓ РІРЅРёР·. РїРѕР»РѕР¶РёС‚РµР»СЊРЅР°СЏ РѕСЃСЊ x РЅР°РїСЂР°РІР»РµРЅР° РІРїСЂР°РІРѕ, y - РІРЅРёР·*/
 	if(face->tvlist[v1].y < face->tvlist[v0].y)
 		SWAP(v0, v1, temp);
 
@@ -2508,7 +2509,7 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 	{
 		tri_type = TRI_TYPE_FLAT_TOP;
 
-		//Сортируем вершины слева направо, т.е. v0 будет слева
+		//РЎРѕСЂС‚РёСЂСѓРµРј РІРµСЂС€РёРЅС‹ СЃР»РµРІР° РЅР°РїСЂР°РІРѕ, С‚.Рµ. v0 Р±СѓРґРµС‚ СЃР»РµРІР°
 		if(face->tvlist[v1].x < face->tvlist[v0].x)
 			SWAP(v1, v0, temp);
 	}
@@ -2516,7 +2517,7 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 	{
 		tri_type = TRI_TYPE_FLAT_BOTTOM;
 
-		//Сортируем вершины слева направо, т.е. v1 будет слева
+		//РЎРѕСЂС‚РёСЂСѓРµРј РІРµСЂС€РёРЅС‹ СЃР»РµРІР° РЅР°РїСЂР°РІРѕ, С‚.Рµ. v1 Р±СѓРґРµС‚ СЃР»РµРІР°
 		if(face->tvlist[v2].x < face->tvlist[v1].x)
 			SWAP(v2, v1, temp);
 	}
@@ -2549,7 +2550,7 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 	{
 		if(tri_type == TRI_TYPE_FLAT_TOP)
 		{
-			dy = 1.0f / (y2 - y0);//Используем обратную величину чтобы не использовать деление
+			dy = 1.0f / (y2 - y0);//РСЃРїРѕР»СЊР·СѓРµРј РѕР±СЂР°С‚РЅСѓСЋ РІРµР»РёС‡РёРЅСѓ С‡С‚РѕР±С‹ РЅРµ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґРµР»РµРЅРёРµ
 			dxdyl = (x2 - x0) * dy;
 			dzdyl = (z2 - z0) * dy;
 			dnxdyl = (tnx2 - tnx0) * dy;
@@ -2623,7 +2624,7 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 		}
 		else// if(tri_type == TRI_TYPE_FLAT_BOTTOM)
 		{
-			dy = 1.0f / (y1 - y0);//Используем обратную величину чтобы не использовать деление
+			dy = 1.0f / (y1 - y0);//РСЃРїРѕР»СЊР·СѓРµРј РѕР±СЂР°С‚РЅСѓСЋ РІРµР»РёС‡РёРЅСѓ С‡С‚РѕР±С‹ РЅРµ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґРµР»РµРЅРёРµ
 			dxdyl = (x1 - x0) * dy;
 			dzdyl = (z1 - z0) * dy;
 			dnxdyl = (tnx1 - tnx0) * dy;
@@ -3187,9 +3188,9 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 						}
 						else if(lights->lights[currLight].attr & mat::LIGHT_ATTR_POINT)
 						{
-							/*Работает неправильно!!! Нужно попробовать приобразовать p3D еще с помощью обратной матрицы камеры, чтобы перейти к мировым координатам
-							(сейчас p3D в координатах камеры!!!). Или сохранять мировые координаты вершин и их потом интерполировать(скорее всего!!!!...РАБОТАЕТ!!!!). Или преобразовывать 
-							всё(нормали к пикселям) в координаты камеры.*/
+							/*Р Р°Р±РѕС‚Р°РµС‚ РЅРµРїСЂР°РІРёР»СЊРЅРѕ!!! РќСѓР¶РЅРѕ РїРѕРїСЂРѕР±РѕРІР°С‚СЊ РїСЂРёРѕР±СЂР°Р·РѕРІР°С‚СЊ p3D РµС‰Рµ СЃ РїРѕРјРѕС‰СЊСЋ РѕР±СЂР°С‚РЅРѕР№ РјР°С‚СЂРёС†С‹ РєР°РјРµСЂС‹, С‡С‚РѕР±С‹ РїРµСЂРµР№С‚Рё Рє РјРёСЂРѕРІС‹Рј РєРѕРѕСЂРґРёРЅР°С‚Р°Рј
+							(СЃРµР№С‡Р°СЃ p3D РІ РєРѕРѕСЂРґРёРЅР°С‚Р°С… РєР°РјРµСЂС‹!!!). РР»Рё СЃРѕС…СЂР°РЅСЏС‚СЊ РјРёСЂРѕРІС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РІРµСЂС€РёРЅ Рё РёС… РїРѕС‚РѕРј РёРЅС‚РµСЂРїРѕР»РёСЂРѕРІР°С‚СЊ(СЃРєРѕСЂРµРµ РІСЃРµРіРѕ!!!!...Р РђР‘РћРўРђР•Рў!!!!). РР»Рё РїСЂРµРѕР±СЂР°Р·РѕРІС‹РІР°С‚СЊ 
+							РІСЃС‘(РЅРѕСЂРјР°Р»Рё Рє РїРёРєСЃРµР»СЏРј) РІ РєРѕРѕСЂРґРёРЅР°С‚С‹ РєР°РјРµСЂС‹.*/
 							VECTOR4D n, l, p3D;
 							/*MATRIX4X4 mcamInv;*/
 							/*VECTOR4D pR;*/
@@ -3200,7 +3201,7 @@ int Draw32BitStrategy::DrawPhongTriangle(struct3D::CAM4D_PTR cam, mat::LightSyst
 							n.z = nzi;
 							n.w = 1.0f;
 
-							//вычисляем положение пикселя в 3D пространстве
+							//РІС‹С‡РёСЃР»СЏРµРј РїРѕР»РѕР¶РµРЅРёРµ РїРёРєСЃРµР»СЏ РІ 3D РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµ
 							/*alpha = (0.5f * cam->viewport_width - 0.5f);
 							beta = (0.5f * cam->viewport_height - 0.5f);
 
@@ -3399,15 +3400,15 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 	math3D::VECTOR4D dn, dw;
 	math3D::VECTOR4D ni, wi;
 
-	//Интерполяция по левой стороне
-	float dxdyl, xl;//интерпояция значений по оси X
-	math3D::VECTOR4D dndyl, nl;//значений нормали к каждому пикселю
-	math3D::VECTOR4D dwdyl, wl;//положения каждого пикселя в мировых координитах
+	//РРЅС‚РµСЂРїРѕР»СЏС†РёСЏ РїРѕ Р»РµРІРѕР№ СЃС‚РѕСЂРѕРЅРµ
+	float dxdyl, xl;//РёРЅС‚РµСЂРїРѕСЏС†РёСЏ Р·РЅР°С‡РµРЅРёР№ РїРѕ РѕСЃРё X
+	math3D::VECTOR4D dndyl, nl;//Р·РЅР°С‡РµРЅРёР№ РЅРѕСЂРјР°Р»Рё Рє РєР°Р¶РґРѕРјСѓ РїРёРєСЃРµР»СЋ
+	math3D::VECTOR4D dwdyl, wl;//РїРѕР»РѕР¶РµРЅРёСЏ РєР°Р¶РґРѕРіРѕ РїРёРєСЃРµР»СЏ РІ РјРёСЂРѕРІС‹С… РєРѕРѕСЂРґРёРЅРёС‚Р°С…
 
-	//Интерполяция по правой стороне
-	float dxdyr, xr;//интерпояция значений по оси X
-	math3D::VECTOR4D dndyr, nr;//и значений нормали к каждому пикселю
-	math3D::VECTOR4D dwdyr, wr;//положения каждого пикселя в мировых координитах
+	//РРЅС‚РµСЂРїРѕР»СЏС†РёСЏ РїРѕ РїСЂР°РІРѕР№ СЃС‚РѕСЂРѕРЅРµ
+	float dxdyr, xr;//РёРЅС‚РµСЂРїРѕСЏС†РёСЏ Р·РЅР°С‡РµРЅРёР№ РїРѕ РѕСЃРё X
+	math3D::VECTOR4D dndyr, nr;//Рё Р·РЅР°С‡РµРЅРёР№ РЅРѕСЂРјР°Р»Рё Рє РєР°Р¶РґРѕРјСѓ РїРёРєСЃРµР»СЋ
+	math3D::VECTOR4D dwdyr, wr;//РїРѕР»РѕР¶РµРЅРёСЏ РєР°Р¶РґРѕРіРѕ РїРёРєСЃРµР»СЏ РІ РјРёСЂРѕРІС‹С… РєРѕРѕСЂРґРёРЅРёС‚Р°С…
 
 	float x0, y0, x1, y1, x2, y2;
 	math3D::VECTOR4D tn0, tn1, tn2;
@@ -3429,7 +3430,7 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 		(face->tvlist[0].y > this->maxClipY) && (face->tvlist[1].y > this->maxClipY) && (face->tvlist[2].y > this->maxClipY) ||
 		(face->tvlist[0].x < this->minClipX) && (face->tvlist[1].x < this->minClipX) && (face->tvlist[2].x < this->minClipX) ||
 		(face->tvlist[0].x > this->maxClipX) && (face->tvlist[1].x > this->maxClipX) && (face->tvlist[2].x > this->maxClipX))
-		return 0; //Треугольник вне экрана
+		return 0; //РўСЂРµСѓРіРѕР»СЊРЅРёРє РІРЅРµ СЌРєСЂР°РЅР°
 
 	if(((face->tvlist[0].x == face->tvlist[1].x) && (face->tvlist[1].x == face->tvlist[2].x)) ||
 		((face->tvlist[0].y == face->tvlist[1].y) && (face->tvlist[1].y == face->tvlist[2].y)))
@@ -3449,7 +3450,7 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 	{
 		tri_type = TRI_TYPE_FLAT_TOP;
 
-		//Сортируем вершины слева направо, т.е. v0 будет слева
+		//РЎРѕСЂС‚РёСЂСѓРµРј РІРµСЂС€РёРЅС‹ СЃР»РµРІР° РЅР°РїСЂР°РІРѕ, С‚.Рµ. v0 Р±СѓРґРµС‚ СЃР»РµРІР°
 		if(face->tvlist[v1].x < face->tvlist[v0].x)
 			SWAP(v1, v0, temp);
 	}
@@ -3457,7 +3458,7 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 	{
 		tri_type = TRI_TYPE_FLAT_BOTTOM;
 
-		//Сортируем вершины слева направо, т.е. v1 будет слева
+		//РЎРѕСЂС‚РёСЂСѓРµРј РІРµСЂС€РёРЅС‹ СЃР»РµРІР° РЅР°РїСЂР°РІРѕ, С‚.Рµ. v1 Р±СѓРґРµС‚ СЃР»РµРІР°
 		if(face->tvlist[v2].x < face->tvlist[v1].x)
 			SWAP(v2, v1, temp);
 	}
@@ -3484,7 +3485,7 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 	{
 		if(tri_type == TRI_TYPE_FLAT_TOP)
 		{
-			dy = 1.0f / (y2 - y0);//Используем обратную величину чтобы не использовать деление
+			dy = 1.0f / (y2 - y0);//РСЃРїРѕР»СЊР·СѓРµРј РѕР±СЂР°С‚РЅСѓСЋ РІРµР»РёС‡РёРЅСѓ С‡С‚РѕР±С‹ РЅРµ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґРµР»РµРЅРёРµ
 			dxdyl = (x2 - x0) * dy;
 			vecSub(&tn2, &tn0, &dndyl);
 			vecScale(dy, &dndyl);
@@ -3530,7 +3531,7 @@ int Draw32BitStrategy::DrawPhongTriangle2(struct3D::CAM4D_PTR cam, mat::LightSys
 		}
 		else
 		{
-			dy = 1.0f / (y1 - y0);//Используем обратную величину чтобы не использовать деление
+			dy = 1.0f / (y1 - y0);//РСЃРїРѕР»СЊР·СѓРµРј РѕР±СЂР°С‚РЅСѓСЋ РІРµР»РёС‡РёРЅСѓ С‡С‚РѕР±С‹ РЅРµ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґРµР»РµРЅРёРµ
 			dxdyl = (x1 - x0) * dy;
 			vecSub(&tn1, &tn0, &dndyl);
 			vecScale(dy, &dndyl);
@@ -4156,22 +4157,22 @@ int Draw32BitStrategy::FullScreenShader(unsigned int *videoMemory, int lpitch)
 //		pushad
 //
 //
-//		mov eax, lpitch2 //Загружаем значение y + 1 для видеопамяти
-//		mov ecx, iMasSize //Загружаем количество эл. в виделпамяти y - 1
+//		mov eax, lpitch2 //Р—Р°РіСЂСѓР¶Р°РµРј Р·РЅР°С‡РµРЅРёРµ y + 1 РґР»СЏ РІРёРґРµРѕРїР°РјСЏС‚Рё
+//		mov ecx, iMasSize //Р—Р°РіСЂСѓР¶Р°РµРј РєРѕР»РёС‡РµСЃС‚РІРѕ СЌР». РІ РІРёРґРµР»РїР°РјСЏС‚Рё y - 1
 //
-//		mov edi, vb;//_videoBuffer //Загружаем начало видеопамяти
-//		mov esi, iMasWidth //Загружаем кол. эл. по вертикали 
+//		mov edi, vb;//_videoBuffer //Р—Р°РіСЂСѓР¶Р°РµРј РЅР°С‡Р°Р»Рѕ РІРёРґРµРѕРїР°РјСЏС‚Рё
+//		mov esi, iMasWidth //Р—Р°РіСЂСѓР¶Р°РµРј РєРѕР». СЌР». РїРѕ РІРµСЂС‚РёРєР°Р»Рё 
 //
-//		add edi, eax //К началу видеопамяти прибавляем y + 1
-//		dec ecx //Уменшаем кол. эл. на x - 1
+//		add edi, eax //Рљ РЅР°С‡Р°Р»Сѓ РІРёРґРµРѕРїР°РјСЏС‚Рё РїСЂРёР±Р°РІР»СЏРµРј y + 1
+//		dec ecx //РЈРјРµРЅС€Р°РµРј РєРѕР». СЌР». РЅР° x - 1
 //
-//		shl esi, 2 //Узнаем кол. эл. по вертикали в байтах
-//		add edi, 4 //Смещаем на x + 1, т.к. цвет имеет размер 4 байта
+//		shl esi, 2 //РЈР·РЅР°РµРј РєРѕР». СЌР». РїРѕ РІРµСЂС‚РёРєР°Р»Рё РІ Р±Р°Р№С‚Р°С…
+//		add edi, 4 //РЎРјРµС‰Р°РµРј РЅР° x + 1, С‚.Рє. С†РІРµС‚ РёРјРµРµС‚ СЂР°Р·РјРµСЂ 4 Р±Р°Р№С‚Р°
 //		
-//		mov edx, edi //Копируем аддрес первого эл. в видеопамяти
-//		sub esi, 12 //Уменшаем кол. эл. по вертикали так чтобы при прибавлении к x+1 получался конечный аддресс - (iWidth - 1)
+//		mov edx, edi //РљРѕРїРёСЂСѓРµРј Р°РґРґСЂРµСЃ РїРµСЂРІРѕРіРѕ СЌР». РІ РІРёРґРµРѕРїР°РјСЏС‚Рё
+//		sub esi, 12 //РЈРјРµРЅС€Р°РµРј РєРѕР». СЌР». РїРѕ РІРµСЂС‚РёРєР°Р»Рё С‚Р°Рє С‡С‚РѕР±С‹ РїСЂРё РїСЂРёР±Р°РІР»РµРЅРёРё Рє x+1 РїРѕР»СѓС‡Р°Р»СЃСЏ РєРѕРЅРµС‡РЅС‹Р№ Р°РґРґСЂРµСЃСЃ - (iWidth - 1)
 //
-//		add edx, esi //Получаем конечный аддрес по вертикали - (iWidth - 1)
+//		add edx, esi //РџРѕР»СѓС‡Р°РµРј РєРѕРЅРµС‡РЅС‹Р№ Р°РґРґСЂРµСЃ РїРѕ РІРµСЂС‚РёРєР°Р»Рё - (iWidth - 1)
 //		push esi
 //
 //L1:
@@ -4334,9 +4335,9 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 	const int INTERP_LHS = 0;
 	const int INTERP_RHS = 1;
 
-	int v0 = 0, v1 = 1, v2 = 2, /*индексы вершин. ипользуються для того чтобы не менять местами вершины в массиве face->tvlist, а менять только индексы вершин*/
-		temp = 0, /*переменная для обмена индексов вершин*/
-		tri_type = TRI_TYPE_NONE, /*тип треугольника*/
+	int v0 = 0, v1 = 1, v2 = 2, /*РёРЅРґРµРєСЃС‹ РІРµСЂС€РёРЅ. РёРїРѕР»СЊР·СѓСЋС‚СЊСЃСЏ РґР»СЏ С‚РѕРіРѕ С‡С‚РѕР±С‹ РЅРµ РјРµРЅСЏС‚СЊ РјРµСЃС‚Р°РјРё РІРµСЂС€РёРЅС‹ РІ РјР°СЃСЃРёРІРµ face->tvlist, Р° РјРµРЅСЏС‚СЊ С‚РѕР»СЊРєРѕ РёРЅРґРµРєСЃС‹ РІРµСЂС€РёРЅ*/
+		temp = 0, /*РїРµСЂРµРјРµРЅРЅР°СЏ РґР»СЏ РѕР±РјРµРЅР° РёРЅРґРµРєСЃРѕРІ РІРµСЂС€РёРЅ*/
+		tri_type = TRI_TYPE_NONE, /*С‚РёРї С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°*/
 		irestart = INTERP_LHS;
 	float dx, dy, dyl, dyr;
 	float tempf = 0;
@@ -4376,13 +4377,13 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 		(face->tvlist[0].y > this->maxClipY) && (face->tvlist[1].y > this->maxClipY) && (face->tvlist[2].y > this->maxClipY) ||
 		(face->tvlist[0].x < this->minClipX) && (face->tvlist[1].x < this->minClipX) && (face->tvlist[2].x < this->minClipX) ||
 		(face->tvlist[0].x > this->maxClipX) && (face->tvlist[1].x > this->maxClipX) && (face->tvlist[2].x > this->maxClipX))
-		return 0; //Треугольник вне экрана
+		return 0; //РўСЂРµСѓРіРѕР»СЊРЅРёРє РІРЅРµ СЌРєСЂР°РЅР°
 
 	if(((face->tvlist[0].x == face->tvlist[1].x) && (face->tvlist[1].x == face->tvlist[2].x)) ||
 		((face->tvlist[0].y == face->tvlist[1].y) && (face->tvlist[1].y == face->tvlist[2].y)))
 		return 0;
 
-	/*сортируем индексы вершин в порядке v0.y <= v1.y <= v2.y, т.е. сверху вниз. положительная ось x направлена вправо, y - вниз*/
+	/*СЃРѕСЂС‚РёСЂСѓРµРј РёРЅРґРµРєСЃС‹ РІРµСЂС€РёРЅ РІ РїРѕСЂСЏРґРєРµ v0.y <= v1.y <= v2.y, С‚.Рµ. СЃРІРµСЂС…Сѓ РІРЅРёР·. РїРѕР»РѕР¶РёС‚РµР»СЊРЅР°СЏ РѕСЃСЊ x РЅР°РїСЂР°РІР»РµРЅР° РІРїСЂР°РІРѕ, y - РІРЅРёР·*/
 	if(face->tvlist[v1].y < face->tvlist[v0].y)
 		SWAP(v0, v1, temp);
 
@@ -4396,7 +4397,7 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 	{
 		tri_type = TRI_TYPE_FLAT_TOP;
 
-		//Сортируем вершины слева направо, т.е. v0 будет слева
+		//РЎРѕСЂС‚РёСЂСѓРµРј РІРµСЂС€РёРЅС‹ СЃР»РµРІР° РЅР°РїСЂР°РІРѕ, С‚.Рµ. v0 Р±СѓРґРµС‚ СЃР»РµРІР°
 		if(face->tvlist[v1].x < face->tvlist[v0].x)
 			SWAP(v1, v0, temp);
 	}
@@ -4404,7 +4405,7 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 	{
 		tri_type = TRI_TYPE_FLAT_BOTTOM;
 
-		//Сортируем вершины слева направо, т.е. v1 будет слева
+		//РЎРѕСЂС‚РёСЂСѓРµРј РІРµСЂС€РёРЅС‹ СЃР»РµРІР° РЅР°РїСЂР°РІРѕ, С‚.Рµ. v1 Р±СѓРґРµС‚ СЃР»РµРІР°
 		if(face->tvlist[v2].x < face->tvlist[v1].x)
 			SWAP(v2, v1, temp);
 	}
@@ -4413,7 +4414,7 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 		tri_type = TRI_TYPE_GENERAL;
 	}
 
-	//Используеться 32 битный цвет
+	//РСЃРїРѕР»СЊР·СѓРµС‚СЊСЃСЏ 32 Р±РёС‚РЅС‹Р№ С†РІРµС‚
 
 	RGBFROM32BIT(face->lit_color[0], r_base0, g_base0, b_base0);
 
@@ -4438,7 +4439,7 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 	{
 		if(tri_type == TRI_TYPE_FLAT_TOP)
 		{
-			dy = 1.0f / (y2 - y0);//Используем обратную величину чтобы не использовать деление
+			dy = 1.0f / (y2 - y0);//РСЃРїРѕР»СЊР·СѓРµРј РѕР±СЂР°С‚РЅСѓСЋ РІРµР»РёС‡РёРЅСѓ С‡С‚РѕР±С‹ РЅРµ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґРµР»РµРЅРёРµ
 			dxdyl = (x2 - x0) * dy;
 			vecDUVDYL.x = (tu2 - tu0) * dy;
 			vecDUVDYL.y = (tv2 - tv0) * dy;
@@ -4476,7 +4477,7 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 		}//if(tri_type == TRI_TYPE_FLAT_TOP)
 		else //tri_type == TRI_TYPE_FLAT_BOTTOM
 		{
-			dy = 1.0f / (y1 - y0);//Используем обратную величину чтобы не использовать деление
+			dy = 1.0f / (y1 - y0);//РСЃРїРѕР»СЊР·СѓРµРј РѕР±СЂР°С‚РЅСѓСЋ РІРµР»РёС‡РёРЅСѓ С‡С‚РѕР±С‹ РЅРµ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґРµР»РµРЅРёРµ
 			dxdyl = (x1 - x0) * dy;
 			vecDUVDYL.x = (tu1 - tu0) * dy;
 			vecDUVDYL.y = (tv1 - tv0) * dy;
@@ -4593,7 +4594,7 @@ int Draw32BitStrategy::DrawTriangleTex(struct3D::POLYF4D_PTR face, unsigned int 
 
 				screen_ptr += lpitch;
 			}//for(yi = ystart; yi <= yend; yi++)
-		}//if с отсечением по x
+		}//if СЃ РѕС‚СЃРµС‡РµРЅРёРµРј РїРѕ x
 		else
 		{
 
@@ -5314,7 +5315,7 @@ int Draw32BitStrategy::DrawTriangle4(struct3D::POLYF4D_PTR poly, unsigned int *v
 	UINT lp = lpitch >> 2;
 	UINT *vb;
 
-	//сортировка сверху вниз
+	//СЃРѕСЂС‚РёСЂРѕРІРєР° СЃРІРµСЂС…Сѓ РІРЅРёР·
 	if(poly->tvlist[v1].y < poly->tvlist[v0].y)
 	{
 		SWAP(v1, v0, tmp);
@@ -5328,7 +5329,7 @@ int Draw32BitStrategy::DrawTriangle4(struct3D::POLYF4D_PTR poly, unsigned int *v
 		SWAP(v2, v1, tmp);
 	}
 
-	//сортировка сверху по Х против часовой стрелки
+	//СЃРѕСЂС‚РёСЂРѕРІРєР° СЃРІРµСЂС…Сѓ РїРѕ РҐ РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРё
 	if(poly->tvlist[v1].y == poly->tvlist[v0].y)//FLAT_TOP
 	{
 		if(poly->tvlist[v1].x > poly->tvlist[v0].x)
@@ -5548,7 +5549,7 @@ int Draw32BitStrategy::DrawTriangle5(struct3D::POLYF4D_PTR poly, unsigned int *v
 	UINT lp = lpitch >> 2;
 	UINT *vb;
 
-	//сортировка сверху вниз
+	//СЃРѕСЂС‚РёСЂРѕРІРєР° СЃРІРµСЂС…Сѓ РІРЅРёР·
 	if(poly->tvlist[v1].y < poly->tvlist[v0].y)
 	{
 		SWAP(v1, v0, tmp);
@@ -5562,7 +5563,7 @@ int Draw32BitStrategy::DrawTriangle5(struct3D::POLYF4D_PTR poly, unsigned int *v
 		SWAP(v2, v1, tmp);
 	}
 
-	//сортировка сверху по Х против часовой стрелки
+	//СЃРѕСЂС‚РёСЂРѕРІРєР° СЃРІРµСЂС…Сѓ РїРѕ РҐ РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРё
 	if(poly->tvlist[v1].y == poly->tvlist[v0].y)//FLAT_TOP
 	{
 		if(poly->tvlist[v1].x > poly->tvlist[v0].x)
@@ -5848,7 +5849,7 @@ int Draw32BitStrategy::DrawTriangle6(struct3D::POLYF4D_PTR poly, unsigned int *v
 	UINT lp = lpitch >> 2;
 	UINT *vb;
 
-	//сортировка сверху вниз
+	//СЃРѕСЂС‚РёСЂРѕРІРєР° СЃРІРµСЂС…Сѓ РІРЅРёР·
 	if(poly->tvlist[v1].y < poly->tvlist[v0].y)
 	{
 		SWAP(v1, v0, tmp);
@@ -5862,7 +5863,7 @@ int Draw32BitStrategy::DrawTriangle6(struct3D::POLYF4D_PTR poly, unsigned int *v
 		SWAP(v2, v1, tmp);
 	}
 
-	//сортировка сверху по Х против часовой стрелки
+	//СЃРѕСЂС‚РёСЂРѕРІРєР° СЃРІРµСЂС…Сѓ РїРѕ РҐ РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРё
 	if(poly->tvlist[v1].y == poly->tvlist[v0].y)//FLAT_TOP
 	{
 		if(poly->tvlist[v1].x > poly->tvlist[v0].x)
@@ -5998,7 +5999,7 @@ int Draw32BitStrategy::DrawTriangle7_sse(struct3D::POLYF4D_PTR poly, unsigned in
 	//UINT lp = lpitch >> 2;
 	//UINT *vb;
 
-	////сортировка сверху вниз
+	////СЃРѕСЂС‚РёСЂРѕРІРєР° СЃРІРµСЂС…Сѓ РІРЅРёР·
 	//if(poly->tvlist[v1].y < poly->tvlist[v0].y)
 	//{
 	//	SWAP(v1, v0, tmp);
@@ -6012,7 +6013,7 @@ int Draw32BitStrategy::DrawTriangle7_sse(struct3D::POLYF4D_PTR poly, unsigned in
 	//	SWAP(v2, v1, tmp);
 	//}
 
-	////сортировка сверху по Х против часовой стрелки
+	////СЃРѕСЂС‚РёСЂРѕРІРєР° СЃРІРµСЂС…Сѓ РїРѕ РҐ РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРё
 	//if(poly->tvlist[v1].y == poly->tvlist[v0].y)//FLAT_TOP
 	//{
 	//	if(poly->tvlist[v1].x > poly->tvlist[v0].x)

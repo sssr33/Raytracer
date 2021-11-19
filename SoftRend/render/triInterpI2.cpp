@@ -1,3 +1,4 @@
+ï»¿// ğŸš
 #include "triInterpI2.h"
 
 
@@ -17,7 +18,7 @@ void triInterpI2::setTriangle(POLYF4D_PTR poly)
 	isRestarted = 0;
 	y_idx_row = 0;
 
-	//ñîğòèğîâêà ñâåğõó âíèç
+	//ÑĞ¾Ñ€Ñ‚Ğ¸Ñ€Ğ¾Ğ²ĞºĞ° ÑĞ²ĞµÑ€Ñ…Ñƒ Ğ²Ğ½Ğ¸Ğ·
 	if(poly->tvlist[v1].y < poly->tvlist[v0].y)
 	{
 		SWAP(v1, v0, tmp);
@@ -31,7 +32,7 @@ void triInterpI2::setTriangle(POLYF4D_PTR poly)
 		SWAP(v2, v1, tmp);
 	}
 
-	//Îïğåäåëåíèå òèïà òğåóãîëüíèêà
+	//ĞĞ¿Ñ€ĞµĞ´ĞµĞ»ĞµĞ½Ğ¸Ğµ Ñ‚Ğ¸Ğ¿Ğ° Ñ‚Ñ€ĞµÑƒĞ³Ğ¾Ğ»ÑŒĞ½Ğ¸ĞºĞ°
 	//if(ceil(poly->tvlist[v1].y) == ceil(poly->tvlist[v0].y))//FLAT_TOP
 	if(math3D::mathFunc.FCMP(poly->tvlist[v1].y, poly->tvlist[v0].y))
 	{

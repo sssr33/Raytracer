@@ -1,3 +1,4 @@
+п»ї// рџђљ
 #include "StdAfx.h"
 #include "Clipper.h"
 
@@ -93,7 +94,7 @@ int Clipper::clipCohenSutherland(RECT *clippingRect, std::vector<POINT2D> *subjP
 		}
 	}
 
-	//отсечение линии от последней точки к начальной
+	//РѕС‚СЃРµС‡РµРЅРёРµ Р»РёРЅРёРё РѕС‚ РїРѕСЃР»РµРґРЅРµР№ С‚РѕС‡РєРё Рє РЅР°С‡Р°Р»СЊРЅРѕР№
 	if(numPts > 2)
 	{
 	pcode1 = pcode2 = 0;

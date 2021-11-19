@@ -1,3 +1,4 @@
+п»ї// рџђљ
 #include "StdAfx.h"
 #include "Pipeline.h"
 
@@ -346,11 +347,11 @@ int Pipeline::LightOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 	unsigned int rSum2, gSum2, bSum2;
 	unsigned int shadedColor;
 
-	float dp, //Скалярное произведение
-		dist, //Расстояние от источника до поверхности
-		i,    //Общие итенсивности
-		nl,   //Длина нормали
-		atten;//Коэфициент затухания
+	float dp, //РЎРєР°Р»СЏСЂРЅРѕРµ РїСЂРѕРёР·РІРµРґРµРЅРёРµ
+		dist, //Р Р°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚ РёСЃС‚РѕС‡РЅРёРєР° РґРѕ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё
+		i,    //РћР±С‰РёРµ РёС‚РµРЅСЃРёРІРЅРѕСЃС‚Рё
+		nl,   //Р”Р»РёРЅР° РЅРѕСЂРјР°Р»Рё
+		atten;//РљРѕСЌС„РёС†РёРµРЅС‚ Р·Р°С‚СѓС…Р°РЅРёСЏ
 
 	if(!(obj->state & struct3D::OBJECT4D_STATE_ACTIVE) || (obj->state & struct3D::OBJECT4D_STATE_CULLED) || !(obj->state & struct3D::OBJECT4D_STATE_VISIBLE))
 		return 0;
@@ -370,7 +371,7 @@ int Pipeline::LightOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 
 		if(currPoly->attr & struct3D::POLY4D_ATTR_SHADE_MODE_FLAT)
 		{
-			//предпологаеться что используеться 32 битный цвет
+			//РїСЂРµРґРїРѕР»РѕРіР°РµС‚СЊСЃСЏ С‡С‚Рѕ РёСЃРїРѕР»СЊР·СѓРµС‚СЊСЃСЏ 32 Р±РёС‚РЅС‹Р№ С†РІРµС‚
 
 			rBase = (currPoly->color >> 16) & 0x000000FF;
 			gBase = (currPoly->color >> 8) & 0x000000FF;
@@ -786,11 +787,11 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 	unsigned int rSum2, gSum2, bSum2;
 	unsigned int shadedColor;
 
-	float dp, //Скалярное произведение
-		dist, //Расстояние от источника до поверхности
-		i,    //Общие итенсивности
-		nl,   //Длина нормали
-		atten;//Коэфициент затухания
+	float dp, //РЎРєР°Р»СЏСЂРЅРѕРµ РїСЂРѕРёР·РІРµРґРµРЅРёРµ
+		dist, //Р Р°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚ РёСЃС‚РѕС‡РЅРёРєР° РґРѕ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё
+		i,    //РћР±С‰РёРµ РёС‚РµРЅСЃРёРІРЅРѕСЃС‚Рё
+		nl,   //Р”Р»РёРЅР° РЅРѕСЂРјР°Р»Рё
+		atten;//РљРѕСЌС„РёС†РёРµРЅС‚ Р·Р°С‚СѓС…Р°РЅРёСЏ
 
 	MATRIX4X4 mr;
 
@@ -809,7 +810,7 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 
 		if(currPoly->attr & struct3D::POLY4D_ATTR_SHADE_MODE_FLAT)
 		{
-			//предпологаеться что используеться 32 битный цвет
+			//РїСЂРµРґРїРѕР»РѕРіР°РµС‚СЊСЃСЏ С‡С‚Рѕ РёСЃРїРѕР»СЊР·СѓРµС‚СЊСЃСЏ 32 Р±РёС‚РЅС‹Р№ С†РІРµС‚
 
 			rBase = (currPoly->color >> 16) & 0x000000FF;
 			gBase = (currPoly->color >> 8) & 0x000000FF;
@@ -1364,7 +1365,7 @@ int Pipeline::LightRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 		{
 			//MessageBox(0,L"PHONG",0,0);
 			currPoly->lit_color[0] = currPoly->lit_color[1] = currPoly->lit_color[2] = currPoly->color;
-			//Все вычисление будут производиться при растеризации, т.к. нужно вычислить(интерполировать) нормаль к каждому пикселю треугольника и осветить его
+			//Р’СЃРµ РІС‹С‡РёСЃР»РµРЅРёРµ Р±СѓРґСѓС‚ РїСЂРѕРёР·РІРѕРґРёС‚СЊСЃСЏ РїСЂРё СЂР°СЃС‚РµСЂРёР·Р°С†РёРё, С‚.Рє. РЅСѓР¶РЅРѕ РІС‹С‡РёСЃР»РёС‚СЊ(РёРЅС‚РµСЂРїРѕР»РёСЂРѕРІР°С‚СЊ) РЅРѕСЂРјР°Р»СЊ Рє РєР°Р¶РґРѕРјСѓ РїРёРєСЃРµР»СЋ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР° Рё РѕСЃРІРµС‚РёС‚СЊ РµРіРѕ
 		}
 		else
 		{
@@ -1760,7 +1761,7 @@ int Pipeline::compareAvgZPOLYF4D(const void *arg1, const void *arg2)
 
 void Pipeline::SortRENDERLIST4D(RENDERLIST4D_PTR rendList, sortMethod enm)
 {
-	//enm не используеться т.к. треугольники сортируються по среднему значению
+	//enm РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЊСЃСЏ С‚.Рє. С‚СЂРµСѓРіРѕР»СЊРЅРёРєРё СЃРѕСЂС‚РёСЂСѓСЋС‚СЊСЃСЏ РїРѕ СЃСЂРµРґРЅРµРјСѓ Р·РЅР°С‡РµРЅРёСЋ
 
 	qsort((void *)rendList->poly_ptrs, rendList->num_polys, sizeof(POLYF4D_PTR), this->compareAvgZPOLYF4D);
 }
@@ -1904,7 +1905,7 @@ vertPROC:
 				{
 					vecMulMat(&currPoly->tvlist[vertex].n, &mr, &pResult);
 					vecCopy(&pResult, &currPoly->tvlist[vertex].n);
-					currPoly->lit_color[0] = currPoly->lit_color[1] = currPoly->lit_color[2] = currPoly->color; //Если освещение отключено!!!
+					currPoly->lit_color[0] = currPoly->lit_color[1] = currPoly->lit_color[2] = currPoly->color; //Р•СЃР»Рё РѕСЃРІРµС‰РµРЅРёРµ РѕС‚РєР»СЋС‡РµРЅРѕ!!!
 				}
 
 				

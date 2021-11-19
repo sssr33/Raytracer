@@ -1,3 +1,4 @@
+п»ї// рџђљ
 #include "StdAfx.h"
 #include "GeometryGen.h"
 
@@ -42,10 +43,10 @@ int GeometryGen::generateRotationForm(POINT4D_PTR pts, int numPts, int numSides,
 	if(obj)
 		obj->Destroy();
 
-	if(numSides < 3) return 0; //Как минимум у объекта вращение должно быть 3 стороны
+	if(numSides < 3) return 0; //РљР°Рє РјРёРЅРёРјСѓРј Сѓ РѕР±СЉРµРєС‚Р° РІСЂР°С‰РµРЅРёРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ 3 СЃС‚РѕСЂРѕРЅС‹
 
-	numSides--;//уменьшаем количество для того чтобы треугольники между последней и 1 стороной имели правильный размер, но угол для каждой итерации расчитываем 
-	//как numSides + 1
+	numSides--;//СѓРјРµРЅСЊС€Р°РµРј РєРѕР»РёС‡РµСЃС‚РІРѕ РґР»СЏ С‚РѕРіРѕ С‡С‚РѕР±С‹ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРё РјРµР¶РґСѓ РїРѕСЃР»РµРґРЅРµР№ Рё 1 СЃС‚РѕСЂРѕРЅРѕР№ РёРјРµР»Рё РїСЂР°РІРёР»СЊРЅС‹Р№ СЂР°Р·РјРµСЂ, РЅРѕ СѓРіРѕР» РґР»СЏ РєР°Р¶РґРѕР№ РёС‚РµСЂР°С†РёРё СЂР°СЃС‡РёС‚С‹РІР°РµРј 
+	//РєР°Рє numSides + 1
 
 	int numHSegs = numPts - 2 - 1;
 	int numGenVertsPerIteration = numPts - 2;
@@ -132,7 +133,7 @@ int GeometryGen::generateRotationForm(POINT4D_PTR pts, int numPts, int numSides,
 
 	for(int i = 0; i < numSides; i++)
 	{
-		//вращаем все точки кроме первой и последней
+		//РІСЂР°С‰Р°РµРј РІСЃРµ С‚РѕС‡РєРё РєСЂРѕРјРµ РїРµСЂРІРѕР№ Рё РїРѕСЃР»РµРґРЅРµР№
 		for(int j = 1; j < numPts - 1; j++, currVert++)
 		{
 			POINT4D pRes;
@@ -146,11 +147,11 @@ int GeometryGen::generateRotationForm(POINT4D_PTR pts, int numPts, int numSides,
 			//vecAdd(&pCenterCorrection, &obj->vlist_local[currVert].v, &pCenterCorrection);
 		}
 
-		//Генерируем треугольники для всех сегментов вдоль стороны(по высоте).
+		//Р“РµРЅРµСЂРёСЂСѓРµРј С‚СЂРµСѓРіРѕР»СЊРЅРёРєРё РґР»СЏ РІСЃРµС… СЃРµРіРјРµРЅС‚РѕРІ РІРґРѕР»СЊ СЃС‚РѕСЂРѕРЅС‹(РїРѕ РІС‹СЃРѕС‚Рµ).
 		for(int k = 0; k < numHSegs; k++)
 		{
-			//задаем индексы вершин по часовой стрелке для всех треугольников кроме верхнего и нижнего
-			//задаем сразу по 2 треугольника
+			//Р·Р°РґР°РµРј РёРЅРґРµРєСЃС‹ РІРµСЂС€РёРЅ РїРѕ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРµ РґР»СЏ РІСЃРµС… С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ РєСЂРѕРјРµ РІРµСЂС…РЅРµРіРѕ Рё РЅРёР¶РЅРµРіРѕ
+			//Р·Р°РґР°РµРј СЃСЂР°Р·Сѓ РїРѕ 2 С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
 				obj->plist[currPoly].vert[0] = (currVert - k - 1) - numGenVertsPerIteration;
 				obj->plist[currPoly].vert[1] = (currVert - k - 1) - 1;
 				obj->plist[currPoly].vert[2] = (currVert - k - 1);
@@ -174,8 +175,8 @@ int GeometryGen::generateRotationForm(POINT4D_PTR pts, int numPts, int numSides,
 				currPoly += 2;
 		}
 
-		//Генерируем верхний и нижний треугольники
-		//верхний
+		//Р“РµРЅРµСЂРёСЂСѓРµРј РІРµСЂС…РЅРёР№ Рё РЅРёР¶РЅРёР№ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРё
+		//РІРµСЂС…РЅРёР№
 		obj->plist[currPoly].vert[0] = (currVert - 1) - numHSegs - numGenVertsPerIteration;
 		obj->plist[currPoly].vert[1] = 0;
 		obj->plist[currPoly].vert[2] = (currVert - 1) - numHSegs;
@@ -186,7 +187,7 @@ int GeometryGen::generateRotationForm(POINT4D_PTR pts, int numPts, int numSides,
 		obj->plist[currPoly].color = polyColor;
 		obj->plist[currPoly].SetLitColor(obj->plist[currPoly].color);
 
-		//нижний
+		//РЅРёР¶РЅРёР№
 		obj->plist[currPoly + 1].vert[0] = (currVert - 1);
 		obj->plist[currPoly + 1].vert[1] = 1;
 		obj->plist[currPoly + 1].vert[2] = (currVert - 1) - numGenVertsPerIteration;
@@ -200,12 +201,12 @@ int GeometryGen::generateRotationForm(POINT4D_PTR pts, int numPts, int numSides,
 		currPoly += 2;
 	}
 
-	//Генерируем треугольники соединяющий последнюю сторону и первую
+	//Р“РµРЅРµСЂРёСЂСѓРµРј С‚СЂРµСѓРіРѕР»СЊРЅРёРєРё СЃРѕРµРґРёРЅСЏСЋС‰РёР№ РїРѕСЃР»РµРґРЅСЋСЋ СЃС‚РѕСЂРѕРЅСѓ Рё РїРµСЂРІСѓСЋ
 
 	for(int k = 0; k < numHSegs; k++)
 		{
-			//задаем индексы вершин по часовой стрелке для всех треугольников кроме верхнего и нижнего
-			//задаем сразу по 2 треугольника
+			//Р·Р°РґР°РµРј РёРЅРґРµРєСЃС‹ РІРµСЂС€РёРЅ РїРѕ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРµ РґР»СЏ РІСЃРµС… С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ РєСЂРѕРјРµ РІРµСЂС…РЅРµРіРѕ Рё РЅРёР¶РЅРµРіРѕ
+			//Р·Р°РґР°РµРј СЃСЂР°Р·Сѓ РїРѕ 2 С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
 				obj->plist[currPoly].vert[0] = (currVert - k - 1);
 				obj->plist[currPoly].vert[1] = numPts - k - 1 - 1;
 				obj->plist[currPoly].vert[2] = numPts - k - 1;
@@ -229,8 +230,8 @@ int GeometryGen::generateRotationForm(POINT4D_PTR pts, int numPts, int numSides,
 				currPoly += 2;
 		}
 
-	//Генерируем верхний и нижний треугольники
-	//верхний
+	//Р“РµРЅРµСЂРёСЂСѓРµРј РІРµСЂС…РЅРёР№ Рё РЅРёР¶РЅРёР№ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРё
+	//РІРµСЂС…РЅРёР№
 	obj->plist[currPoly].vert[0] = (currVert - 1) - numHSegs;
 	obj->plist[currPoly].vert[1] = 0;
 	obj->plist[currPoly].vert[2] = 2;
@@ -241,7 +242,7 @@ int GeometryGen::generateRotationForm(POINT4D_PTR pts, int numPts, int numSides,
 	obj->plist[currPoly].color = polyColor;
 	obj->plist[currPoly].SetLitColor(obj->plist[currPoly].color);
 
-	//нижний
+	//РЅРёР¶РЅРёР№
 	obj->plist[currPoly + 1].vert[0] = (numPts - 1);
 	obj->plist[currPoly + 1].vert[1] = 1;
 	obj->plist[currPoly + 1].vert[2] = (currVert - 1);
@@ -347,8 +348,8 @@ int GeometryGen::generateCylinder(int numSides, int numHSegs, int numCapSegs, fl
 int GeometryGen::generateSphere(int numSegs, float radius, OBJECT4D_PTR obj, POINT4D_PTR worldPos, unsigned int iColor)
 {
 	int numSides = numSegs;
-	int numPts = numSegs / 2 + 1;//Дробную чать не учитываем, т.к. кол-во вершин не может быть дробным
-	int numHSegs = numPts - 2; //количество точек по вертикали минус начальная и конечная
+	int numPts = numSegs / 2 + 1;//Р”СЂРѕР±РЅСѓСЋ С‡Р°С‚СЊ РЅРµ СѓС‡РёС‚С‹РІР°РµРј, С‚.Рє. РєРѕР»-РІРѕ РІРµСЂС€РёРЅ РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РґСЂРѕР±РЅС‹Рј
+	int numHSegs = numPts - 2; //РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РїРѕ РІРµСЂС‚РёРєР°Р»Рё РјРёРЅСѓСЃ РЅР°С‡Р°Р»СЊРЅР°СЏ Рё РєРѕРЅРµС‡РЅР°СЏ
 	float rotAngle = 360.0f / (float)numSegs;
 
 	if(!obj) return 0;
@@ -358,7 +359,7 @@ int GeometryGen::generateSphere(int numSegs, float radius, OBJECT4D_PTR obj, POI
 	POINT4D_PTR pts = new POINT4D[numPts];
 	MATRIX4X4 mrot;
 
-	//Записываем начальную и конечную точки
+	//Р—Р°РїРёСЃС‹РІР°РµРј РЅР°С‡Р°Р»СЊРЅСѓСЋ Рё РєРѕРЅРµС‡РЅСѓСЋ С‚РѕС‡РєРё
 	pts[0].x = 0;
 	pts[0].y = radius;
 	pts[0].z = 0.0f;
@@ -369,7 +370,7 @@ int GeometryGen::generateSphere(int numSegs, float radius, OBJECT4D_PTR obj, POI
 	pts[numPts - 1].z = 0.0f;
 	pts[numPts - 1].w = 1.0f;
 
-	//генерируем остальные точки
+	//РіРµРЅРµСЂРёСЂСѓРµРј РѕСЃС‚Р°Р»СЊРЅС‹Рµ С‚РѕС‡РєРё
 	mrot.Build_XYZ_Rotation_MATRIX4X4(0.0f, 0.0f, rotAngle);
 	vecCopy(&pts[0], &p);
 
@@ -520,7 +521,7 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 	obj->curr_frame = 0;
 	obj->attr = struct3D::OBJECT4D_ATTR_SINGLE_FRAME;
 
-	//Вычисляем заднюю вернюю левую точку
+	//Р’С‹С‡РёСЃР»СЏРµРј Р·Р°РґРЅСЋСЋ РІРµСЂРЅСЋСЋ Р»РµРІСѓСЋ С‚РѕС‡РєСѓ
 	currPt.x = 0 - (width / 2);
 	currPt.y = 0 + (height / 2);
 	currPt.z = 0 - (length / 2);
@@ -528,7 +529,7 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 	//
 	std::vector<int> shapeIdx, shapeIdxNext;
 
-	//Генерируем верхние вершины
+	//Р“РµРЅРµСЂРёСЂСѓРµРј РІРµСЂС…РЅРёРµ РІРµСЂС€РёРЅС‹
 	int vm = WSegs + 1;
 	float WStep = width / WSegs;
 	for(int i = 0; i < vm; i++)
@@ -540,7 +541,7 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 		currVert++;
 	}
 
-	//Генерируем правые вершины
+	//Р“РµРЅРµСЂРёСЂСѓРµРј РїСЂР°РІС‹Рµ РІРµСЂС€РёРЅС‹
 	vm = HSegs - 1;
 	currPt.x -= WStep;
 	float HStep = height / (HSegs);
@@ -552,7 +553,7 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 		shapeIdx.push_back(currVert);
 		currVert++;
 	}
-	//Генерируем нижние вершины
+	//Р“РµРЅРµСЂРёСЂСѓРµРј РЅРёР¶РЅРёРµ РІРµСЂС€РёРЅС‹
 	currPt.y -= HStep;
 	vm = WSegs + 1;
 	for(int i = 0; i < vm; i++)
@@ -563,7 +564,7 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 		shapeIdx.push_back(currVert);
 		currVert++;
 	}
-	//Генерируем левые вершины
+	//Р“РµРЅРµСЂРёСЂСѓРµРј Р»РµРІС‹Рµ РІРµСЂС€РёРЅС‹
 	vm = HSegs - 1;
 	currPt.x += WStep;
 	for(int i = 0; i < vm; i++)
@@ -575,7 +576,7 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 		currVert++;
 	}
 
-	//Создаем треугольники для задней стенки===============
+	//РЎРѕР·РґР°РµРј С‚СЂРµСѓРіРѕР»СЊРЅРёРєРё РґР»СЏ Р·Р°РґРЅРµР№ СЃС‚РµРЅРєРё===============
 	std::vector<int> topIdx, btIdx;
 
 	vm = WSegs + 1;
@@ -590,7 +591,7 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 	{
 		btIdx.clear();
 
-		btIdx.push_back(shapeIdx[shapeIdxSize - 1 - i]);//индекс слева сверху
+		btIdx.push_back(shapeIdx[shapeIdxSize - 1 - i]);//РёРЅРґРµРєСЃ СЃР»РµРІР° СЃРІРµСЂС…Сѓ
 		vm = WSegs;// - 1;
 
 		for(int j = 1; j < vm; j++)
@@ -672,7 +673,7 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 		}
 	//==============================================================
 	
-	//Создаем треугольники по длинне===============
+	//РЎРѕР·РґР°РµРј С‚СЂРµСѓРіРѕР»СЊРЅРёРєРё РїРѕ РґР»РёРЅРЅРµ===============
 	float LStep = length / LSegs;
 	pm = shapeIdxSize - 1;
 
@@ -744,7 +745,7 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 	}
 
 	//=============================================================
-	//Создаем треугольники для передней стенки===============
+	//РЎРѕР·РґР°РµРј С‚СЂРµСѓРіРѕР»СЊРЅРёРєРё РґР»СЏ РїРµСЂРµРґРЅРµР№ СЃС‚РµРЅРєРё===============
 	vm = WSegs + 1;
 	topIdx.clear();
 	for(int i = 0; i < vm; i++)
@@ -756,7 +757,7 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 	{
 		btIdx.clear();
 
-		btIdx.push_back(shapeIdx[shapeIdxSize - 1 - i]);//индекс слева сверху
+		btIdx.push_back(shapeIdx[shapeIdxSize - 1 - i]);//РёРЅРґРµРєСЃ СЃР»РµРІР° СЃРІРµСЂС…Сѓ
 		vm = WSegs;// - 1;
 
 		for(int j = 1; j < vm; j++)
@@ -852,19 +853,31 @@ int GeometryGen::generateBox(float length, float width, float height, int LSegs,
 
 int GeometryGen::generateShadowVolume(LIGHT_PTR l_in, int num_l_in, OBJECT4D_PTR objShadowCaster_in, OBJECT4D_PTR objShadowVol_inout, int sh_vol_num_in)
 {
-	//версия для одного источника света!!!!!!!
+	//РІРµСЂСЃРёСЏ РґР»СЏ РѕРґРЅРѕРіРѕ РёСЃС‚РѕС‡РЅРёРєР° СЃРІРµС‚Р°!!!!!!!
 
 	this->attrBase += 4;
 
-	if(!objShadowCaster_in->adj) return 0;
+	if (!objShadowCaster_in->adj)
+	{
+		return 0;
+	}
 
-	if(objShadowCaster_in->num_polys > static_cast<int>(this->frontBackFace.size())) this->frontBackFace.resize(objShadowCaster_in->num_polys);
+	if (objShadowCaster_in->num_polys > static_cast<int>(this->frontBackFace.size()))
+	{
+		this->frontBackFace.resize(objShadowCaster_in->num_polys);
+	}
 
-	if(this->frontBackFace[0] & 0x8000) this->frontBackFace.resize(this->frontBackFace.size(), 0); //Для правильной работы с атрибутами
+	if (this->frontBackFace[0] & 0x8000)
+	{
+		this->frontBackFace.resize(this->frontBackFace.size(), 0); //Р”Р»СЏ РїСЂР°РІРёР»СЊРЅРѕР№ СЂР°Р±РѕС‚С‹ СЃ Р°С‚СЂРёР±СѓС‚Р°РјРё
+	}
 
-	if(l_in[0].attr & LIGHT_ATTR_AMBIENT) return 0;
+	if (l_in[0].attr & LIGHT_ATTR_AMBIENT)
+	{
+		return 0;
+	}
 	
-	//Для точечного источника света нужно добавить преобразование его позиции в пространсво объекта!!!!
+	//Р”Р»СЏ С‚РѕС‡РµС‡РЅРѕРіРѕ РёСЃС‚РѕС‡РЅРёРєР° СЃРІРµС‚Р° РЅСѓР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РµРіРѕ РїРѕР·РёС†РёРё РІ РїСЂРѕСЃС‚СЂР°РЅСЃРІРѕ РѕР±СЉРµРєС‚Р°!!!!
 
 	VECTOR4D u, v, n, /*r, c,*/ l;
 	float dp;
@@ -931,7 +944,10 @@ int GeometryGen::generateShadowVolume(LIGHT_PTR l_in, int num_l_in, OBJECT4D_PTR
 
 	for(int i = 0; i < objShadowCaster_in->num_polys; i++)
 	{
-		if(this->frontBackFace[i] == PROC_CULLED(this->attrBase)) continue;
+		if (this->frontBackFace[i] == PROC_CULLED(this->attrBase))
+		{
+			continue;
+		}
 
 		if(NOT_PROC(this->frontBackFace[i], this->attrBase))
 		{
@@ -956,10 +972,9 @@ int GeometryGen::generateShadowVolume(LIGHT_PTR l_in, int num_l_in, OBJECT4D_PTR
 			}
 		}
 
-
 		if(this->frontBackFace[i] == FRONT_CULLED(this->attrBase))
 		{
-			this->frontBackFace[i] = PROC_CULLED(this->attrBase); //треугольник обработан
+			this->frontBackFace[i] = PROC_CULLED(this->attrBase); //С‚СЂРµСѓРіРѕР»СЊРЅРёРє РѕР±СЂР°Р±РѕС‚Р°РЅ
 
 			for(int j = 0; j < 3; j++)
 			{

@@ -1,3 +1,4 @@
+ï»¿// ğŸš
 #include "GraphicImpInMemory.h"
 
 void GraphicImpInMemory::Initialize(const ScreenParamsInMemory& screenParams, const DstFlipParams& dstFlipParams)
@@ -141,7 +142,7 @@ LIGHT_PTR GraphicImpInMemory::getLight(int index)
 {
 	LIGHT_PTR light = 0;
 
-	if (index >= 0 || index < this->pipe.lights.getNumLights())
+	if (index >= 0 && index < this->pipe.lights.getNumLights())
 	{
 		light = &this->pipe.lights.lights[index];
 	}
@@ -973,18 +974,18 @@ int GraphicImpInMemory::point2DTo3D(math3D::POINT2D_PTR pt2D, math3D::POINT4D_PT
 	float alpha = (0.5f * this->mainCam.viewport_width/* - 0.5f*/);
 	float beta = (0.5f * this->mainCam.viewport_height/* - 0.5f*/);
 
-	//ïğåîáğàçîâàíèå â àêñîíîìåòğè÷åñêèå
+	//Ğ¿Ñ€ĞµĞ¾Ğ±Ñ€Ğ°Ğ·Ğ¾Ğ²Ğ°Ğ½Ğ¸Ğµ Ğ² Ğ°ĞºÑĞ¾Ğ½Ğ¾Ğ¼ĞµÑ‚Ñ€Ğ¸Ñ‡ĞµÑĞºĞ¸Ğµ
 	pt3D->x = (pt2D->x - alpha) / alpha;
 	pt3D->y = (-pt2D->y + beta) / beta;
 
-	//ïğåîáğàçîâàíèå â êîîğäèíàòû êàìåğû
+	//Ğ¿Ñ€ĞµĞ¾Ğ±Ñ€Ğ°Ğ·Ğ¾Ğ²Ğ°Ğ½Ğ¸Ğµ Ğ² ĞºĞ¾Ğ¾Ñ€Ğ´Ğ¸Ğ½Ğ°Ñ‚Ñ‹ ĞºĞ°Ğ¼ĞµÑ€Ñ‹
 	pt3D->x = pt3D->x / this->mainCam.view_dist * z;
 	pt3D->y = pt3D->y / this->mainCam.aspect_ratio / this->mainCam.view_dist * z;
 	pt3D->z = z;
 	//pt3D->z -= this->mainCam.pos.z;
 	//pt3D->z = this->mainCam.pos.z;
 
-	//ïğåîáğàçîâàíèå â ìèğîâûå
+	//Ğ¿Ñ€ĞµĞ¾Ğ±Ñ€Ğ°Ğ·Ğ¾Ğ²Ğ°Ğ½Ğ¸Ğµ Ğ² Ğ¼Ğ¸Ñ€Ğ¾Ğ²Ñ‹Ğµ
 	vecMulMat(pt3D, &mCamInv, &pTmp);
 
 	vecCopy(&pTmp, pt3D);
@@ -993,8 +994,8 @@ int GraphicImpInMemory::point2DTo3D(math3D::POINT2D_PTR pt2D, math3D::POINT4D_PT
 
 	vecNormalize(pt3D);
 
-	//Óæå íàéäåí âåêòîğ "âïåğåä" ñ ó÷åòîì ïîëîæåíèÿ ìûøè.
-	//Äàëüøå èäåò âû÷èñëåíèå ïåğåñå÷åíèÿ âåêòîğà, p0 == ïîçèöèè êàìåğû, è ïëîñêîñòè xz 
+	//Ğ£Ğ¶Ğµ Ğ½Ğ°Ğ¹Ğ´ĞµĞ½ Ğ²ĞµĞºÑ‚Ğ¾Ñ€ "Ğ²Ğ¿ĞµÑ€ĞµĞ´" Ñ ÑƒÑ‡ĞµÑ‚Ğ¾Ğ¼ Ğ¿Ğ¾Ğ»Ğ¾Ğ¶ĞµĞ½Ğ¸Ñ Ğ¼Ñ‹ÑˆĞ¸.
+	//Ğ”Ğ°Ğ»ÑŒÑˆĞµ Ğ¸Ğ´ĞµÑ‚ Ğ²Ñ‹Ñ‡Ğ¸ÑĞ»ĞµĞ½Ğ¸Ğµ Ğ¿ĞµÑ€ĞµÑĞµÑ‡ĞµĞ½Ğ¸Ñ Ğ²ĞµĞºÑ‚Ğ¾Ñ€Ğ°, p0 == Ğ¿Ğ¾Ğ·Ğ¸Ñ†Ğ¸Ğ¸ ĞºĞ°Ğ¼ĞµÑ€Ñ‹, Ğ¸ Ğ¿Ğ»Ğ¾ÑĞºĞ¾ÑÑ‚Ğ¸ xz 
 
 	POINT4D p1, p2;
 	VECTOR4D n, p;
@@ -1020,8 +1021,8 @@ int GraphicImpInMemory::point2DTo3D(math3D::POINT2D_PTR pt2D, math3D::POINT4D_PT
 
 	t = (n.x * (p.x - p1.x) + n.y * (p.y - p1.y) + n.z * (p.z - p1.z)) / dpVN;//(n.x * (p2.x - p1.x) + n.y * (p2.y - p1.y) + n.z * (p2.z - p1.z));
 
-	//t òàêæå ÿâëÿåòüñÿ äëèíîé îòğåçêà ïîñòğîåííûì ìåæäó òî÷êîé íà ïëîñêîñòè è ïîçèöèåé êàìåğû.
-	//Òàê ÷òî íå áóäåì ïåğåìåùÿòü îáúåêò çà äàëüíşş ïëîñêîñòü îòñå÷åíèÿ.
+	//t Ñ‚Ğ°ĞºĞ¶Ğµ ÑĞ²Ğ»ÑĞµÑ‚ÑŒÑÑ Ğ´Ğ»Ğ¸Ğ½Ğ¾Ğ¹ Ğ¾Ñ‚Ñ€ĞµĞ·ĞºĞ° Ğ¿Ğ¾ÑÑ‚Ñ€Ğ¾ĞµĞ½Ğ½Ñ‹Ğ¼ Ğ¼ĞµĞ¶Ğ´Ñƒ Ñ‚Ğ¾Ñ‡ĞºĞ¾Ğ¹ Ğ½Ğ° Ğ¿Ğ»Ğ¾ÑĞºĞ¾ÑÑ‚Ğ¸ Ğ¸ Ğ¿Ğ¾Ğ·Ğ¸Ñ†Ğ¸ĞµĞ¹ ĞºĞ°Ğ¼ĞµÑ€Ñ‹.
+	//Ğ¢Ğ°Ğº Ñ‡Ñ‚Ğ¾ Ğ½Ğµ Ğ±ÑƒĞ´ĞµĞ¼ Ğ¿ĞµÑ€ĞµĞ¼ĞµÑ‰ÑÑ‚ÑŒ Ğ¾Ğ±ÑŠĞµĞºÑ‚ Ğ·Ğ° Ğ´Ğ°Ğ»ÑŒĞ½ÑÑ Ğ¿Ğ»Ğ¾ÑĞºĞ¾ÑÑ‚ÑŒ Ğ¾Ñ‚ÑĞµÑ‡ĞµĞ½Ğ¸Ñ.
 	if (t > this->mainCam.far_clip_z /*|| t == numeric_limits<float>::infinity()*/) return 0;
 
 	pt3D->x = p1.x + t * (p2.x - p1.x);
@@ -1046,12 +1047,12 @@ int GraphicImpInMemory::point2DToVector3D(math3D::POINT2D_PTR pt2D, math3D::VECT
 
 	mCamInv.M30 = mCamInv.M31 = mCamInv.M32 = 0;
 
-	//ïğåîáğàçîâàíèå â êîîğäèíàòû êàìåğû
+	//Ğ¿Ñ€ĞµĞ¾Ğ±Ñ€Ğ°Ğ·Ğ¾Ğ²Ğ°Ğ½Ğ¸Ğµ Ğ² ĞºĞ¾Ğ¾Ñ€Ğ´Ğ¸Ğ½Ğ°Ñ‚Ñ‹ ĞºĞ°Ğ¼ĞµÑ€Ñ‹
 	pt3D->x = ((pt2D->x - this->mainCam.viewport_center_x) / this->mainCam.view_dist2) * z;
 	pt3D->y = ((this->mainCam.viewport_center_y - pt2D->y) / this->mainCam.view_dist2) * z;
 	pt3D->z = z;
 
-	//ïğåîáğàçîâàíèå â ìèğîâûå
+	//Ğ¿Ñ€ĞµĞ¾Ğ±Ñ€Ğ°Ğ·Ğ¾Ğ²Ğ°Ğ½Ğ¸Ğµ Ğ² Ğ¼Ğ¸Ñ€Ğ¾Ğ²Ñ‹Ğµ
 	vecMulMat(pt3D, &mCamInv, &pTmp);
 	vecCopy(&pTmp, pt3D);
 
@@ -1446,7 +1447,7 @@ bool GraphicImpInMemory::isInPoly(POINT4D_PTR p, VECTOR4D_PTR v, POLY4D_PTR poly
 
 			int hit = 0;
 
-			//òåñòû íà íàõîæäåíèå òî÷êè â ïîëîæèòåëüíîì ïîëóïğîñòğàíñòâå
+			//Ñ‚ĞµÑÑ‚Ñ‹ Ğ½Ğ° Ğ½Ğ°Ñ…Ğ¾Ğ¶Ğ´ĞµĞ½Ğ¸Ğµ Ñ‚Ğ¾Ñ‡ĞºĞ¸ Ğ² Ğ¿Ğ¾Ğ»Ğ¾Ğ¶Ğ¸Ñ‚ĞµĞ»ÑŒĞ½Ğ¾Ğ¼ Ğ¿Ğ¾Ğ»ÑƒĞ¿Ñ€Ğ¾ÑÑ‚Ñ€Ğ°Ğ½ÑÑ‚Ğ²Ğµ
 
 			vecBuild(&pRes, &obj->vlist_local[vindex0].v, &vt1);
 			if (vecDot(&vt1, &v1) > 0.0f) hit++;

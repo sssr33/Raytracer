@@ -1,3 +1,4 @@
+﻿// 🐚
 #include "ISoftRend.h"
 #include "render/GraphicImpInMemory.h"
 #include "render/GeometryGen.h"
@@ -35,13 +36,60 @@ private:
         std::unique_ptr<OBJECT4D> sphere = std::make_unique<OBJECT4D>();
         math3D::POINT4D spherePos = {};
 
-        spherePos.z = 10.f;
-        spherePos.y = 3.f;
-        spherePos.w = 1.f;
+        spherePos.z = 300.f;
 
-        geomGen.generateSphere(32, 1.f, sphere.get(), &spherePos, _ARGB32BIT(255, 255, 255, 255));
+        geomGen.generateSphere(32, 100.f, sphere.get(), &spherePos, _ARGB32BIT(255, 0, 255, 0));
+
+        mat::RGBA ambient;
+        mat::RGBA diffuse;
+        mat::RGBA specular;
+        VECTOR4D lightDir, lightPos;
+
+        lightDir.VECTOR4D_ZERO();
+        /*lightDir.z = 1.0f;
+        lightDir.y = 1;*/
+        lightDir.x = 1;
+
+        vecNormalize(&lightDir);
+
+        diffuse.a = 255;
+        diffuse.r = 255;
+        diffuse.g = 255;
+        diffuse.b = 255;
+
+        specular.a = 255;
+        specular.r = 255;
+        specular.g = 255;
+        specular.b = 255;
+
+        ambient.a = 255;
+        ambient.r = 50;
+        ambient.g = 50;
+        ambient.b = 50;
+
+        int l_idx = 0;
+
+        if (!this->graphics->getLight(0))
+        {
+            this->graphics->AddLight(mat::LIGHT_STATE_ON, mat::LIGHT_ATTR_AMBIENT, ambient, diffuse, specular, 0, &lightDir, 0, 0, 0, 0, 0, 10);
+        }
+
+        if (!this->graphics->getLight(1))
+        {
+            l_idx = this->graphics->AddLight(mat::LIGHT_STATE_ON, mat::LIGHT_ATTR_INFINITE, ambient, diffuse, specular, 0, &lightDir, 0, 0, 0, 0, 0, 10);
+        }
+
+        this->graphics->setRenderState(RendState::RS_LIGHTING, 1);
+
+        LIGHT_PTR l = this->graphics->getLight(1);
+
+        std::unique_ptr<OBJECT4D> sphereShadow = std::make_unique<OBJECT4D>();
+
+        geomGen.generateShadowVolume(l, 1, sphere.get(), sphereShadow.get(), 1);
 
         this->graphics->DrawOBJECT4DSolid(sphere.get());
+
+        this->graphics->DrawOBJECT4DSolid(sphereShadow.get());
     }
 
     void CheckGrapics(uint32_t width, uint32_t height, void* dstMemory)

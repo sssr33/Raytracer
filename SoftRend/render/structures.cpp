@@ -1,3 +1,4 @@
+п»ї// рџђљ
 #include "StdAfx.h"
 #include "structures.h"
 #include <math.h>
@@ -825,11 +826,11 @@ void struct3D::CAM4D_TYP::Init_CAM4D(int cam_attr, POINT4D_PTR cam_pos, VECTOR4D
 	this->viewplane_width = 2.0f;
 	this->viewplane_height = 2.0f / this->aspect_ratio;
 
-	float tan_fov_div2 = cos(math3D::mathFunc.DEG_TO_RAD(fov / 2)) / sin(math3D::mathFunc.DEG_TO_RAD(fov / 2));//tan(math3D::mathFunc.DEG_TO_RAD(fov / 2));//В книге используеться тангенс, но в таком случае при уменшении угла озора он будет увеличиваться, так что нужен катангенс как противоположная функция
+	float tan_fov_div2 = cos(math3D::mathFunc.DEG_TO_RAD(fov / 2)) / sin(math3D::mathFunc.DEG_TO_RAD(fov / 2));//tan(math3D::mathFunc.DEG_TO_RAD(fov / 2));//Р’ РєРЅРёРіРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЊСЃСЏ С‚Р°РЅРіРµРЅСЃ, РЅРѕ РІ С‚Р°РєРѕРј СЃР»СѓС‡Р°Рµ РїСЂРё СѓРјРµРЅС€РµРЅРёРё СѓРіР»Р° РѕР·РѕСЂР° РѕРЅ Р±СѓРґРµС‚ СѓРІРµР»РёС‡РёРІР°С‚СЊСЃСЏ, С‚Р°Рє С‡С‚Рѕ РЅСѓР¶РµРЅ РєР°С‚Р°РЅРіРµРЅСЃ РєР°Рє РїСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅР°СЏ С„СѓРЅРєС†РёСЏ
 
 	this->view_dist = /*0.5f * this->viewplane_width * */tan_fov_div2;
 	this->view_dist2 = this->viewport_center_x * tan_fov_div2;
-	//this->view_dist = /*0.5f **/ this->viewport_center_x * tan_fov_div2;//viewplane заменен на viewport для совмещения преобразований в CameraToPerspective и PerspectiveToScreen.
+	//this->view_dist = /*0.5f **/ this->viewport_center_x * tan_fov_div2;//viewplane Р·Р°РјРµРЅРµРЅ РЅР° viewport РґР»СЏ СЃРѕРІРјРµС‰РµРЅРёСЏ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёР№ РІ CameraToPerspective Рё PerspectiveToScreen.
 
 	if(fov == 90.0f)
 	{
@@ -980,7 +981,7 @@ void struct3D::CAM4D_TYP::Build_CAM4D_Matrix_UVN(int mode)
 		this->target.z = 1.0f * sinPhi * cosTheta;
 	}
 
-	//this->target.VECTOR4D_Sub(&this->pos, &this->n); //Вычисляем вектор направления от позиции камеры к точке на которую она направлена.В книге используеться функция Build. Она выполняет тоже самое.
+	//this->target.VECTOR4D_Sub(&this->pos, &this->n); //Р’С‹С‡РёСЃР»СЏРµРј РІРµРєС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ РѕС‚ РїРѕР·РёС†РёРё РєР°РјРµСЂС‹ Рє С‚РѕС‡РєРµ РЅР° РєРѕС‚РѕСЂСѓСЋ РѕРЅР° РЅР°РїСЂР°РІР»РµРЅР°.Р’ РєРЅРёРіРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЊСЃСЏ С„СѓРЅРєС†РёСЏ Build. РћРЅР° РІС‹РїРѕР»РЅСЏРµС‚ С‚РѕР¶Рµ СЃР°РјРѕРµ.
 	this->n.VECTOR4D_Build(&this->pos, &this->target);
 
 	this->v.VECTOR4D_INITXYZ(0.0f, 1.0f, 0.0f);

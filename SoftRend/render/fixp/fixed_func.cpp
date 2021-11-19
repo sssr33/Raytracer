@@ -1,3 +1,4 @@
+﻿// 🐚
 /*
 Copyright (c) 2007, Markus Trenkwalder
 

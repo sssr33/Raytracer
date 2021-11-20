@@ -43,14 +43,6 @@ private:
         mat::RGBA ambient;
         mat::RGBA diffuse;
         mat::RGBA specular;
-        VECTOR4D lightDir, lightPos;
-
-        lightDir.VECTOR4D_ZERO();
-        /*lightDir.z = 1.0f;
-        lightDir.y = 1;*/
-        lightDir.x = 1;
-
-        vecNormalize(&lightDir);
 
         diffuse.a = 255;
         diffuse.r = 255;
@@ -69,27 +61,64 @@ private:
 
         int l_idx = 0;
 
-        if (!this->graphics->getLight(0))
+        /*if (!this->graphics->getLight(0))
         {
             this->graphics->AddLight(mat::LIGHT_STATE_ON, mat::LIGHT_ATTR_AMBIENT, ambient, diffuse, specular, 0, &lightDir, 0, 0, 0, 0, 0, 10);
-        }
+        }*/
 
-        if (!this->graphics->getLight(1))
+        POINT4D lightPos = spherePos;
+
+        lightPos.x = 100.f;
+        lightPos.y = 100.f;
+
+        static float angle = 0.f;
+
+        MATRIX4X4 mrot;
+        mrot.Build_XYZ_Rotation_MATRIX4X4(0.f, 0.f, angle);
+
+        POINT4D lightPosNew = {};
+
+        lightPos.Mat_Mul_VECTOR4D_4X4(&mrot, &lightPosNew);
+
+        
+
+        angle += 0.01f;
+
+        VECTOR4D lightDir;
+
+        spherePos.VECTOR4D_Sub(&lightPosNew, &lightDir);
+
+        vecNormalize(&lightDir);
+
+        if (!this->graphics->getLight(0))
         {
-            l_idx = this->graphics->AddLight(mat::LIGHT_STATE_ON, mat::LIGHT_ATTR_INFINITE, ambient, diffuse, specular, 0, &lightDir, 0, 0, 0, 0, 0, 10);
+            
+
+            l_idx = this->graphics->AddLight(mat::LIGHT_STATE_ON, mat::LIGHT_ATTR_POINT, ambient, diffuse, specular, &lightPos, &lightDir, 1.f, 0, 0, 0, 0, 10.f);
         }
 
-        this->graphics->setRenderState(RendState::RS_LIGHTING, 1);
+        LIGHT_PTR l = this->graphics->getLight(l_idx);
 
-        LIGHT_PTR l = this->graphics->getLight(1);
+        l->pos = lightPosNew;
+        l->dir = lightDir;
+
+        //this->graphics->setRenderState(RendState::RS_LIGHTING, 1);
 
         std::unique_ptr<OBJECT4D> sphereShadow = std::make_unique<OBJECT4D>();
 
         geomGen.generateShadowVolume(l, 1, sphere.get(), sphereShadow.get(), 1);
 
-        this->graphics->DrawOBJECT4DSolid(sphere.get());
+        //this->graphics->DrawOBJECT4DSolid(sphere.get());
 
-        this->graphics->DrawOBJECT4DSolid(sphereShadow.get());
+        sphereShadow->ModelToWorld();
+
+        std::unique_ptr<RENDERLIST4D> renderList = std::make_unique<RENDERLIST4D>();
+
+        renderList->Insert_OBJECT4D_RENDERLIST4D(sphereShadow.get());
+
+        this->graphics->DrawRENDERLIST4DSolid(renderList.get(), nullptr);
+
+        //this->graphics->DrawOBJECT4DSolid(sphereShadow.get());
     }
 
     void CheckGrapics(uint32_t width, uint32_t height, void* dstMemory)

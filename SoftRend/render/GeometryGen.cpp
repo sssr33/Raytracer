@@ -1025,7 +1025,7 @@ int GeometryGen::generateShadowVolume(LIGHT_PTR l_in, int num_l_in, OBJECT4D_PTR
 	int pnum = static_cast<int>(svVerts.size());
 	int polyAttr = struct3D::POLY4D_ATTR_RGB24 | struct3D::POLY4D_ATTR_SHADE_MODE_GOURAUD | struct3D::POLY4D_ATTR_DISABLE_MATERIAL;
 	int vertAttr = struct3D::VERTEX4DT_ATTR_NORMAL | struct3D::VERTEX4DT_ATTR_POINT;
-	int polyState = struct3D::POLY4D_STATE_ACTIVE | struct3D::OBJECT4D_STATE_VISIBLE;
+	int polyState = struct3D::POLY4D_STATE_ACTIVE;
 	int polyColor = ARGB32BIT(127,0,0,0);
 	int currVert = 0;
 	int svCurr = 0;

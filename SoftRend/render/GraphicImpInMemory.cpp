@@ -75,7 +75,7 @@ int GraphicImpInMemory::DrawBegin(bool bClearScreen)
 {
 	if (bClearScreen)
 	{
-		uint32_t clearColor = _ARGB32BIT(255, 0, 0, 0);
+		uint32_t clearColor = _ARGB32BIT(255, 255, 255, 255);
 		uint32_t* begin = reinterpret_cast<uint32_t*>(this->videoBuffer.data());
 		uint32_t* end = reinterpret_cast<uint32_t*>(this->videoBuffer.data() + this->videoBuffer.size());
 
@@ -574,9 +574,9 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 	{
 		pipe.ModelToWorldRENDERLIST4D(rendList, worldPos);
 	}*/
-	//pipe.RemoveBackfacesRENDERLIST4D(rendList, &mainCam);
-	//mainCam.Build_CAM4D_Matrix_Euler(struct3D::CAM_ROT_SEQ_ZYX);
-	//pipe.WorldToCameraRENDERLIST4D(&mainCam, rendList);
+	/*pipe.RemoveBackfacesRENDERLIST4D(rendList, &mainCam);
+	mainCam.Build_CAM4D_Matrix_Euler(struct3D::CAM_ROT_SEQ_ZYX);
+	pipe.WorldToCameraRENDERLIST4D(&mainCam, rendList);*/
 
 	pipe.WorldToCamera_and_BackfaceRemoveRENDERLIST4D(rendList, &mainCam);
 
@@ -675,8 +675,8 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 			this->draw->DrawTriangle2(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
 		else if (rendList->poly_ptrs[poly]->attr & struct3D::POLY4D_ATTR_SHADE_MODE_GOURAUD)
 			/*this->_draw->DrawGouraudTriangle3(rendList->poly_ptrs[poly], (unsigned int *)_videoBuffer, _lPitch);*/
-			/*this->_draw->DrawTriangle4(rendList->poly_ptrs[poly], (unsigned int *)_videoBuffer, _lPitch);*/
-			this->draw->DrawTriangle7_sse(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
+			this->draw->DrawTriangle4(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
+			//this->draw->DrawTriangle7_sse(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
 		else if (rendList->poly_ptrs[poly]->attr & struct3D::POLY4D_ATTR_SHADE_MODE_PHONG)
 			this->draw->DrawPhongTriangle2(&this->mainCam, &pipe.lights, rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
 		else if (rendList->poly_ptrs[poly]->attr & struct3D::POLY4D_ATTR_SHADE_MODE_TEST)
@@ -941,16 +941,16 @@ int GraphicImpInMemory::setRenderState(RendState enm, int value)
 {
 	this->state.setFlag(enm, value);
 
-	/*switch(enm)
+	switch(enm)
 	{
 	case RendState::RS_LIGHTING:
 		{
 			if(value != 0)
-				pipe.bLighting = 1;
+				pipe.bLighting = true;
 			else
-				pipe.bLighting = 0;
+				pipe.bLighting = false;
 		}break;
-	}*/
+	}
 
 	return 1;
 }

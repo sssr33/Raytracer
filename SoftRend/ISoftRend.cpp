@@ -71,7 +71,7 @@ private:
         lightPos.x = 100.f;
         lightPos.y = 100.f;
 
-        static float angle = 0.f;
+        static float angle = 10.22f; //0.78f;
 
         MATRIX4X4 mrot;
         mrot.Build_XYZ_Rotation_MATRIX4X4(0.f, 0.f, angle);
@@ -80,9 +80,16 @@ private:
 
         lightPos.Mat_Mul_VECTOR4D_4X4(&mrot, &lightPosNew);
 
-        
+        if (KEYDOWN(VK_UP))
+        {
+            angle += 0.01f;
+        }
+        if (KEYDOWN(VK_DOWN))
+        {
+            angle -= 0.01f;
+        }
 
-        angle += 0.01f;
+        //angle += 0.1f;
 
         VECTOR4D lightDir;
 

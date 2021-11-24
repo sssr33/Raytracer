@@ -12,19 +12,16 @@ enum SIMD
 class Sys
 {
 public:
-	~Sys(void);
-
-	static int Initialize();
-	static int Release();
+	static Sys& Instance();
 
 	static bool getSIMDInfo(SIMD enm);
-	static int Error(const TCHAR *msg, bool showMsgBox = 0);
-	static int setErrorFileName(const TCHAR *name);
-private:
-	static unsigned int iSIMDFlags; 
-	static const TCHAR *tchErrorFile;
 
-	Sys(void);
+	int Error(const TCHAR *msg, bool showMsgBox = 0);
+	int setErrorFileName(const TCHAR *name);
+private:
+	unsigned int iSIMDFlags = 0;
+	const TCHAR *tchErrorFile = TEXT("error.txt");
+
+	Sys();
 	static bool isCPUIDPresent();
 };
-

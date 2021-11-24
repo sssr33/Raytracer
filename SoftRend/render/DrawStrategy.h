@@ -32,11 +32,14 @@ public:
 	virtual int DrawGouraudTriangle3(struct3D::POLYF4D_PTR face, unsigned int *videoMemory, int lpitch) = 0;
 	virtual int DrawTriangle2(struct3D::POLYF4D_PTR face, unsigned int *videoMemory, int lpitch) = 0;
 
+	virtual int DrawTriangleOriginal(struct3D::POLYF4D_PTR face, unsigned int* videoMemory, int lpitch) { return 0; }
 	virtual int DrawTriangle3(struct3D::POLYF4D_PTR face, unsigned int *videoMemory, int lpitch) = 0;
 	virtual int DrawTriangle4(struct3D::POLYF4D_PTR face, unsigned int *videoMemory, int lpitch) = 0;
 	virtual int DrawTriangle5(struct3D::POLYF4D_PTR face, unsigned int *videoMemory, int lpitch) = 0;
 	virtual int DrawTriangle6(struct3D::POLYF4D_PTR face, unsigned int *videoMemory, int lpitch) = 0;
 	virtual int DrawTriangle7_sse(struct3D::POLYF4D_PTR face, unsigned int *videoMemory, int lpitch) = 0;
+
+	virtual void DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned int* videoMemory, int lpitch) {};
 
 	virtual int clipLineCS(RECT *clippingRect, POINT4D *pt1, POINT4D *pt2) = 0;
 
@@ -77,11 +80,14 @@ public:
 	int DrawGouraudTriangle3(struct3D::POLYF4D_PTR face, unsigned int *videoMemory, int lpitch);
 	int DrawTriangle2(struct3D::POLYF4D_PTR face, unsigned int *videoMemory, int lpitch);
 
+	int DrawTriangleOriginal(struct3D::POLYF4D_PTR face, unsigned int* videoMemory, int lpitch) override;
 	int DrawTriangle3(struct3D::POLYF4D_PTR face, unsigned int *videoMemory, int lpitch);
 	int DrawTriangle4(struct3D::POLYF4D_PTR face, unsigned int *videoMemory, int lpitch);
 	int DrawTriangle5(struct3D::POLYF4D_PTR face, unsigned int *videoMemory, int lpitch);
 	int DrawTriangle6(struct3D::POLYF4D_PTR face, unsigned int *videoMemory, int lpitch);
 	int DrawTriangle7_sse(struct3D::POLYF4D_PTR face, unsigned int *videoMemory, int lpitch);
+
+	void DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned int* videoMemory, int lpitch) override;
 	
 	int clipLineCS(RECT *clippingRect, POINT4D *pt1, POINT4D *pt2);
 
@@ -113,6 +119,9 @@ private:
 
 	void DrawTopTri(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int *vb, int lpitch);
 	void DrawBottomTri(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int *vb, int lpitch);
+
+	void DrawTopTriDefault(float xTop, float yTop, float xBottom1, float xBottom2, float yBottom, unsigned int color, unsigned int* vb, int lpitch);
+	void DrawBottomTriDefault(float xBottom, float yBottom, float xTop1, float xTop2, float yTop, unsigned int color, unsigned int* vb, int lpitch);
 	//void DrawGradHLine(float x0, float x1, int y, unsigned int color,int startGrad, int endGrad, void *vb, int lpitch);
 
 	//obj3dmap

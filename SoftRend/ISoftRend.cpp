@@ -140,7 +140,7 @@ private:
             ScreenParamsInMemory screenParams;
 
             screenParams.bitsPerPixel = 32;
-            screenParams.graphicQuality = 0;
+            screenParams.graphicQuality = 1;
             screenParams.width = width;
             screenParams.height = height;
 

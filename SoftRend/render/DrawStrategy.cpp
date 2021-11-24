@@ -19,7 +19,8 @@ Draw32BitStrategy::Draw32BitStrategy(/*unsigned int *SSEInfo, */unsigned int gra
 	//if(SSEInfo[0] != 0 && SSEInfo[1] != 0){
 	if(Sys::getSIMDInfo(SIMD::SSE1) && Sys::getSIMDInfo(SIMD::SSE2))
 	{
-		_alphaBlender = new AlphaBlendSSE32BitStrategy();
+		//_alphaBlender = new AlphaBlendSSE32BitStrategy();
+		_alphaBlender = new AlphaBlendSlow32BitStrategy();
 		if(graphicQuality != 0){
 			_drawLine = new DrawSoftLineSSE32BitStrategy();
 		}
@@ -1618,6 +1619,15 @@ int Draw32BitStrategy::DrawTriangle2(struct3D::POLYF4D_PTR face, unsigned int *v
 	return 1;
 }
 
+int Draw32BitStrategy::DrawTriangleOriginal(struct3D::POLYF4D_PTR face, unsigned int* videoMemory, int lpitch)
+{
+	return DrawTriangle(
+		face->tvlist[0].x, face->tvlist[0].y,
+		face->tvlist[1].x, face->tvlist[1].y,
+		face->tvlist[2].x, face->tvlist[2].y,
+		ARGB32BIT(127, 0, 0, 0),
+		videoMemory, lpitch);
+}
 
 int Draw32BitStrategy::DrawTriangle3(struct3D::POLYF4D_PTR face, unsigned int *videoMemory, int lpitch)
 {
@@ -6356,4 +6366,77 @@ int Draw32BitStrategy::DrawTriangle7_sse(struct3D::POLYF4D_PTR poly, unsigned in
  //   }
 
 	return 1;
+}
+
+void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned int* videoMemory, int lpitch)
+{
+	float x1 = face->tvlist[0].x;
+	float y1 = face->tvlist[0].y;
+	float x2 = face->tvlist[1].x;
+	float y2 = face->tvlist[1].y;
+	float x3 = face->tvlist[2].x;
+	float y3 = face->tvlist[2].y;
+
+	if ((math3D::mathFunc.FCMP(x1, x2) && math3D::mathFunc.FCMP(x2, x3))
+		|| (math3D::mathFunc.FCMP(y1, y2) && math3D::mathFunc.FCMP(y2, y3))
+		)
+	{
+		// degenerate triangle
+		return;
+	}
+
+	if (y2 < y1) {
+		std::swap(x1, x2);
+		std::swap(y1, y2);
+	}
+	if (y3 < y1) {
+		std::swap(x1, x3);
+		std::swap(y1, y3);
+	}
+	if (y3 < y2) {
+		std::swap(x2, x3);
+		std::swap(y2, y3);
+	}
+
+	if (y3 < minClipY || y1 > maxClipY
+		|| (x1 < minClipX && x2 < minClipX && x3 < minClipX)
+		|| (x1 > maxClipX && x2 > maxClipX && x3 > maxClipX)
+		)
+	{
+		// out of screen
+		return;
+	}
+
+	UINT color = ARGB32BIT(127, 0, 0, 0);
+
+	if (math3D::mathFunc.FCMP(y1, y2))
+	{
+		DrawTopTriDefault(x3, y3, x1, x2, y1, color, videoMemory, lpitch);
+	}
+	else if (math3D::mathFunc.FCMP(y3, y2))
+	{
+		DrawBottomTriDefault(x1, y1, x2, x3, y2, color, videoMemory, lpitch);
+	}
+	else
+	{
+		// y1 - bottom (screen coords)
+		// y2 - middle (screen coords)
+		// y3 - top (screen coords)
+		// find where y2 divides edge y1 --> y3 for x
+		float t = (y2 - y1) / (y3 - y1);
+		float new_x = x1 + t * (x3 - x1);
+
+		DrawBottomTriDefault(x1, y1, new_x, x2, y2, color, videoMemory, lpitch);
+		DrawTopTriDefault(x3, y3, new_x, x2, y2, color, videoMemory, lpitch);
+	}
+}
+
+void Draw32BitStrategy::DrawTopTriDefault(float xTop, float yTop, float xBottom1, float xBottom2, float yBottom, unsigned int color, unsigned int* vb, int lpitch)
+{
+
+}
+
+void Draw32BitStrategy::DrawBottomTriDefault(float xBottom, float yBottom, float xTop1, float xTop2, float yTop, unsigned int color, unsigned int* vb, int lpitch)
+{
+
 }

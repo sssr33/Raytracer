@@ -5,27 +5,21 @@
 #include <intrin.h>
 #include <array>
 
-Sys::Sys(void)
+Sys& Sys::Instance()
 {
+	static Sys sys;
+	return sys;
 }
 
-
-Sys::~Sys(void)
+Sys::Sys()
 {
-}
-
-unsigned int Sys::iSIMDFlags = 0; 
-const TCHAR *Sys::tchErrorFile = TEXT("error.txt");;
-
-int Sys::Initialize()
-{
-	/*Sys::tchErrorFile 
+	/*Sys::tchErrorFile
 	Sys::iSIMDFlags = 0;*/
 
-	if(!Sys::isCPUIDPresent())
+	if (!Sys::isCPUIDPresent())
 	{
 		Sys::Error(TEXT("CPUID isn't present!"));
-		return 0;
+		return;
 	}
 
 	const int num = 8;
@@ -60,13 +54,6 @@ int Sys::Initialize()
 	{
 		if (SIMDInfo[i]) setBit(Sys::iSIMDFlags, i);
 	}
-
-	return 1;
-}
-
-int Sys::Release()
-{
-	return 1;
 }
 
 bool Sys::isCPUIDPresent()
@@ -82,7 +69,7 @@ bool Sys::isCPUIDPresent()
 
 bool Sys::getSIMDInfo(SIMD enm)
 {
-	return Sys::iSIMDFlags & enm;
+	return Sys::Instance().iSIMDFlags & enm;
 }
 
 int Sys::Error(const TCHAR *msg, bool showMsgBox)

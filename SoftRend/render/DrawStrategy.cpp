@@ -6377,8 +6377,8 @@ void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned
 	float x3 = face->tvlist[2].x;
 	float y3 = face->tvlist[2].y;
 
-	if ((math3D::mathFunc.FCMP(x1, x2) && math3D::mathFunc.FCMP(x2, x3))
-		|| (math3D::mathFunc.FCMP(y1, y2) && math3D::mathFunc.FCMP(y2, y3))
+	if ((x1 == x2 && x2 == x3)
+		|| (y1 == y2 && y2 == y3)
 		)
 	{
 		// degenerate triangle
@@ -6409,11 +6409,11 @@ void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned
 
 	UINT color = ARGB32BIT(127, 0, 0, 0);
 
-	if (math3D::mathFunc.FCMP(y1, y2))
+	if (y1 == y2)
 	{
 		DrawTopTriDefault(x3, y3, x1, x2, y1, color, videoMemory, lpitch);
 	}
-	else if (math3D::mathFunc.FCMP(y3, y2))
+	else if (y3 == y2)
 	{
 		DrawBottomTriDefault(x1, y1, x2, x3, y2, color, videoMemory, lpitch);
 	}
@@ -6433,10 +6433,102 @@ void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned
 
 void Draw32BitStrategy::DrawTopTriDefault(float xTop, float yTop, float xBottom1, float xBottom2, float yBottom, unsigned int color, unsigned int* vb, int lpitch)
 {
+	float yBottomClipped = Draw32BitStrategy::clamp(yBottom, this->minClipY, this->maxClipY);
+	float yTopClipped = Draw32BitStrategy::clamp(yTop, this->minClipY, this->maxClipY);
 
+	for (float y = yBottomClipped; y < yTopClipped; y++)
+	{
+		float t = (y - yBottom) / (yTop - yBottom);
+		float leftX = Draw32BitStrategy::lerp(t, xBottom1, xTop);
+		float rightX = Draw32BitStrategy::lerp(t, xBottom2, xTop);
+		DrawHLineDefault(leftX, rightX, y, (std::min)(y + 1.f, yTop), color, vb, lpitch);
+	}
 }
 
 void Draw32BitStrategy::DrawBottomTriDefault(float xBottom, float yBottom, float xTop1, float xTop2, float yTop, unsigned int color, unsigned int* vb, int lpitch)
 {
+	float yBottomClipped = Draw32BitStrategy::clamp(yBottom, this->minClipY, this->maxClipY);
+	float yTopClipped = Draw32BitStrategy::clamp(yTop, this->minClipY, this->maxClipY);
 
+	for (float y = yBottomClipped; y < yTopClipped; y++)
+	{
+		float t = (y - yBottom) / (yTop - yBottom);
+		float leftX = Draw32BitStrategy::lerp(t, xBottom, xTop1);
+		float rightX = Draw32BitStrategy::lerp(t, xBottom, xTop2);
+		DrawHLineDefault(leftX, rightX, y, (std::min)(y + 1.f, yTop), color, vb, lpitch);
+	}
+}
+
+void Draw32BitStrategy::DrawHLineDefault(float leftX, float rightX, float topY, float bottomY, unsigned int color, unsigned int* vb, int lpitch)
+{
+	if (leftX > rightX)
+	{
+		std::swap(leftX, rightX);
+	}
+
+	leftX = Draw32BitStrategy::clamp(leftX, this->minClipX, this->maxClipX);
+	rightX = Draw32BitStrategy::clamp(rightX, this->minClipX, this->maxClipX);
+
+	if (leftX >= rightX)
+	{
+		return;
+	}
+
+	RoundedRange yRange = RoundRange(topY, bottomY);
+	if (yRange.start >= yRange.end)
+	{
+		return;
+	}
+
+	RoundedRange xRange = RoundRange(leftX, rightX);
+
+	vb = (uint32_t*)((uint8_t*)vb + yRange.start * lpitch);
+
+	for (int x = xRange.start; x < xRange.end; x++)
+	{
+		this->_alphaBlender->AlphaBlend(&vb[x], &color, 1);
+	}
+}
+
+Draw32BitStrategy::RoundedRange Draw32BitStrategy::RoundRange(float start, float end)
+{
+	float istart = std::floor(start);
+	float iend = std::floor(end);
+
+	float startCenter = istart + 0.5f;
+	float endCenter = iend + 0.5f;
+
+	RoundedRange res;
+
+	if (start <= startCenter)
+	{
+		res.start = static_cast<int>(istart);
+	}
+	else
+	{
+		res.start = static_cast<int>(istart) + 1;
+	}
+
+	if (end <= endCenter)
+	{
+		res.end = static_cast<int>(iend);
+	}
+	else
+	{
+		res.end = static_cast<int>(iend) + 1;
+	}
+
+	return res;
+}
+
+float Draw32BitStrategy::lerp(float t, float start, float end)
+{
+	float res = start + t * (end - start);
+	return res;
+}
+
+float Draw32BitStrategy::clamp(float x, float min, float max)
+{
+	float res = (std::max)((std::min)(x, max), min);
+	return res;
 }

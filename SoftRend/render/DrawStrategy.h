@@ -104,6 +104,12 @@ public:
 
 	int FullScreenShader(unsigned int *videoMemory, int lpitch);
 private:
+	struct RoundedRange
+	{
+		int start;
+		int end;
+	};
+
 	AlphaBlendStrategy *_alphaBlender;
 	DrawLineStrategy *_drawLine;
 	zBuffer zbuffer;
@@ -122,7 +128,12 @@ private:
 
 	void DrawTopTriDefault(float xTop, float yTop, float xBottom1, float xBottom2, float yBottom, unsigned int color, unsigned int* vb, int lpitch);
 	void DrawBottomTriDefault(float xBottom, float yBottom, float xTop1, float xTop2, float yTop, unsigned int color, unsigned int* vb, int lpitch);
+	void DrawHLineDefault(float leftX, float rightX, float topY, float bottomY, unsigned int color, unsigned int* vb, int lpitch);
 	//void DrawGradHLine(float x0, float x1, int y, unsigned int color,int startGrad, int endGrad, void *vb, int lpitch);
+
+	static RoundedRange RoundRange(float start, float end);
+	static float lerp(float t, float start, float end);
+	static float clamp(float x, float min, float max);
 
 	//obj3dmap
 	struct3D::POLYF4D_PTR *ppObjMap;

@@ -39,7 +39,7 @@ public:
 	virtual int DrawTriangle6(struct3D::POLYF4D_PTR face, unsigned int *videoMemory, int lpitch) = 0;
 	virtual int DrawTriangle7_sse(struct3D::POLYF4D_PTR face, unsigned int *videoMemory, int lpitch) = 0;
 
-	virtual void DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned int* videoMemory, int lpitch) {};
+	virtual void DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned int* videoMemory, int lpitch, int polyIdx) {};
 
 	virtual int clipLineCS(RECT *clippingRect, POINT4D *pt1, POINT4D *pt2) = 0;
 
@@ -87,7 +87,7 @@ public:
 	int DrawTriangle6(struct3D::POLYF4D_PTR face, unsigned int *videoMemory, int lpitch);
 	int DrawTriangle7_sse(struct3D::POLYF4D_PTR face, unsigned int *videoMemory, int lpitch);
 
-	void DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned int* videoMemory, int lpitch) override;
+	void DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned int* videoMemory, int lpitch, int polyIdx) override;
 	
 	int clipLineCS(RECT *clippingRect, POINT4D *pt1, POINT4D *pt2);
 
@@ -126,9 +126,11 @@ private:
 	void DrawTopTri(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int *vb, int lpitch);
 	void DrawBottomTri(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int *vb, int lpitch);
 
-	void DrawTopTriDefault(float xTop, float yTop, float xBottom1, float xBottom2, float yBottom, unsigned int color, unsigned int* vb, int lpitch);
-	void DrawBottomTriDefault(float xBottom, float yBottom, float xTop1, float xTop2, float yTop, unsigned int color, unsigned int* vb, int lpitch);
-	void DrawHLineDefault(float leftX, float rightX, float topY, float bottomY, unsigned int color, unsigned int* vb, int lpitch);
+	void DrawTopTriDefault(float xTop, float yTop, float xBottom1, float yBottom1, float xBottom2, float yBottom, unsigned int color, unsigned int* vb, int lpitch, int polyIdx);
+	void DrawBottomTriDefault(float xBottom, float yBottom, float xTop1, float yTop1, float xTop2, float yTop, unsigned int color, unsigned int* vb, int lpitch, int polyIdx);
+	void DrawTopTriDefault2(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx);
+	void DrawBottomTriDefault2(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx);
+	void DrawHLineDefault(float leftX, float rightX, float topY, float bottomY, unsigned int color, unsigned int* vb, int lpitch, int polyIdx);
 	//void DrawGradHLine(float x0, float x1, int y, unsigned int color,int startGrad, int endGrad, void *vb, int lpitch);
 
 	static RoundedRange RoundRange(float start, float end);

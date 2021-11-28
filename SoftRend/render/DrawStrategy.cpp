@@ -6368,7 +6368,7 @@ int Draw32BitStrategy::DrawTriangle7_sse(struct3D::POLYF4D_PTR poly, unsigned in
 	return 1;
 }
 
-void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned int* videoMemory, int lpitch)
+void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned int* videoMemory, int lpitch, int polyIdx)
 {
 	float x1 = face->tvlist[0].x;
 	float y1 = face->tvlist[0].y;
@@ -6407,15 +6407,24 @@ void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned
 		return;
 	}
 
-	UINT color = ARGB32BIT(127, 0, 0, 0);
+	UINT color = face->color;// ARGB32BIT(127, 0, 0, 0);
+
+	ARGB32BIT(127, 0, 0, 0);
+
+	int b = color & 255;
+	int g = (color >> 8) & 255;
+	int r = (color >> 16) & 255;
+	int a = (color >> 24) & 255;
 
 	if (y1 == y2)
 	{
-		DrawTopTriDefault(x3, y3, x1, x2, y1, color, videoMemory, lpitch);
+		//DrawTopTriDefault(x3, y3, x1, x2, y1, color, videoMemory, lpitch, polyIdx);
+		DrawTopTriDefault2(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
 	}
 	else if (y3 == y2)
 	{
-		DrawBottomTriDefault(x1, y1, x2, x3, y2, color, videoMemory, lpitch);
+		//DrawBottomTriDefault(x1, y1, x2, x3, y2, color, videoMemory, lpitch, polyIdx);
+		DrawBottomTriDefault2(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
 	}
 	else
 	{
@@ -6426,12 +6435,28 @@ void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned
 		float t = (y2 - y1) / (y3 - y1);
 		float new_x = x1 + t * (x3 - x1);
 
-		DrawBottomTriDefault(x1, y1, new_x, x2, y2, color, videoMemory, lpitch);
-		DrawTopTriDefault(x3, y3, new_x, x2, y2, color, videoMemory, lpitch);
+		if (polyIdx == 53)
+		{
+			int stop = 234;
+		}
+		if (polyIdx == 54)
+		{
+			int stop = 234;
+		}
+		if (polyIdx == 56)
+		{
+			int stop = 234;
+		}
+
+		/*DrawBottomTriDefault(x1, y1, x3, y3, x2, y2, color, videoMemory, lpitch, polyIdx);
+		DrawTopTriDefault(x3, y3, x1, y1, x2, y2, color, videoMemory, lpitch, polyIdx);*/
+
+		DrawBottomTriDefault2(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+		DrawTopTriDefault2(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
 	}
 }
 
-void Draw32BitStrategy::DrawTopTriDefault(float xTop, float yTop, float xBottom1, float xBottom2, float yBottom, unsigned int color, unsigned int* vb, int lpitch)
+void Draw32BitStrategy::DrawTopTriDefault(float xTop, float yTop, float xBottom1, float yBottom1, float xBottom2, float yBottom, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
 {
 	float yBottomClipped = Draw32BitStrategy::clamp(yBottom, this->minClipY, this->maxClipY);
 	float yTopClipped = Draw32BitStrategy::clamp(yTop, this->minClipY, this->maxClipY);
@@ -6439,13 +6464,14 @@ void Draw32BitStrategy::DrawTopTriDefault(float xTop, float yTop, float xBottom1
 	for (float y = yBottomClipped; y < yTopClipped; y++)
 	{
 		float t = (y - yBottom) / (yTop - yBottom);
-		float leftX = Draw32BitStrategy::lerp(t, xBottom1, xTop);
+		float t1 = (y - yBottom1) / (yTop - yBottom1);
+		float leftX = Draw32BitStrategy::lerp(t1, xBottom1, xTop);
 		float rightX = Draw32BitStrategy::lerp(t, xBottom2, xTop);
-		DrawHLineDefault(leftX, rightX, y, (std::min)(y + 1.f, yTop), color, vb, lpitch);
+		DrawHLineDefault(leftX, rightX, y, (std::min)(y + 1.f, yTop), color, vb, lpitch, polyIdx);
 	}
 }
 
-void Draw32BitStrategy::DrawBottomTriDefault(float xBottom, float yBottom, float xTop1, float xTop2, float yTop, unsigned int color, unsigned int* vb, int lpitch)
+void Draw32BitStrategy::DrawBottomTriDefault(float xBottom, float yBottom, float xTop1, float yTop1, float xTop2, float yTop, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
 {
 	float yBottomClipped = Draw32BitStrategy::clamp(yBottom, this->minClipY, this->maxClipY);
 	float yTopClipped = Draw32BitStrategy::clamp(yTop, this->minClipY, this->maxClipY);
@@ -6453,13 +6479,98 @@ void Draw32BitStrategy::DrawBottomTriDefault(float xBottom, float yBottom, float
 	for (float y = yBottomClipped; y < yTopClipped; y++)
 	{
 		float t = (y - yBottom) / (yTop - yBottom);
-		float leftX = Draw32BitStrategy::lerp(t, xBottom, xTop1);
+		float t1 = (y - yBottom) / (yTop1 - yBottom);
+		float leftX = Draw32BitStrategy::lerp(t1, xBottom, xTop1);
 		float rightX = Draw32BitStrategy::lerp(t, xBottom, xTop2);
-		DrawHLineDefault(leftX, rightX, y, (std::min)(y + 1.f, yTop), color, vb, lpitch);
+		DrawHLineDefault(leftX, rightX, y, (std::min)(y + 1.f, yTop), color, vb, lpitch, polyIdx);
 	}
 }
 
-void Draw32BitStrategy::DrawHLineDefault(float leftX, float rightX, float topY, float bottomY, unsigned int color, unsigned int* vb, int lpitch)
+void Draw32BitStrategy::DrawTopTriDefault2(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
+{
+	float yStart = Draw32BitStrategy::clamp(y2, this->minClipY, this->maxClipY);
+	float yEnd = Draw32BitStrategy::clamp(y3, this->minClipY, this->maxClipY);
+
+	float istart = std::floor(yStart);
+	float iend = std::floor(yEnd);
+
+	float startCenter = istart + 0.5f;
+	float endCenter = iend + 0.5f;
+
+	if (startCenter < yStart)
+	{
+		startCenter++;
+	}
+
+	if (endCenter < yEnd)
+	{
+		endCenter++;
+	}
+
+	for (float y = startCenter; y < endCenter; y++)
+	{
+		float t13 = (y - y1) / (y3 - y1);
+		float t23 = (y - y2) / (y3 - y2);
+
+		float x13 = Draw32BitStrategy::lerp(t13, x1, x3);
+		float x23 = Draw32BitStrategy::lerp(t23, x2, x3);
+		DrawHLineDefault(x13, x23, y, (std::min)(y + 1.f, y3), color, vb, lpitch, polyIdx);
+	}
+
+	/*for (float y = yStart; y < yEnd; y++)
+	{
+		float t13 = (y - y1) / (y3 - y1);
+		float t23 = (y - y2) / (y3 - y2);
+
+		float x13 = Draw32BitStrategy::lerp(t13, x1, x3);
+		float x23 = Draw32BitStrategy::lerp(t23, x2, x3);
+		DrawHLineDefault(x13, x23, y, (std::min)(y + 1.f, y3), color, vb, lpitch, polyIdx);
+	}*/
+}
+
+void Draw32BitStrategy::DrawBottomTriDefault2(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
+{
+	float yStart = Draw32BitStrategy::clamp(y1, this->minClipY, this->maxClipY);
+	float yEnd = Draw32BitStrategy::clamp(y2, this->minClipY, this->maxClipY);
+
+	float istart = std::floor(yStart);
+	float iend = std::floor(yEnd);
+
+	float startCenter = istart + 0.5f;
+	float endCenter = iend + 0.5f;
+
+	if (startCenter < yStart)
+	{
+		startCenter++;
+	}
+
+	if (endCenter < yEnd)
+	{
+		endCenter++;
+	}
+
+	for (float y = startCenter; y < endCenter; y++)
+	{
+		float t13 = (y - y1) / (y3 - y1);
+		float t12 = (y - y1) / (y2 - y1);
+
+		float x13 = Draw32BitStrategy::lerp(t13, x1, x3);
+		float x12 = Draw32BitStrategy::lerp(t12, x1, x2);
+		DrawHLineDefault(x13, x12, y, (std::min)(y + 1.f, y2), color, vb, lpitch, polyIdx);
+	}
+
+	/*for (float y = yStart; y < yEnd; y++)
+	{
+		float t13 = (y - y1) / (y3 - y1);
+		float t12 = (y - y1) / (y2 - y1);
+
+		float x13 = Draw32BitStrategy::lerp(t13, x1, x3);
+		float x12 = Draw32BitStrategy::lerp(t12, x1, x2);
+		DrawHLineDefault(x13, x12, y, (std::min)(y + 1.f, y2), color, vb, lpitch, polyIdx);
+	}*/
+}
+
+void Draw32BitStrategy::DrawHLineDefault(float leftX, float rightX, float topY, float bottomY, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
 {
 	if (leftX > rightX)
 	{
@@ -6469,12 +6580,52 @@ void Draw32BitStrategy::DrawHLineDefault(float leftX, float rightX, float topY, 
 	leftX = Draw32BitStrategy::clamp(leftX, this->minClipX, this->maxClipX);
 	rightX = Draw32BitStrategy::clamp(rightX, this->minClipX, this->maxClipX);
 
+	if (topY >= 217 && topY < 218)
+	{
+		if (polyIdx == 53)
+		{
+			// top
+			int stop = 234;
+		}
+		if (polyIdx == 54)
+		{
+			// bottom
+			int stop = 234;
+		}
+		if (polyIdx == 56)
+		{
+			// top
+			int stop = 234;
+		}
+
+		int stop = 234;
+	}
+
 	if (leftX >= rightX)
 	{
 		return;
 	}
 
 	RoundedRange yRange = RoundRange(topY, bottomY);
+
+	if (yRange.start >= 215 && yRange.end <= 218)
+	{
+		if (polyIdx == 53)
+		{
+			int stop = 234;
+		}
+		if (polyIdx == 54)
+		{
+			int stop = 234;
+		}
+		if (polyIdx == 56)
+		{
+			int stop = 234;
+		}
+
+		int stop = 234;
+	}
+
 	if (yRange.start >= yRange.end)
 	{
 		return;

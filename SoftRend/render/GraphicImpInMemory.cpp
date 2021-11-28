@@ -570,7 +570,9 @@ void GraphicImpInMemory::DrawOBJECT4DSolid(OBJECT4D_PTR obj)
 
 void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4D_PTR worldPos)
 {
-	/*if(worldPos != NULL)
+	//if (false)
+	{
+		/*if(worldPos != NULL)
 	{
 		pipe.ModelToWorldRENDERLIST4D(rendList, worldPos);
 	}*/
@@ -578,24 +580,25 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 	mainCam.Build_CAM4D_Matrix_Euler(struct3D::CAM_ROT_SEQ_ZYX);
 	pipe.WorldToCameraRENDERLIST4D(&mainCam, rendList);*/
 
-	pipe.WorldToCamera_and_BackfaceRemoveRENDERLIST4D(rendList, &mainCam);
+		pipe.WorldToCamera_and_BackfaceRemoveRENDERLIST4D(rendList, &mainCam);
 
-	pipe.ClipPolysRENDERLIST4D(rendList, &mainCam, clipPoly::CLIP_POLY_Z_PLANE);
+		pipe.ClipPolysRENDERLIST4D(rendList, &mainCam, clipPoly::CLIP_POLY_Z_PLANE);
 
-	//if(pipe.bLighting)
-	if (state.checkFlag(RendState::RS_LIGHTING))
-	{
-		pipe.lights.transformLights(&mainCam.mcam);
-		pipe.LightRENDERLIST4D(rendList, &mainCam);
+		//if(pipe.bLighting)
+		if (state.checkFlag(RendState::RS_LIGHTING))
+		{
+			pipe.lights.transformLights(&mainCam.mcam);
+			pipe.LightRENDERLIST4D(rendList, &mainCam);
+		}
+		//pipe.WorldToCameraLights(&mainCam);
+		pipe.SortRENDERLIST4D(rendList, sortMethod::SORT_POLYLIST_AVZG);
+
+
+
+		pipe.CameraToPerspectiveRENDERLIST4D(rendList, &mainCam);
+		pipe.PerspectiveToScreenRENDERLIST4D(rendList, &mainCam);
+		//pipe.CameraToScreenRENDERLIST4D(rendList, &mainCam);
 	}
-	//pipe.WorldToCameraLights(&mainCam);
-	pipe.SortRENDERLIST4D(rendList, sortMethod::SORT_POLYLIST_AVZG);
-
-
-
-	pipe.CameraToPerspectiveRENDERLIST4D(rendList, &mainCam);
-	pipe.PerspectiveToScreenRENDERLIST4D(rendList, &mainCam);
-	//pipe.CameraToScreenRENDERLIST4D(rendList, &mainCam);
 
 	TCHAR mas[128];
 	if (KEYDOWN(VK_NUMPAD5))
@@ -674,9 +677,79 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 			//this->_draw->DrawTriangle(rendList->poly_ptrs[poly]->tvlist[0].x, rendList->poly_ptrs[poly]->tvlist[0].y, rendList->poly_ptrs[poly]->tvlist[1].x, rendList->poly_ptrs[poly]->tvlist[1].y, rendList->poly_ptrs[poly]->tvlist[2].x, rendList->poly_ptrs[poly]->tvlist[2].y, rendList->poly_ptrs[poly]->lit_color[0], (unsigned int *)_videoBuffer, _lPitch);
 			this->draw->DrawTriangle2(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
 		else if (rendList->poly_ptrs[poly]->attr & struct3D::POLY4D_ATTR_SHADE_MODE_GOURAUD)
-			/*this->_draw->DrawGouraudTriangle3(rendList->poly_ptrs[poly], (unsigned int *)_videoBuffer, _lPitch);*/
-			this->draw->DrawTriangleDefault(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
-			//this->draw->DrawTriangle7_sse(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
+		{
+			bool draw = false;
+
+			std::vector<int> allowedList = { 53, 54, 56 };
+
+			if (poly == 52 || poly == 53)
+			{
+				int stop = 234;
+			}
+
+			draw = std::find(allowedList.begin(), allowedList.end(), poly) != allowedList.end();
+
+			//if (draw)
+			{
+				auto polyBeg = rendList->poly_ptrs;
+				auto polyEnd = rendList->poly_ptrs + rendList->num_polys;
+
+				auto cmpVtx = [](const VERTEX4DT& v1, const VERTEX4DT& v2)
+				{
+					bool res = v1.x == v2.x
+						&& v1.y == v2.y
+						&& v1.z == v2.z;
+					return res;
+				};
+
+				auto findPolyVtx = [&cmpVtx](const VERTEX4DT& v, const POLYF4D& poly)
+				{
+					bool res = cmpVtx(v, poly.tvlist[0])
+						|| cmpVtx(v, poly.tvlist[1])
+						|| cmpVtx(v, poly.tvlist[2]);
+					return res;
+				};
+
+				auto cmpPolyAdj = [&findPolyVtx](const POLYF4D& a, const POLYF4D& b)
+				{
+					int adjCount = 0;
+
+					adjCount += findPolyVtx(a.tvlist[0], b) ? 1 : 0;
+					adjCount += findPolyVtx(a.tvlist[1], b) ? 1 : 0;
+					adjCount += findPolyVtx(a.tvlist[2], b) ? 1 : 0;
+
+					return adjCount == 2;
+				};
+
+				auto findAdjPoly = [polyBeg, polyEnd, &cmpPolyAdj](POLYF4D poly)
+				{
+					std::vector<int> idxs;
+
+					for (auto i = polyBeg; i != polyEnd; i++)
+					{
+						if (cmpPolyAdj(poly, **i))
+						{
+							idxs.push_back((int)(i - polyBeg));
+						}
+					}
+
+					return idxs;
+				};
+
+				auto& poly53 = rendList->poly_ptrs[53]->tvlist;
+				auto& poly54 = rendList->poly_ptrs[54]->tvlist;
+				auto& poly56 = rendList->poly_ptrs[56]->tvlist;
+
+				auto adj53 = findAdjPoly(*rendList->poly_ptrs[53]);
+				auto adj54 = findAdjPoly(*rendList->poly_ptrs[54]);
+				auto adj56 = findAdjPoly(*rendList->poly_ptrs[56]);
+
+				/*this->_draw->DrawGouraudTriangle3(rendList->poly_ptrs[poly], (unsigned int *)_videoBuffer, _lPitch);*/
+				//this->draw->DrawTriangle4(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
+				this->draw->DrawTriangleDefault(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch), poly);
+				//this->draw->DrawTriangle7_sse(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
+			}
+		}
 		else if (rendList->poly_ptrs[poly]->attr & struct3D::POLY4D_ATTR_SHADE_MODE_PHONG)
 			this->draw->DrawPhongTriangle2(&this->mainCam, &pipe.lights, rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
 		else if (rendList->poly_ptrs[poly]->attr & struct3D::POLY4D_ATTR_SHADE_MODE_TEST)

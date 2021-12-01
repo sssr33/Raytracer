@@ -680,16 +680,14 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 		{
 			bool draw = false;
 
-			std::vector<int> allowedList = { 53, 54, 56 };
-
-			if (poly == 52 || poly == 53)
-			{
-				int stop = 234;
-			}
+			// 96 - top
+			// 99 - middle
+			// 100 - bottom
+			std::vector<int> allowedList = { 96, 99, 100, };
 
 			draw = std::find(allowedList.begin(), allowedList.end(), poly) != allowedList.end();
 
-			//if (draw)
+			if (draw)
 			{
 				auto polyBeg = rendList->poly_ptrs;
 				auto polyEnd = rendList->poly_ptrs + rendList->num_polys;
@@ -736,13 +734,13 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 					return idxs;
 				};
 
-				auto& poly53 = rendList->poly_ptrs[53]->tvlist;
-				auto& poly54 = rendList->poly_ptrs[54]->tvlist;
-				auto& poly56 = rendList->poly_ptrs[56]->tvlist;
+				auto& poly96 = rendList->poly_ptrs[96]->tvlist;
+				auto& poly99 = rendList->poly_ptrs[99]->tvlist;
+				auto& poly100 = rendList->poly_ptrs[100]->tvlist;
 
-				auto adj53 = findAdjPoly(*rendList->poly_ptrs[53]);
-				auto adj54 = findAdjPoly(*rendList->poly_ptrs[54]);
-				auto adj56 = findAdjPoly(*rendList->poly_ptrs[56]);
+				auto adj96 = findAdjPoly(*rendList->poly_ptrs[96]);
+				auto adj99 = findAdjPoly(*rendList->poly_ptrs[99]);
+				auto adj100 = findAdjPoly(*rendList->poly_ptrs[100]);
 
 				/*this->_draw->DrawGouraudTriangle3(rendList->poly_ptrs[poly], (unsigned int *)_videoBuffer, _lPitch);*/
 				//this->draw->DrawTriangle4(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));

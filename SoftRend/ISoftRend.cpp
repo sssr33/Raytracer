@@ -74,7 +74,7 @@ private:
         lightPos.x = 100.f;
         lightPos.y = 100.f;
 
-        static float angle = 10.22f; //0.78f;
+        static float angle = -53.9799156f; //-53.9799156f;// 10.22f; //0.78f;
 
         MATRIX4X4 mrot;
         mrot.Build_XYZ_Rotation_MATRIX4X4(0.f, 0.f, angle);
@@ -85,11 +85,13 @@ private:
 
         if (KEYDOWN(VK_UP))
         {
-            angle += 0.01f;
+            //angle += 0.01f;
+            angle += 0.3f;
         }
         if (KEYDOWN(VK_DOWN))
         {
-            angle -= 0.01f;
+            //angle -= 0.01f;
+            angle -= 0.3f;
         }
 
         //angle += 0.1f;

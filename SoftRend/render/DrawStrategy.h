@@ -128,10 +128,14 @@ private:
 
 	void DrawTopTriDefault(float xTop, float yTop, float xBottom1, float yBottom1, float xBottom2, float yBottom, unsigned int color, unsigned int* vb, int lpitch, int polyIdx);
 	void DrawBottomTriDefault(float xBottom, float yBottom, float xTop1, float yTop1, float xTop2, float yTop, unsigned int color, unsigned int* vb, int lpitch, int polyIdx);
+	void DrawHLineDefault(float leftX, float rightX, float topY, float bottomY, unsigned int color, unsigned int* vb, int lpitch, int polyIdx);
 	void DrawTopTriDefault2(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx);
 	void DrawBottomTriDefault2(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx);
-	void DrawHLineDefault(float leftX, float rightX, float topY, float bottomY, unsigned int color, unsigned int* vb, int lpitch, int polyIdx);
+	void DrawHLineDefault2(float leftX, float rightX, float topY, float bottomY, unsigned int color, unsigned int* vb, int lpitch, int polyIdx);
 	//void DrawGradHLine(float x0, float x1, int y, unsigned int color,int startGrad, int endGrad, void *vb, int lpitch);
+
+	float ClampScreenX(float x) const;
+	float ClampScreenY(float y) const;
 
 	static RoundedRange RoundRange(float start, float end);
 	static float lerp(float t, float start, float end);

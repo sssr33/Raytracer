@@ -3,7 +3,7 @@
 #include "DrawStrategy.h"
 #include "Math3DStructs.h"
 #include <math.h>
-
+#include <cassert>
 
 DrawStrategy::DrawStrategy(void)
 {
@@ -6486,90 +6486,6 @@ void Draw32BitStrategy::DrawBottomTriDefault(float xBottom, float yBottom, float
 	}
 }
 
-void Draw32BitStrategy::DrawTopTriDefault2(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
-{
-	float yStart = Draw32BitStrategy::clamp(y2, this->minClipY, this->maxClipY);
-	float yEnd = Draw32BitStrategy::clamp(y3, this->minClipY, this->maxClipY);
-
-	float istart = std::floor(yStart);
-	float iend = std::floor(yEnd);
-
-	float startCenter = istart + 0.5f;
-	float endCenter = iend + 0.5f;
-
-	if (startCenter < yStart)
-	{
-		startCenter++;
-	}
-
-	if (endCenter < yEnd)
-	{
-		endCenter++;
-	}
-
-	for (float y = startCenter; y < endCenter; y++)
-	{
-		float t13 = (y - y1) / (y3 - y1);
-		float t23 = (y - y2) / (y3 - y2);
-
-		float x13 = Draw32BitStrategy::lerp(t13, x1, x3);
-		float x23 = Draw32BitStrategy::lerp(t23, x2, x3);
-		DrawHLineDefault(x13, x23, y, (std::min)(y + 1.f, y3), color, vb, lpitch, polyIdx);
-	}
-
-	/*for (float y = yStart; y < yEnd; y++)
-	{
-		float t13 = (y - y1) / (y3 - y1);
-		float t23 = (y - y2) / (y3 - y2);
-
-		float x13 = Draw32BitStrategy::lerp(t13, x1, x3);
-		float x23 = Draw32BitStrategy::lerp(t23, x2, x3);
-		DrawHLineDefault(x13, x23, y, (std::min)(y + 1.f, y3), color, vb, lpitch, polyIdx);
-	}*/
-}
-
-void Draw32BitStrategy::DrawBottomTriDefault2(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
-{
-	float yStart = Draw32BitStrategy::clamp(y1, this->minClipY, this->maxClipY);
-	float yEnd = Draw32BitStrategy::clamp(y2, this->minClipY, this->maxClipY);
-
-	float istart = std::floor(yStart);
-	float iend = std::floor(yEnd);
-
-	float startCenter = istart + 0.5f;
-	float endCenter = iend + 0.5f;
-
-	if (startCenter < yStart)
-	{
-		startCenter++;
-	}
-
-	if (endCenter < yEnd)
-	{
-		endCenter++;
-	}
-
-	for (float y = startCenter; y < endCenter; y++)
-	{
-		float t13 = (y - y1) / (y3 - y1);
-		float t12 = (y - y1) / (y2 - y1);
-
-		float x13 = Draw32BitStrategy::lerp(t13, x1, x3);
-		float x12 = Draw32BitStrategy::lerp(t12, x1, x2);
-		DrawHLineDefault(x13, x12, y, (std::min)(y + 1.f, y2), color, vb, lpitch, polyIdx);
-	}
-
-	/*for (float y = yStart; y < yEnd; y++)
-	{
-		float t13 = (y - y1) / (y3 - y1);
-		float t12 = (y - y1) / (y2 - y1);
-
-		float x13 = Draw32BitStrategy::lerp(t13, x1, x3);
-		float x12 = Draw32BitStrategy::lerp(t12, x1, x2);
-		DrawHLineDefault(x13, x12, y, (std::min)(y + 1.f, y2), color, vb, lpitch, polyIdx);
-	}*/
-}
-
 void Draw32BitStrategy::DrawHLineDefault(float leftX, float rightX, float topY, float bottomY, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
 {
 	if (leftX > rightX)
@@ -6577,8 +6493,8 @@ void Draw32BitStrategy::DrawHLineDefault(float leftX, float rightX, float topY, 
 		std::swap(leftX, rightX);
 	}
 
-	leftX = Draw32BitStrategy::clamp(leftX, this->minClipX, this->maxClipX);
-	rightX = Draw32BitStrategy::clamp(rightX, this->minClipX, this->maxClipX);
+	leftX = this->ClampScreenX(leftX);
+	rightX = this->ClampScreenX(rightX);
 
 	if (topY >= 217 && topY < 218)
 	{
@@ -6639,6 +6555,124 @@ void Draw32BitStrategy::DrawHLineDefault(float leftX, float rightX, float topY, 
 	{
 		this->_alphaBlender->AlphaBlend(&vb[x], &color, 1);
 	}
+}
+
+void Draw32BitStrategy::DrawTopTriDefault2(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
+{
+	float yStart = this->ClampScreenY(y2);
+	float yEnd = this->ClampScreenY(y3);
+
+	float istart = std::floor(yStart);
+	float iend = std::floor(yEnd);
+
+	float startCenter = istart + 0.5f;
+	float endCenter = iend + 0.5f;
+
+	if (startCenter < y2)
+	{
+		startCenter++;
+	}
+
+	if (endCenter < y3)
+	{
+		endCenter++;
+	}
+
+	for (float y = startCenter; y < endCenter; y++)
+	{
+		float t13 = (y - y1) / (y3 - y1);
+		float t23 = (y - y2) / (y3 - y2);
+
+		float x13 = Draw32BitStrategy::lerp(t13, x1, x3);
+		float x23 = Draw32BitStrategy::lerp(t23, x2, x3);
+		DrawHLineDefault2(x13, x23, y, (std::min)(y + 1.f, y3), color, vb, lpitch, polyIdx);
+	}
+}
+
+void Draw32BitStrategy::DrawBottomTriDefault2(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
+{
+	float yStart = this->ClampScreenY(y1);
+	float yEnd = this->ClampScreenY(y2);
+
+	float istart = std::floor(yStart);
+	float iend = std::floor(yEnd);
+
+	float startCenter = istart + 0.5f;
+	float endCenter = iend + 0.5f;
+
+	if (startCenter < y1)
+	{
+		startCenter++;
+	}
+
+	if (endCenter < y2)
+	{
+		endCenter++;
+	}
+
+	for (float y = startCenter; y < endCenter; y++)
+	{
+		// t13, t12 to lerp all vertex parameter along Y axis
+		float t13 = (y - y1) / (y3 - y1);
+		float t12 = (y - y1) / (y2 - y1);
+
+		float x13 = Draw32BitStrategy::lerp(t13, x1, x3);
+		float x12 = Draw32BitStrategy::lerp(t12, x1, x2);
+		DrawHLineDefault2(x13, x12, y, (std::min)(y + 1.f, y2), color, vb, lpitch, polyIdx);
+	}
+}
+
+void Draw32BitStrategy::DrawHLineDefault2(float leftX, float rightX, float topY, float bottomY, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
+{
+	// maybe need if(topY >= bottomY) return;
+	// TODO check on triangles inside screen
+	assert(bottomY > topY);
+
+	if (leftX > rightX)
+	{
+		std::swap(leftX, rightX);
+	}
+
+	float xStart = this->ClampScreenX(leftX);
+	float xEnd = this->ClampScreenX(rightX);
+
+	float istart = std::floor(xStart);
+	float iend = std::floor(xEnd);
+
+	float startCenter = istart + 0.5f;
+	float endCenter = iend + 0.5f;
+
+	if (startCenter < leftX)
+	{
+		startCenter++;
+	}
+
+	if (endCenter < rightX)
+	{
+		endCenter++;
+	}
+
+	uint32_t* vbLine = (uint32_t*)((uint8_t*)vb + (int)topY * lpitch);
+
+	for (float x = startCenter; x < endCenter; x++)
+	{
+		// t to lerp all vertex parameter along X axis
+		// float t = (x - leftX) / (rightX - leftX);
+
+		this->_alphaBlender->AlphaBlend(&vbLine[(int)x], &color, 1);
+	}
+}
+
+float Draw32BitStrategy::ClampScreenX(float x) const
+{
+	float res = Draw32BitStrategy::clamp(x, this->minClipX + 0.5f, this->maxClipX + 0.5f);
+	return res;
+}
+
+float Draw32BitStrategy::ClampScreenY(float y) const
+{
+	float res = Draw32BitStrategy::clamp(y, this->minClipY + 0.5f, this->maxClipY + 0.5f);
+	return res;
 }
 
 Draw32BitStrategy::RoundedRange Draw32BitStrategy::RoundRange(float start, float end)

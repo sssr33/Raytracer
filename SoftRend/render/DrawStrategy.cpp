@@ -6435,15 +6435,15 @@ void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned
 		float t = (y2 - y1) / (y3 - y1);
 		float new_x = x1 + t * (x3 - x1);
 
-		if (polyIdx == 53)
+		if (polyIdx == 96)
 		{
 			int stop = 234;
 		}
-		if (polyIdx == 54)
+		if (polyIdx == 99)
 		{
 			int stop = 234;
 		}
-		if (polyIdx == 56)
+		if (polyIdx == 100)
 		{
 			int stop = 234;
 		}
@@ -6557,10 +6557,85 @@ void Draw32BitStrategy::DrawHLineDefault(float leftX, float rightX, float topY, 
 	}
 }
 
+#include <optional>
+#include <map>
+
+struct TriInter
+{
+	bool top = false;
+	int polyIdx = -1;
+
+	std::optional<float> t13;
+	std::optional<float> t23;
+	std::optional<float> t12;
+
+	std::optional<float> x13;
+	std::optional<float> x23;
+	std::optional<float> x12;
+};
+
+std::map<int, TriInter> triInterStats;
+bool triStatsAdd = false;
+
+void CmpStats()
+{
+	if (triInterStats.size() != 3)
+	{
+		return;
+	}
+
+	auto& triInter96 = triInterStats[96];
+	auto& triInter99 = triInterStats[99];
+	auto& triInter100 = triInterStats[100];
+
+	bool cmp11 = *triInter96.t13 == *triInter99.t23;
+	bool cmp22 = *triInter99.t13 == *triInter100.t12;
+
+	int stop = 234;
+}
+
 void Draw32BitStrategy::DrawTopTriDefault2(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
 {
+	triStatsAdd = false;
+
+	float yStart1 = this->ClampScreenY(y1);
 	float yStart = this->ClampScreenY(y2);
 	float yEnd = this->ClampScreenY(y3);
+
+	float x11s = x1;
+	float y11s = y1;
+
+	float x22s = x2;
+	float y22s = y2;
+
+	float x31s = x3;
+	float y31s = y3;
+	float x32s = x3;
+	float y32s = y3;
+
+	if (yStart1 != y1)
+	{
+		float t = (yStart1 - y1) / (y3 - y1);
+		x11s = Draw32BitStrategy::lerp(t, x1, x3);
+		y11s = yStart1;
+	}
+	if (yStart != y2)
+	{
+		float t = (yStart - y2) / (y3 - y2);
+		x22s = Draw32BitStrategy::lerp(t, x2, x3);
+		y22s = yStart;
+	}
+	if (yEnd != y3)
+	{
+		float t13 = (yEnd - y1) / (y3 - y1);
+		float t23 = (yEnd - y2) / (y3 - y2);
+
+		x31s = Draw32BitStrategy::lerp(t13, x1, x3);
+		x32s = Draw32BitStrategy::lerp(t23, x2, x3);
+
+		y31s = yEnd;
+		y32s = yEnd;
+	}
 
 	float istart = std::floor(yStart);
 	float iend = std::floor(yEnd);
@@ -6586,13 +6661,67 @@ void Draw32BitStrategy::DrawTopTriDefault2(float x1, float y1, float x2, float y
 		float x13 = Draw32BitStrategy::lerp(t13, x1, x3);
 		float x23 = Draw32BitStrategy::lerp(t23, x2, x3);
 		DrawHLineDefault2(x13, x23, y, (std::min)(y + 1.f, y3), color, vb, lpitch, polyIdx);
+
+		if (triStatsAdd)
+		{
+			TriInter inter;
+
+			inter.polyIdx = polyIdx;
+			inter.top = true;
+			inter.t13 = t13;
+			inter.t23 = t23;
+			inter.x13 = x13;
+			inter.x23 = x23;
+
+			triInterStats[polyIdx] = inter;
+			CmpStats();
+			triStatsAdd = false;
+		}
 	}
 }
 
 void Draw32BitStrategy::DrawBottomTriDefault2(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
 {
+	triStatsAdd = false;
+
 	float yStart = this->ClampScreenY(y1);
 	float yEnd = this->ClampScreenY(y2);
+	float y3End = this->ClampScreenY(y3);
+
+	float y13s = y1;
+	float y12s = y1;
+	float x13s = x1;
+	float x12s = x1;
+
+	float y33s = y3;
+	float x33s = x3;
+
+	float y22s = y2;
+	float x22s = x2;
+
+	if (yStart != y1)
+	{
+		float t13 = (yStart - y1) / (y3 - y1);
+		float t12 = (yStart - y1) / (y2 - y1);
+
+		x13s = Draw32BitStrategy::lerp(t13, x1, x3);
+		x12s = Draw32BitStrategy::lerp(t12, x1, x2);
+
+		y13s = yStart;
+		y12s = yStart;
+	}
+	if (yEnd != y2)
+	{
+		float t = (yEnd - y2) / (y2 - y1);
+		x22s = Draw32BitStrategy::lerp(t, x1, x2);
+		y22s = yEnd;
+	}
+	if (y3End != y3)
+	{
+		float t = (y3End - y3) / (y3 - y1);
+		x33s = Draw32BitStrategy::lerp(t, x1, x3);
+		y33s = yEnd;
+	}
 
 	float istart = std::floor(yStart);
 	float iend = std::floor(yEnd);
@@ -6619,6 +6748,22 @@ void Draw32BitStrategy::DrawBottomTriDefault2(float x1, float y1, float x2, floa
 		float x13 = Draw32BitStrategy::lerp(t13, x1, x3);
 		float x12 = Draw32BitStrategy::lerp(t12, x1, x2);
 		DrawHLineDefault2(x13, x12, y, (std::min)(y + 1.f, y2), color, vb, lpitch, polyIdx);
+
+		if (triStatsAdd)
+		{
+			TriInter inter;
+
+			inter.polyIdx = polyIdx;
+			inter.top = false;
+			inter.t13 = t13;
+			inter.t12 = t12;
+			inter.x13 = x13;
+			inter.x12 = x12;
+
+			triInterStats[polyIdx] = inter;
+			CmpStats();
+			triStatsAdd = false;
+		}
 	}
 }
 
@@ -6652,10 +6797,33 @@ void Draw32BitStrategy::DrawHLineDefault2(float leftX, float rightX, float topY,
 		endCenter++;
 	}
 
-	uint32_t* vbLine = (uint32_t*)((uint8_t*)vb + (int)topY * lpitch);
+	uint32_t* vbLine = (uint32_t*)((uint8_t*)vb + (ptrdiff_t)topY * lpitch);
 
 	for (float x = startCenter; x < endCenter; x++)
 	{
+		if ((int)x == 563 && (int)topY == 111)
+		{
+			if (polyIdx == 96)
+			{
+				triInterStats.clear();
+				// bottom
+				int stop = 234;
+				triStatsAdd = true;
+			}
+			if (polyIdx == 99)
+			{
+				// top
+				int stop = 234;
+				triStatsAdd = true;
+			}
+			if (polyIdx == 100)
+			{
+				// bottom
+				int stop = 234;
+				triStatsAdd = true;
+			}
+		}
+
 		// t to lerp all vertex parameter along X axis
 		// float t = (x - leftX) / (rightX - leftX);
 

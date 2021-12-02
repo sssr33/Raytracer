@@ -138,7 +138,8 @@ private:
 	float ClampScreenY(float y) const;
 
 	static RoundedRange RoundRange(float start, float end);
-	static float lerp(float t, float start, float end);
+	static double lerpd(double t, double start, double end);
+	static float lerpf(float t, float start, float end);
 	static float clamp(float x, float min, float max);
 
 	//obj3dmap

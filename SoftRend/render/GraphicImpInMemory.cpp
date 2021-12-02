@@ -687,7 +687,7 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 
 			draw = std::find(allowedList.begin(), allowedList.end(), poly) != allowedList.end();
 
-			//if (draw)
+			if (draw)
 			{
 				auto polyBeg = rendList->poly_ptrs;
 				auto polyEnd = rendList->poly_ptrs + rendList->num_polys;

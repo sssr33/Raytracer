@@ -6416,15 +6416,49 @@ void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned
 	int r = (color >> 16) & 255;
 	int a = (color >> 24) & 255;
 
+	int draw = 3;
+
 	if (y1 == y2)
 	{
+		switch (draw)
+		{
+		case 1:
+			//DrawTopTriDefault(x3, y3, x1, x2, y1, color, videoMemory, lpitch, polyIdx);
+			break;
+		case 2:
+			DrawTopTriDefault2(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+			break;
+		case 3:
+			DrawTopTriDefault3(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+			break;
+		default:
+			break;
+		}
+
 		//DrawTopTriDefault(x3, y3, x1, x2, y1, color, videoMemory, lpitch, polyIdx);
-		DrawTopTriDefault2(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+		//DrawTopTriDefault2(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+		//DrawTopTriDefault3(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
 	}
 	else if (y3 == y2)
 	{
+		switch (draw)
+		{
+		case 1:
+			//DrawBottomTriDefault(x1, y1, x2, x3, y2, color, videoMemory, lpitch, polyIdx);
+			break;
+		case 2:
+			DrawBottomTriDefault2(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+			break;
+		case 3:
+			DrawBottomTriDefault3(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+			break;
+		default:
+			break;
+		}
+
 		//DrawBottomTriDefault(x1, y1, x2, x3, y2, color, videoMemory, lpitch, polyIdx);
-		DrawBottomTriDefault2(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+		//DrawBottomTriDefault2(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+		//DrawBottomTriDefault3(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
 	}
 	else
 	{
@@ -6448,11 +6482,23 @@ void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned
 			int stop = 234;
 		}
 
-		/*DrawBottomTriDefault(x1, y1, x3, y3, x2, y2, color, videoMemory, lpitch, polyIdx);
-		DrawTopTriDefault(x3, y3, x1, y1, x2, y2, color, videoMemory, lpitch, polyIdx);*/
-
-		DrawBottomTriDefault2(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
-		DrawTopTriDefault2(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+		switch (draw)
+		{
+		case 1:
+			DrawBottomTriDefault(x1, y1, x3, y3, x2, y2, color, videoMemory, lpitch, polyIdx);
+			DrawTopTriDefault(x3, y3, x1, y1, x2, y2, color, videoMemory, lpitch, polyIdx);
+			break;
+		case 2:
+			DrawBottomTriDefault2(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+			DrawTopTriDefault2(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+			break;
+		case 3:
+			DrawBottomTriDefault3(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+			DrawTopTriDefault3(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+			break;
+		default:
+			break;
+		}
 	}
 }
 
@@ -6560,15 +6606,31 @@ void Draw32BitStrategy::DrawHLineDefault(float leftX, float rightX, float topY, 
 #include <optional>
 #include <map>
 
+struct TriData
+{
+	float y1 = 0.f;
+	float y2 = 0.f;
+	float y3 = 0.f;
+	float x1 = 0.f;
+	float x2 = 0.f;
+	float x3 = 0.f;
+};
+
+TriData curTriData;
+
 struct TriInter
 {
 	bool top = false;
 	int polyIdx = -1;
 
+	float x = 0.f;
 	float y = 0.f;
 	float y1 = 0.f;
 	float y2 = 0.f;
 	float y3 = 0.f;
+	float x1 = 0.f;
+	float x2 = 0.f;
+	float x3 = 0.f;
 
 	std::optional<float> t13;
 	std::optional<float> t23;
@@ -6579,8 +6641,125 @@ struct TriInter
 	std::optional<float> x12;
 };
 
+struct Point
+{
+	float x = 0.f;
+	float y = 0.f;
+
+	Point operator-(const Point& other) const
+	{
+		Point res;
+
+		res.x = this->x - other.x;
+		res.y = this->y - other.y;
+
+		return res;
+	}
+};
+
+typedef Point Vector;
+
+struct BarycentricCoords
+{
+	float u = 0.f;
+	float v = 0.f;
+	float w = 0.f;
+};
+
+BarycentricCoords Barycentric(Point p, Point a, Point b, Point c)
+{
+	Vector v0 = b - a, v1 = c - a, v2 = p - a;
+	float den = v0.x * v1.y - v1.x * v0.y;
+
+	BarycentricCoords res;
+
+	res.v = (v2.x * v1.y - v1.x * v2.y) / den;
+	res.w = (v0.x * v2.y - v2.x * v0.y) / den;
+	res.u = 1.0f - res.v - res.w;
+
+	return res;
+}
+
+BarycentricCoords Barycentric(const TriInter& inter)
+{
+	return Barycentric({ inter.x, inter.y }, { inter.x1, inter.y1 }, { inter.x2, inter.y2 }, { inter.x3, inter.y3 });
+}
+
+BarycentricCoords Barycentric(Point p, const TriInter& inter)
+{
+	return Barycentric(p, { inter.x1, inter.y1 }, { inter.x2, inter.y2 }, { inter.x3, inter.y3 });
+}
+
+BarycentricCoords Barycentric(Point p, const TriData& tri)
+{
+	return Barycentric(p, { tri.x1, tri.y1 }, { tri.x2, tri.y2 }, { tri.x3, tri.y3 });
+}
+
+bool BaryInside(const BarycentricCoords& bary, const TriData* tri = nullptr, const Point* pt = nullptr)
+{
+	bool inside = false;
+
+	if (tri && pt)
+	{
+		TriData tt;
+
+		tt.x1 = 0.f;
+		tt.y1 = 10.f;
+
+		tt.x2 = 0.f;
+		tt.y2 = 0.f;
+
+		tt.x3 = 10.f;
+		tt.y3 = 0.f;
+
+
+		const auto& bb = Barycentric({ 0.f, 3.f }, tt);
+
+		int stop = 23;
+
+	}
+	else
+	{
+		float tmp = bary.u + bary.v + bary.w;
+		inside = tmp <= 1.f;
+	}
+
+	return inside;
+}
+
+float sign(Point p1, Point p2, Point p3)
+{
+	return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+}
+
+bool PointInTriangle(Point pt, Point v1, Point v2, Point v3)
+{
+	float d1, d2, d3;
+	bool has_neg, has_pos;
+
+	d1 = sign(pt, v1, v2);
+	d2 = sign(pt, v2, v3);
+	d3 = sign(pt, v3, v1);
+
+	has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
+	has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
+
+	return !(has_neg && has_pos);
+}
+
+bool PointInTriangle(Point p, const TriInter& inter)
+{
+	return PointInTriangle(p, { inter.x1, inter.y1 }, { inter.x2, inter.y2 }, { inter.x3, inter.y3 });
+}
+
+bool PointInTriangle(Point p, const TriData& tri)
+{
+	return PointInTriangle(p, { tri.x1, tri.y1 }, { tri.x2, tri.y2 }, { tri.x3, tri.y3 });
+}
+
 std::map<int, TriInter> triInterStats;
 bool triStatsAdd = false;
+float xAddTest = 0.f;
 
 void CmpStats()
 {
@@ -6589,9 +6768,9 @@ void CmpStats()
 		return;
 	}
 
-	auto& triInter96 = triInterStats[96];
-	auto& triInter99 = triInterStats[99];
-	auto& triInter100 = triInterStats[100];
+	const auto& triInter112 = triInterStats[112];
+	const auto& triInter114 = triInterStats[114];
+	const auto& triInter116 = triInterStats[116];
 
 	auto lerp = [](float t, float start, float end)
 	{
@@ -6599,17 +6778,77 @@ void CmpStats()
 		return res;
 	};
 
-	float y96_1 = lerp(*triInter96.t13, triInter96.y1, triInter96.y3);
-	float y96_2 = lerp(*triInter96.t12, triInter96.y1, triInter96.y2);
+	//float y96_13 = lerp(*triInter96.t13, triInter96.y1, triInter96.y3);
+	//float y96_12 = lerp(*triInter96.t12, triInter96.y1, triInter96.y2);
 
-	float y99_1 = lerp(*triInter99.t13, triInter99.y1, triInter99.y3);
-	float y99_2 = lerp(*triInter99.t23, triInter99.y2, triInter99.y3);
+	//float y99_13 = lerp(*triInter99.t13, triInter99.y1, triInter99.y3);
+	//float y99_23 = lerp(*triInter99.t23, triInter99.y2, triInter99.y3);
 
-	float y100_1 = lerp(*triInter100.t13, triInter100.y1, triInter100.y3);
-	float y100_2 = lerp(*triInter100.t12, triInter100.y1, triInter100.y2);
+	//float y100_13 = lerp(*triInter100.t13, triInter100.y1, triInter100.y3);
+	//float y100_12 = lerp(*triInter100.t12, triInter100.y1, triInter100.y2);
 
-	bool cmp11 = *triInter96.t13 == *triInter99.t23;
-	bool cmp22 = *triInter99.t13 == *triInter100.t12;
+	//float x96_13 = lerp(*triInter96.t13, triInter96.x1, triInter96.x3);
+	//float x96_12 = lerp(*triInter96.t12, triInter96.x1, triInter96.x2);
+
+	//float x99_13 = lerp(*triInter99.t13, triInter99.x1, triInter99.x3);
+	//float x99_23 = lerp(*triInter99.t23, triInter99.x2, triInter99.x3);
+
+	//float x100_13 = lerp(*triInter100.t13, triInter100.x1, triInter100.x3);
+	//float x100_12 = lerp(*triInter100.t12, triInter100.x1, triInter100.x2);
+
+	//float xlen100 = triInter100.x2 - triInter100.x1;
+	//float ylen100 = triInter100.y2 - triInter100.y1;
+	//float xstep100 = xlen100 / ylen100;
+	//float x100 = triInter100.x1 + (triInter100.y - triInter100.y1) * xstep100;
+
+	//float xlen96 = triInter96.x3 - triInter96.x1;
+	//float ylen96 = triInter96.y3 - triInter96.y1;
+	//float xstep96 = xlen96 / ylen96;
+	//float x96 = triInter96.x1 + (triInter96.y - triInter96.y1) * xstep96;
+
+
+	//float xlen99_13 = triInter99.x3 - triInter99.x1;
+	//float ylen99_13 = triInter99.y3 - triInter99.y1;
+	//float xstep99_13 = xlen99_13 / ylen99_13;
+	//float xlen99_23 = triInter99.x3 - triInter99.x2;
+	//float ylen99_23 = triInter99.y3 - triInter99.y2;
+	//float xstep99_23 = xlen99_23 / ylen99_23;
+	//float xx99_13 = triInter99.x1 + (triInter99.y - triInter99.y1) * xstep99_13;
+	//float xx99_23 = triInter99.x2 + (triInter99.y - triInter99.y2) * xstep99_23;
+
+	//bool cmp11 = *triInter96.t13 == *triInter99.t23;
+	//bool cmp22 = *triInter99.t13 == *triInter100.t12;
+
+	///*auto bary96 = BaryInside(Barycentric({ x96_13 , y96_13 }, triInter96));
+	//auto bary99 = BaryInside(Barycentric(triInter99));
+	//auto bary100 = BaryInside(Barycentric({ x100_12 , y100_12 }, triInter100));*/
+
+	//auto inside96 = PointInTriangle({ x96_13 , y96_13 }, triInter96);
+	//auto inside99 = BaryInside(Barycentric(triInter99));
+	//auto inside100 = PointInTriangle({ x100_12 , y100_12 }, triInter100);
+
+	float xstep13_112 = (triInter112.x3 - triInter112.x1) / (triInter112.y3 - triInter112.y1);
+	float xstep23_112 = (triInter112.x3 - triInter112.x2) / (triInter112.y3 - triInter112.y2);
+
+	float xstep13_114 = (triInter114.x3 - triInter114.x1) / (triInter114.y3 - triInter114.y1);
+	float xstep23_114 = (triInter114.x3 - triInter114.x2) / (triInter114.y3 - triInter114.y2);
+
+	float xstep13_116 = (triInter116.x3 - triInter116.x1) / (triInter116.y3 - triInter116.y1);
+	float xstep12_116 = (triInter116.x2 - triInter116.x1) / (triInter116.y2 - triInter116.y1);
+
+	float x13_112 = triInter112.x1 + (triInter112.y - triInter112.y1) * xstep13_112;
+	float x23_112 = triInter112.x2 + (triInter112.y - triInter112.y2) * xstep23_112;
+
+	float x13_114 = triInter114.x1 + (triInter114.y - triInter114.y1) * xstep13_114;
+	float x23_114 = triInter114.x2 + (triInter114.y - triInter114.y2) * xstep23_114;
+
+	float x12_116 = triInter116.x1 + (triInter116.y - triInter116.y1) * xstep12_116;
+	float x13_116 = triInter116.x1 + (triInter116.y - triInter116.y1) * xstep13_116;
+
+	auto bary_112 = Barycentric({ x13_112 , triInter112.y }, triInter112);
+	auto bary_114_13 = Barycentric({ x13_114 , triInter114.y }, triInter114);
+	auto bary_114_23 = Barycentric({ x23_114 , triInter114.y }, triInter114);
+	auto bary_116 = Barycentric({ x12_116 , triInter116.y }, triInter116);
 
 	int stop = 234;
 }
@@ -6685,17 +6924,25 @@ void Draw32BitStrategy::DrawTopTriDefault2(float x1, float y1, float x2, float y
 
 		float x13 = Draw32BitStrategy::lerpf(t13, x1, x3);
 		float x23 = Draw32BitStrategy::lerpf(t23, x2, x3);
+
+		curTriData.x1 = x1;
+		curTriData.x2 = x2;
+		curTriData.x3 = x3;
+		curTriData.y1 = y1;
+		curTriData.y2 = y2;
+		curTriData.y3 = y3;
+
 		DrawHLineDefault2(x13, x23, y, (std::min)(y + 1.f, y3), color, vb, lpitch, polyIdx);
 
-		if (y == 111.5f)
-		{
-			if (polyIdx == 99)
-			{
-				// top
-				int stop = 234;
-				triStatsAdd = true;
-			}
-		}
+		//if (y == 111.5f)
+		//{
+		//	if (polyIdx == 99)
+		//	{
+		//		// top
+		//		int stop = 234;
+		//		triStatsAdd = true;
+		//	}
+		//}
 
 		if (triStatsAdd)
 		{
@@ -6707,10 +6954,14 @@ void Draw32BitStrategy::DrawTopTriDefault2(float x1, float y1, float x2, float y
 			inter.t23 = t23;
 			inter.x13 = x13;
 			inter.x23 = x23;
+			inter.x = xAddTest;
 			inter.y = y;
 			inter.y1 = y1;
 			inter.y2 = y2;
 			inter.y3 = y3;
+			inter.x1 = x1;
+			inter.x2 = x2;
+			inter.x3 = x3;
 
 			triInterStats[polyIdx] = inter;
 			CmpStats();
@@ -6780,22 +7031,22 @@ void Draw32BitStrategy::DrawBottomTriDefault2(float x1, float y1, float x2, floa
 
 	for (float y = startCenter; y < endCenter; y++)
 	{
-		if (y == 111.5f)
-		{
-			if (polyIdx == 96)
-			{
-				triInterStats.clear();
-				// bottom
-				int stop = 234;
-				triStatsAdd = true;
-			}
-			if (polyIdx == 100)
-			{
-				// bottom
-				int stop = 234;
-				triStatsAdd = true;
-			}
-		}
+		//if (y == 111.5f)
+		//{
+		//	if (polyIdx == 96)
+		//	{
+		//		triInterStats.clear();
+		//		// bottom
+		//		int stop = 234;
+		//		triStatsAdd = true;
+		//	}
+		//	if (polyIdx == 100)
+		//	{
+		//		// bottom
+		//		int stop = 234;
+		//		triStatsAdd = true;
+		//	}
+		//}
 
 		// t13, t12 to lerp all vertex parameter along Y axis
 		/*double t13 = ((double)y - (double)y1) / ((double)y3 - (double)y1);
@@ -6808,6 +7059,14 @@ void Draw32BitStrategy::DrawBottomTriDefault2(float x1, float y1, float x2, floa
 
 		float x13 = Draw32BitStrategy::lerpf(t13, x1, x3);
 		float x12 = Draw32BitStrategy::lerpf(t12, x1, x2);
+
+		curTriData.x1 = x1;
+		curTriData.x2 = x2;
+		curTriData.x3 = x3;
+		curTriData.y1 = y1;
+		curTriData.y2 = y2;
+		curTriData.y3 = y3;
+
 		DrawHLineDefault2(x13, x12, y, (std::min)(y + 1.f, y2), color, vb, lpitch, polyIdx);
 
 		float t13_1 = ((y - 1.f) - y1) / (y3 - y1);
@@ -6826,10 +7085,14 @@ void Draw32BitStrategy::DrawBottomTriDefault2(float x1, float y1, float x2, floa
 			inter.t12 = t12;
 			inter.x13 = x13;
 			inter.x12 = x12;
+			inter.x = xAddTest;
 			inter.y = y;
 			inter.y1 = y1;
 			inter.y2 = y2;
 			inter.y3 = y3;
+			inter.x1 = x1;
+			inter.x2 = x2;
+			inter.x3 = x3;
 
 			triInterStats[polyIdx] = inter;
 			CmpStats();
@@ -6880,18 +7143,301 @@ void Draw32BitStrategy::DrawHLineDefault2(float leftX, float rightX, float topY,
 				// bottom
 				int stop = 234;
 				triStatsAdd = true;
+				xAddTest = x;
 			}
 			if (polyIdx == 99)
 			{
 				// top
 				int stop = 234;
 				triStatsAdd = true;
+				xAddTest = x;
 			}
 			if (polyIdx == 100)
 			{
 				// bottom
 				int stop = 234;
 				triStatsAdd = true;
+				xAddTest = x;
+			}
+		}
+
+		const auto& bary = Barycentric({ x, topY }, curTriData);
+		Point pp = { x, topY };
+		bool baryInside = BaryInside(bary, &curTriData, &pp);
+
+		if (!baryInside)
+		{
+			//continue;
+		}
+
+		if (!PointInTriangle({ x, topY }, curTriData))
+		{
+			//continue;
+		}
+
+		// t to lerp all vertex parameter along X axis
+		// float t = (x - leftX) / (rightX - leftX);
+
+		this->_alphaBlender->AlphaBlend(&vbLine[(int)x], &color, 1);
+	}
+}
+
+void Draw32BitStrategy::DrawTopTriDefault3(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
+{
+	triStatsAdd = false;
+
+	float yStart1 = this->ClampScreenY(y1);
+	float yStart = this->ClampScreenY(y2);
+	float yEnd = this->ClampScreenY(y3);
+
+	float x11s = x1;
+	float y11s = y1;
+
+	float x22s = x2;
+	float y22s = y2;
+
+	float x31s = x3;
+	float y31s = y3;
+	float x32s = x3;
+	float y32s = y3;
+
+	if (yStart1 != y1)
+	{
+		float t = (yStart1 - y1) / (y3 - y1);
+		x11s = Draw32BitStrategy::lerpf(t, x1, x3);
+		y11s = yStart1;
+	}
+	if (yStart != y2)
+	{
+		float t = (yStart - y2) / (y3 - y2);
+		x22s = Draw32BitStrategy::lerpf(t, x2, x3);
+		y22s = yStart;
+	}
+	if (yEnd != y3)
+	{
+		float t13 = (yEnd - y1) / (y3 - y1);
+		float t23 = (yEnd - y2) / (y3 - y2);
+
+		x31s = Draw32BitStrategy::lerpf(t13, x1, x3);
+		x32s = Draw32BitStrategy::lerpf(t23, x2, x3);
+
+		y31s = yEnd;
+		y32s = yEnd;
+	}
+
+	float istart = std::floor(yStart);
+	float iend = std::floor(yEnd);
+
+	float startCenter = istart + 0.5f;
+	float endCenter = iend + 0.5f;
+
+	if (startCenter < y2)
+	{
+		startCenter++;
+	}
+
+	if (endCenter < y3)
+	{
+		endCenter++;
+	}
+
+	float xstep13 = (x3 - x1) / (y3 - y1);
+	float xstep23 = (x3 - x2) / (y3 - y2);
+
+	for (float y = startCenter; y < endCenter; y++)
+	{
+		float x13 = x1 + (y - y1) * xstep13;
+		float x23 = x2 + (y - y2) * xstep23;
+
+		/*float t13 = (y - y1) / (y3 - y1);
+		float t23 = (y - y2) / (y3 - y2);
+
+		float x13 = Draw32BitStrategy::lerpf(t13, x1, x3);
+		float x23 = Draw32BitStrategy::lerpf(t23, x2, x3);*/
+
+		DrawHLineDefault3(x13, x23, y, (std::min)(y + 1.f, y3), color, vb, lpitch, polyIdx);
+
+		if (triStatsAdd)
+		{
+			TriInter inter;
+
+			inter.polyIdx = polyIdx;
+			inter.top = true;
+			/*inter.t13 = t13;
+			inter.t12 = t12;
+			inter.x13 = x13;
+			inter.x12 = x12;*/
+			inter.x = xAddTest;
+			inter.y = y;
+			inter.y1 = y1;
+			inter.y2 = y2;
+			inter.y3 = y3;
+			inter.x1 = x1;
+			inter.x2 = x2;
+			inter.x3 = x3;
+
+			triInterStats[polyIdx] = inter;
+			CmpStats();
+			triStatsAdd = false;
+		}
+	}
+}
+
+void Draw32BitStrategy::DrawBottomTriDefault3(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
+{
+	triStatsAdd = false;
+
+	float yStart = this->ClampScreenY(y1);
+	float yEnd = this->ClampScreenY(y2);
+	float y3End = this->ClampScreenY(y3);
+
+	float y13s = y1;
+	float y12s = y1;
+	float x13s = x1;
+	float x12s = x1;
+
+	float y33s = y3;
+	float x33s = x3;
+
+	float y22s = y2;
+	float x22s = x2;
+
+	if (yStart != y1)
+	{
+		float t13 = (yStart - y1) / (y3 - y1);
+		float t12 = (yStart - y1) / (y2 - y1);
+
+		x13s = Draw32BitStrategy::lerpf(t13, x1, x3);
+		x12s = Draw32BitStrategy::lerpf(t12, x1, x2);
+
+		y13s = yStart;
+		y12s = yStart;
+	}
+	if (yEnd != y2)
+	{
+		float t = (yEnd - y2) / (y2 - y1);
+		x22s = Draw32BitStrategy::lerpf(t, x1, x2);
+		y22s = yEnd;
+	}
+	if (y3End != y3)
+	{
+		float t = (y3End - y3) / (y3 - y1);
+		x33s = Draw32BitStrategy::lerpf(t, x1, x3);
+		y33s = yEnd;
+	}
+
+	float istart = std::floor(yStart);
+	float iend = std::floor(yEnd);
+
+	float startCenter = istart + 0.5f;
+	float endCenter = iend + 0.5f;
+
+	if (startCenter < y1)
+	{
+		startCenter++;
+	}
+
+	if (endCenter < y2)
+	{
+		endCenter++;
+	}
+
+	float xstep13 = (x3 - x1) / (y3 - y1);
+	float xstep12 = (x2 - x1) / (y2 - y1);
+
+	for (float y = startCenter; y < endCenter; y++)
+	{
+		float x12 = x1 + (y - y1) * xstep12;
+		float x13 = x1 + (y - y1) * xstep13;
+
+		/*float t13 = (y - y1) / (y3 - y1);
+		float t12 = (y - y1) / (y2 - y1);
+
+		float x13 = Draw32BitStrategy::lerpf(t13, x1, x3);
+		float x12 = Draw32BitStrategy::lerpf(t12, x1, x2);*/
+
+		DrawHLineDefault3(x13, x12, y, (std::min)(y + 1.f, y2), color, vb, lpitch, polyIdx);
+
+		if (triStatsAdd)
+		{
+			TriInter inter;
+
+			inter.polyIdx = polyIdx;
+			inter.top = false;
+			/*inter.t13 = t13;
+			inter.t12 = t12;
+			inter.x13 = x13;
+			inter.x12 = x12;*/
+			inter.x = xAddTest;
+			inter.y = y;
+			inter.y1 = y1;
+			inter.y2 = y2;
+			inter.y3 = y3;
+			inter.x1 = x1;
+			inter.x2 = x2;
+			inter.x3 = x3;
+
+			triInterStats[polyIdx] = inter;
+			CmpStats();
+			triStatsAdd = false;
+		}
+	}
+}
+
+void Draw32BitStrategy::DrawHLineDefault3(float leftX, float rightX, float topY, float bottomY, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
+{
+	// maybe need if(topY >= bottomY) return;
+	// TODO check on triangles inside screen
+	assert(bottomY > topY);
+
+	if (leftX > rightX)
+	{
+		std::swap(leftX, rightX);
+	}
+
+	float xStart = this->ClampScreenX(leftX);
+	float xEnd = this->ClampScreenX(rightX);
+
+	float istart = std::floor(xStart);
+	float iend = std::floor(xEnd);
+
+	float startCenter = istart + 0.5f;
+	float endCenter = iend + 0.5f;
+
+	if (startCenter < leftX)
+	{
+		startCenter++;
+	}
+
+	if (endCenter < rightX)
+	{
+		endCenter++;
+	}
+
+	uint32_t* vbLine = (uint32_t*)((uint8_t*)vb + (ptrdiff_t)topY * lpitch);
+
+	for (float x = startCenter; x < endCenter; x++)
+	{
+		if ((int)x == 576 && (int)topY == 269)
+		{
+			if (polyIdx == 112)
+			{
+				triInterStats.clear();
+				triStatsAdd = true;
+				// top
+				int stop = 234;
+			}
+			if (polyIdx == 114)
+			{
+				triStatsAdd = true;
+				// top
+				int stop = 234;
+			}
+			if (polyIdx == 116)
+			{
+				triStatsAdd = true;
+				// bottom
+				int stop = 234;
 			}
 		}
 

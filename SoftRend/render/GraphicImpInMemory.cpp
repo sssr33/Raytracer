@@ -652,6 +652,8 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 		//}
 	}
 
+	int rendered = 0;
+
 	for (int poly = 0; poly < rendList->num_polys; poly++)
 	{
 		if (!(rendList->poly_ptrs[poly]->state & struct3D::POLY4D_STATE_ACTIVE) || (rendList->poly_ptrs[poly]->state & struct3D::POLY4D_STATE_CLIPPED) || (rendList->poly_ptrs[poly]->state & struct3D::POLY4D_STATE_BACKFACE)) continue;
@@ -683,9 +685,11 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 			// 96 - top
 			// 99 - middle
 			// 100 - bottom
-			std::vector<int> allowedList = { 96, 99, 100, };
+			std::vector<int> allowedList = { 112, /*113,*/ 114, /*115,*/ 116, };
 
 			draw = std::find(allowedList.begin(), allowedList.end(), poly) != allowedList.end();
+
+			//draw = rendered >= 24 && rendered <= 28;
 
 			if (draw)
 			{
@@ -734,19 +738,20 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 					return idxs;
 				};
 
-				/*auto& poly96 = rendList->poly_ptrs[96]->tvlist;
-				auto& poly99 = rendList->poly_ptrs[99]->tvlist;
-				auto& poly100 = rendList->poly_ptrs[100]->tvlist;
+				/*auto& poly112 = rendList->poly_ptrs[112]->tvlist;
+				auto& poly114 = rendList->poly_ptrs[114]->tvlist;
+				auto& poly116 = rendList->poly_ptrs[116]->tvlist;
 
-				auto adj96 = findAdjPoly(*rendList->poly_ptrs[96]);
-				auto adj99 = findAdjPoly(*rendList->poly_ptrs[99]);
-				auto adj100 = findAdjPoly(*rendList->poly_ptrs[100]);*/
+				auto adj112 = findAdjPoly(*rendList->poly_ptrs[112]);
+				auto adj114 = findAdjPoly(*rendList->poly_ptrs[114]);
+				auto adj116 = findAdjPoly(*rendList->poly_ptrs[116]);*/
 
 				/*this->_draw->DrawGouraudTriangle3(rendList->poly_ptrs[poly], (unsigned int *)_videoBuffer, _lPitch);*/
 				//this->draw->DrawTriangle4(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
 				this->draw->DrawTriangleDefault(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch), poly);
 				//this->draw->DrawTriangle7_sse(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
 			}
+			rendered++;
 		}
 		else if (rendList->poly_ptrs[poly]->attr & struct3D::POLY4D_ATTR_SHADE_MODE_PHONG)
 			this->draw->DrawPhongTriangle2(&this->mainCam, &pipe.lights, rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));

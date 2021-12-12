@@ -75,7 +75,7 @@ private:
         lightPos.y = 100.f;
 
         // -53.9799156f; for left top overdraw test
-        static float angle = -53.9799156f; //-53.9799156f;// 10.22f; //0.78f;
+        static float angle = -53.9799156f;// -53.9799156f; //-53.9799156f;// 10.22f; //0.78f;
 
         MATRIX4X4 mrot;
         mrot.Build_XYZ_Rotation_MATRIX4X4(0.f, 0.f, angle);

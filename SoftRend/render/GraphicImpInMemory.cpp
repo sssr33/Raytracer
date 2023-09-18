@@ -582,18 +582,33 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 
 		pipe.WorldToCamera_and_BackfaceRemoveRENDERLIST4D(rendList, &mainCam);
 
-		pipe.ClipPolysRENDERLIST4D(rendList, &mainCam, clipPoly::CLIP_POLY_Z_PLANE);
+		//pipe.ClipPolysRENDERLIST4D(rendList, &mainCam, clipPoly::CLIP_POLY_Z_PLANE);
 
 		//if(pipe.bLighting)
-		if (state.checkFlag(RendState::RS_LIGHTING))
+		/*if (state.checkFlag(RendState::RS_LIGHTING))
 		{
 			pipe.lights.transformLights(&mainCam.mcam);
 			pipe.LightRENDERLIST4D(rendList, &mainCam);
-		}
+		}*/
 		//pipe.WorldToCameraLights(&mainCam);
-		pipe.SortRENDERLIST4D(rendList, sortMethod::SORT_POLYLIST_AVZG);
+		//pipe.SortRENDERLIST4D(rendList, sortMethod::SORT_POLYLIST_AVZG);
 
+		auto getOrigIndex = [](int curIndex, RENDERLIST4D_PTR rendList)
+		{
+			if (!rendList->poly_ptrs[curIndex]) {
+				return -1;
+			}
 
+			auto beg = &rendList->poly_data[0];
+			auto idx = rendList->poly_ptrs[curIndex] - beg;
+			return static_cast<int>(idx);
+		};
+
+		/*auto idx0 = getOrigIndex(112, rendList);
+		auto idx1 = getOrigIndex(114, rendList);
+		auto idx2 = getOrigIndex(116, rendList);*/
+
+		float dist = rendList->poly_ptrs[1]->tvlist[0].y - rendList->poly_ptrs[1]->tvlist[2].y;
 
 		pipe.CameraToPerspectiveRENDERLIST4D(rendList, &mainCam);
 		pipe.PerspectiveToScreenRENDERLIST4D(rendList, &mainCam);
@@ -688,8 +703,10 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 			std::vector<int> allowedList = { 112, /*113,*/ 114, /*115,*/ 116, };
 
 			draw = std::find(allowedList.begin(), allowedList.end(), poly) != allowedList.end();
-
+			
 			//draw = rendered >= 24 && rendered <= 28;
+
+			draw = true; // allow all
 
 			if (draw)
 			{

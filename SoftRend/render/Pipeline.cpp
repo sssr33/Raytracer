@@ -1777,8 +1777,11 @@ void Pipeline::CameraToPerspectiveOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 	}
 }
 
+#include <DirectXMath.h>
+
 void Pipeline::CameraToPerspectiveRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 {
+	DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(cam->fov), cam->aspect_ratio, cam->near_clip_z, cam->far_clip_z);
 
 	for(int poly = 0; poly < rendList->num_polys; poly++)
 	{
@@ -1793,12 +1796,37 @@ void Pipeline::CameraToPerspectiveRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_
 			currPoly->tvlist[vertex].x = ((double)cam->view_dist * (double)currPoly->tvlist[vertex].x / z);
 			currPoly->tvlist[vertex].y = ((double)cam->view_dist * (double)currPoly->tvlist[vertex].y * (double)cam->aspect_ratio / z);*/
 
+			auto vCopy = currPoly->tvlist[vertex];
+			auto dxv = DirectX::XMVectorSet(vCopy.x, vCopy.y, vCopy.z, vCopy.w);
+			auto dxvProj = DirectX::XMVector4Transform(dxv, proj);
+			auto W = DirectX::XMVectorSplatW(dxvProj);
+			auto dxvProj2 = DirectX::XMVectorDivide(dxvProj, W);
 
 			float z = 1.0f / currPoly->tvlist[vertex].z;
+
+			float part_a_1 = cam->view_dist * currPoly->tvlist[vertex].y;
+			float part_a_2 = cam->aspect_ratio * z;
+			float part_a_3 = part_a_1 * part_a_2;
+
+			float part_b_1 = cam->view_dist * currPoly->tvlist[vertex].y;
+			float part_b_2 = part_b_1 * cam->aspect_ratio;
+			float part_b_3 = part_b_2 * z;
+
+			uint32_t z_binRep = *reinterpret_cast<uint32_t*>(&z);
+			uint32_t ar_binRep = *reinterpret_cast<uint32_t*>(&cam->aspect_ratio);
+			uint32_t y_binRep = *reinterpret_cast<uint32_t*>(&currPoly->tvlist[vertex].y);
 
 			currPoly->tvlist[vertex].x = cam->view_dist * currPoly->tvlist[vertex].x * z;
 			currPoly->tvlist[vertex].y = cam->view_dist * currPoly->tvlist[vertex].y * cam->aspect_ratio * z;
 
+			int stop = 234;
+
+			//cam->
+
+			/*double z = 1.0 / currPoly->tvlist[vertex].z;
+
+			currPoly->tvlist[vertex].x = ((double)cam->view_dist * (double)currPoly->tvlist[vertex].x * z);
+			currPoly->tvlist[vertex].y = ((double)cam->view_dist * (double)currPoly->tvlist[vertex].y * (double)cam->aspect_ratio * z);*/
 		}
 	}
 }
@@ -1882,8 +1910,6 @@ void Pipeline::WorldToCamera_and_BackfaceRemoveRENDERLIST4D(RENDERLIST4D_PTR ren
 		vecBuild(&currPoly->tvlist[0].v, &currPoly->tvlist[2].v, &v);
 
 		vecCross(&u, &v, &n);
-
-		view.VECTOR4D_Build(&currPoly->tvlist[0].v, &cam->pos);
 
 		vecBuild(&currPoly->tvlist[0].v, &cam->pos, &view);
 

@@ -2,6 +2,13 @@
 #include "ISoftRend.h"
 #include "render/GraphicImpInMemory.h"
 #include "render/GeometryGen.h"
+#include "DebugLayer/DebugLayer.h"
+
+#include <algorithm>
+#include <iterator>
+#include <cassert>
+#include <set>
+#include <vector>
 
 class SoftRend : public ISoftRend
 {
@@ -9,6 +16,7 @@ public:
     void Render(uint32_t width, uint32_t height, void* dstMemory) override
     {
         this->CheckGrapics(width, height, dstMemory);
+        DebugLayer::Instance().ResizePiexlInfo(width, height);
 
         this->graphics->DrawBegin(true);
         this->DrawScene();
@@ -129,8 +137,6 @@ private:
         {
             renderList->Insert_OBJECT4D_RENDERLIST4D(sphereShadow.get());
         }
-
-        std::unique_ptr<OBJECT4D> testTirangles = std::make_unique<OBJECT4D>();
 
         if(false)
         {
@@ -293,7 +299,154 @@ private:
             }
         }
 
-        this->graphics->DrawRENDERLIST4DSolid(renderList.get(), nullptr);
+        std::unique_ptr<RENDERLIST4D> testTris = std::make_unique<RENDERLIST4D>();
+
+        testTris->attr = renderList->attr;
+        testTris->state = renderList->state;
+        testTris->num_objects = 1;
+
+        testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[32]); // 112
+        testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[33]); // 114
+        testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[30]); // 116
+
+        DebugLayer::Instance().ClearPixelInfo();
+        this->graphics->DrawRENDERLIST4DSolid(testTris.get(), nullptr);
+
+        if(false)
+        {
+            auto& dbgLayer = DebugLayer::Instance();
+            for (uint32_t y = 0; y < dbgLayer.GetHeight(); y++) {
+                for (uint32_t x = 0; x < dbgLayer.GetWidth(); x++) {
+                    auto& pixInfo = dbgLayer.GetPixelInfo(x, y);
+
+                    if (pixInfo.triDrawnHalfPlane.size() > 2) {
+                        auto& triInfo0 = pixInfo.triDrawnHalfPlane[0];
+                        auto& triInfo1 = pixInfo.triDrawnHalfPlane[1];
+                        auto pt = triInfo0.rasterPt;
+
+                        bool test0 = triInfo0.planeA.IsInside(pt) && triInfo0.planeB.IsInside(pt) && triInfo0.planeC.IsInside(pt);
+                        bool test1 = triInfo1.planeA.IsInside(pt) && triInfo1.planeB.IsInside(pt) && triInfo1.planeC.IsInside(pt);
+
+                        auto v01 = (triInfo1.vertices[0] - triInfo1.vertices[1]);
+                        auto v02 = (triInfo1.vertices[0] - triInfo1.vertices[2]).Normalized();
+                        auto v12 = (triInfo1.vertices[1] - triInfo1.vertices[2]).Normalized();
+
+                        Point2D axis = { -1.f, 0.f };
+
+                        auto v02dp = axis.Dot(v02);
+                        auto v12dp = axis.Dot(v12);
+
+                        int stop = 234;
+                    }
+
+                    //if (pixInfo.triDrawn.size() > 1) {
+                    //    auto& triInfo0 = pixInfo.triDrawn[0];
+                    //    auto& triInfo1 = pixInfo.triDrawn[1];
+                    //    auto& triInfo2 = pixInfo.triDrawn[2];
+
+                    //    auto t0v0 = triInfo0.vertices[0];
+                    //    auto t0v2 = triInfo0.vertices[2];
+
+                    //    auto t1v0 = triInfo1.vertices[0];
+                    //    auto t1v1 = triInfo1.vertices[1];
+                    //    auto t1v2 = triInfo1.vertices[2];
+
+                    //    auto t2v0 = triInfo2.vertices[0];
+                    //    auto t2v1 = triInfo2.vertices[1];
+
+                    //    bool test_t0t1 = t0v0 == t1v1 && t0v2 == t1v2;
+
+                    //    bool test_t1t2 = t1v0 == t2v0 && t1v2 == t2v1;
+
+                    //    auto xAxis = Point2D();
+
+                    //    xAxis.y = 1.f;
+
+                    //    auto t0e_1_to_0 = (triInfo0.vertices[0] - triInfo0.vertices[1]).Normalized();
+                    //    auto t0e_2_to_0 = (triInfo0.vertices[0] - triInfo0.vertices[2]).Normalized();
+
+                    //    auto t1e_2_to_1 = (triInfo1.vertices[1] - triInfo1.vertices[2]).Normalized();
+                    //    auto t1e_2_to_0 = (triInfo1.vertices[0] - triInfo1.vertices[2]).Normalized();
+
+                    //    auto t2e_1_to_0 = (triInfo2.vertices[0] - triInfo2.vertices[1]).Normalized();
+                    //    auto t2e_2_to_0 = (triInfo2.vertices[0] - triInfo2.vertices[2]).Normalized();
+
+                    //    auto t0e_1_to_0_dp = t0e_1_to_0.Dot(xAxis);
+                    //    auto t0e_2_to_0_dp = t0e_2_to_0.Dot(xAxis);
+
+                    //    auto t1e_2_to_1_dp = t1e_2_to_1.Dot(xAxis);
+                    //    auto t1e_2_to_0_dp = t1e_2_to_0.Dot(xAxis);
+
+                    //    auto t2e_1_to_0_dp = t2e_1_to_0.Dot(xAxis);
+                    //    auto t2e_2_to_0_dp = t2e_2_to_0.Dot(xAxis);
+
+                    //    bool test_e0e1 = t0e_2_to_0 == t1e_2_to_1;
+                    //    bool test_e2e1 = t1e_2_to_0 == t2e_1_to_0;
+
+                    //    /*float xStart = x1 + (y - y1) * xstepStart;
+                    //    float xEnd = x1 + (y - y1) * xstepEnd;*/
+
+                    //    int stop = 234;
+                    //}
+                }
+            }
+        }
+
+        int stop = 234;
+
+        if(false)
+        {
+            std::vector<VERTEX4DT> verts;
+
+            for (int i = 0; i < testTris->num_polys; ++i) {
+                verts.push_back(testTris->poly_data[i].tvlist[0]);
+                verts.push_back(testTris->poly_data[i].tvlist[1]);
+                verts.push_back(testTris->poly_data[i].tvlist[2]);
+            }
+
+            auto vertexCmp = [](const VERTEX4DT& a, const VERTEX4DT& b)
+            {
+                return a.x == b.x && a.y == b.y && a.z == b.z && a.w == b.w;
+            };
+
+            std::vector<VERTEX4DT> vertsForIdx;
+
+            std::for_each(std::begin(verts), std::end(verts),
+                [&](const VERTEX4DT& i)
+                {
+                    auto it = std::find_if(std::begin(vertsForIdx), std::end(vertsForIdx),
+                        [&](const VERTEX4DT& j)
+                        {
+                            return vertexCmp(i, j);
+                        });
+
+                    if (it == std::end(vertsForIdx)) {
+                        vertsForIdx.push_back(i);
+                    }
+                });
+
+            std::vector<int> vertsIdx;
+
+            std::for_each(std::begin(verts), std::end(verts),
+                [&](const VERTEX4DT& i)
+                {
+                    auto it = std::find_if(std::begin(vertsForIdx), std::end(vertsForIdx),
+                        [&](const VERTEX4DT& j)
+                        {
+                            return vertexCmp(i, j);
+                        });
+
+                    if (it == std::end(vertsForIdx)) {
+                        assert(false);
+                        return;
+                    }
+
+                    auto idx = it - std::begin(vertsForIdx);
+                    vertsIdx.push_back(static_cast<int>(idx));
+                });
+
+            int stop = 234;
+        }
 
         //this->graphics->DrawOBJECT4DSolid(sphereShadow.get());
     }

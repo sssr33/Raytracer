@@ -2,6 +2,8 @@
 #include "StdAfx.h"
 #include "DrawStrategy.h"
 #include "Math3DStructs.h"
+#include "DebugLayer/DebugLayer.h"
+
 #include <math.h>
 #include <cassert>
 
@@ -6385,7 +6387,7 @@ void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned
 		return;
 	}
 
-	if (y2 < y1) {
+	/*if (y2 < y1) {
 		std::swap(x1, x2);
 		std::swap(y1, y2);
 	}
@@ -6396,16 +6398,16 @@ void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned
 	if (y3 < y2) {
 		std::swap(x2, x3);
 		std::swap(y2, y3);
-	}
+	}*/
 
-	if (y3 < minClipY || y1 > maxClipY
-		|| (x1 < minClipX && x2 < minClipX && x3 < minClipX)
-		|| (x1 > maxClipX && x2 > maxClipX && x3 > maxClipX)
-		)
-	{
-		// out of screen
-		return;
-	}
+	//if (y3 < minClipY || y1 > maxClipY
+	//	|| (x1 < minClipX && x2 < minClipX && x3 < minClipX)
+	//	|| (x1 > maxClipX && x2 > maxClipX && x3 > maxClipX)
+	//	)
+	//{
+	//	// out of screen
+	//	return;
+	//}
 
 	UINT color = face->color;// ARGB32BIT(127, 0, 0, 0);
 
@@ -6416,9 +6418,9 @@ void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned
 	int r = (color >> 16) & 255;
 	int a = (color >> 24) & 255;
 
-	int draw = 3;
+	int draw = 4;
 
-	if (y1 == y2)
+	if (false && y1 == y2)
 	{
 		switch (draw)
 		{
@@ -6439,7 +6441,7 @@ void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned
 		//DrawTopTriDefault2(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
 		//DrawTopTriDefault3(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
 	}
-	else if (y3 == y2)
+	else if (false && y3 == y2)
 	{
 		switch (draw)
 		{
@@ -6495,6 +6497,9 @@ void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned
 		case 3:
 			DrawBottomTriDefault3(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
 			DrawTopTriDefault3(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+			break;
+		case 4:
+			DrawTriDefault4(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
 			break;
 		default:
 			break;
@@ -7244,6 +7249,29 @@ void Draw32BitStrategy::DrawTopTriDefault3(float x1, float y1, float x2, float y
 	float xstep13 = (x3 - x1) / (y3 - y1);
 	float xstep23 = (x3 - x2) / (y3 - y2);
 
+	if (DebugLayer::Instance().IsEnabled())
+	{
+		DebugLayer::TriangleRasterInfo triInfo;
+
+		triInfo.vertices[0].x = x1;
+		triInfo.vertices[0].y = y1;
+		triInfo.vertices[1].x = x2;
+		triInfo.vertices[1].y = y2;
+		triInfo.vertices[2].x = x3;
+		triInfo.vertices[2].y = y3;
+
+		triInfo.polyIdx = polyIdx;
+		triInfo.isTopTriangle = true;
+		triInfo.xstepxStart = xstep13;
+		triInfo.xstepEnd = xstep23;
+		triInfo.yStart = yStart;
+		triInfo.yEnd = yEnd;
+		triInfo.startCenterY = startCenter;
+		triInfo.endCenterY = endCenter;
+
+		DebugLayer::Instance().SetCurrentTriangleRasterInfo(triInfo);
+	}
+
 	for (float y = startCenter; y < endCenter; y++)
 	{
 		float x13 = x1 + (y - y1) * xstep13;
@@ -7254,6 +7282,21 @@ void Draw32BitStrategy::DrawTopTriDefault3(float x1, float y1, float x2, float y
 
 		float x13 = Draw32BitStrategy::lerpf(t13, x1, x3);
 		float x23 = Draw32BitStrategy::lerpf(t23, x2, x3);*/
+
+		/*if (x13 > x23) {
+			continue;
+		}*/
+
+		if (DebugLayer::Instance().IsEnabled())
+		{
+			auto triInfo = DebugLayer::Instance().GetCurrentTriangleRasterInfo();
+
+			triInfo.xStart = x13;
+			triInfo.xEnd = x23;
+			triInfo.y = y;
+
+			DebugLayer::Instance().SetCurrentTriangleRasterInfo(triInfo);
+		}
 
 		DrawHLineDefault3(x13, x23, y, (std::min)(y + 1.f, y3), color, vb, lpitch, polyIdx);
 
@@ -7345,16 +7388,54 @@ void Draw32BitStrategy::DrawBottomTriDefault3(float x1, float y1, float x2, floa
 	float xstep13 = (x3 - x1) / (y3 - y1);
 	float xstep12 = (x2 - x1) / (y2 - y1);
 
+	if (DebugLayer::Instance().IsEnabled())
+	{
+		DebugLayer::TriangleRasterInfo triInfo;
+
+		triInfo.vertices[0].x = x1;
+		triInfo.vertices[0].y = y1;
+		triInfo.vertices[1].x = x2;
+		triInfo.vertices[1].y = y2;
+		triInfo.vertices[2].x = x3;
+		triInfo.vertices[2].y = y3;
+
+		triInfo.polyIdx = polyIdx;
+		triInfo.isTopTriangle = true;
+		triInfo.xstepxStart = xstep13;
+		triInfo.xstepEnd = xstep12;
+		triInfo.yStart = yStart;
+		triInfo.yEnd = yEnd;
+		triInfo.startCenterY = startCenter;
+		triInfo.endCenterY = endCenter;
+
+		DebugLayer::Instance().SetCurrentTriangleRasterInfo(triInfo);
+	}
+
 	for (float y = startCenter; y < endCenter; y++)
 	{
-		float x12 = x1 + (y - y1) * xstep12;
 		float x13 = x1 + (y - y1) * xstep13;
+		float x12 = x1 + (y - y1) * xstep12;
 
 		/*float t13 = (y - y1) / (y3 - y1);
 		float t12 = (y - y1) / (y2 - y1);
 
 		float x13 = Draw32BitStrategy::lerpf(t13, x1, x3);
 		float x12 = Draw32BitStrategy::lerpf(t12, x1, x2);*/
+
+		/*if (x13 > x12) {
+			continue;
+		}*/
+
+		if (DebugLayer::Instance().IsEnabled())
+		{
+			auto triInfo = DebugLayer::Instance().GetCurrentTriangleRasterInfo();
+
+			triInfo.xStart = x13;
+			triInfo.xEnd = x12;
+			triInfo.y = y;
+
+			DebugLayer::Instance().SetCurrentTriangleRasterInfo(triInfo);
+		}
 
 		DrawHLineDefault3(x13, x12, y, (std::min)(y + 1.f, y2), color, vb, lpitch, polyIdx);
 
@@ -7414,6 +7495,20 @@ void Draw32BitStrategy::DrawHLineDefault3(float leftX, float rightX, float topY,
 		endCenter++;
 	}
 
+	if (DebugLayer::Instance().IsEnabled())
+	{
+		auto triInfo = DebugLayer::Instance().GetCurrentTriangleRasterInfo();
+
+		triInfo.xStartScreenClamp = xStart;
+		triInfo.xEndScreenClamp = xEnd;
+		triInfo.ixStartScreenClamp = istart;
+		triInfo.ixEndScreenClamp = iend;
+		triInfo.startCenterX = startCenter;
+		triInfo.startCenterY = endCenter;
+
+		DebugLayer::Instance().SetCurrentTriangleRasterInfo(triInfo);
+	}
+
 	uint32_t* vbLine = (uint32_t*)((uint8_t*)vb + (ptrdiff_t)topY * lpitch);
 
 	for (float x = startCenter; x < endCenter; x++)
@@ -7444,8 +7539,285 @@ void Draw32BitStrategy::DrawHLineDefault3(float leftX, float rightX, float topY,
 		// t to lerp all vertex parameter along X axis
 		// float t = (x - leftX) / (rightX - leftX);
 
+		if(DebugLayer::Instance().IsEnabled())
+		{
+			auto triInfo = DebugLayer::Instance().GetCurrentTriangleRasterInfo();
+
+			triInfo.x = x;
+
+			DebugLayer::Instance().AddTriangleRasterInfoForPixel((uint32_t)x, (uint32_t)topY, triInfo);
+		}
 		this->_alphaBlender->AlphaBlend(&vbLine[(int)x], &color, 1);
 	}
+}
+
+namespace TestDetails {
+	typedef int OutCode;
+
+	const int INSIDE = 0; // 0000
+	const int LEFT = 1;   // 0001
+	const int RIGHT = 2;  // 0010
+	const int BOTTOM = 4; // 0100
+	const int TOP = 8;    // 1000
+
+	OutCode ComputeOutCode(float x, float y, float xmin, float xmax, float ymin, float ymax)
+	{
+		OutCode code = INSIDE;  // initialised as being inside of clip window
+
+		if (x < xmin)           // to the left of clip window
+			code |= LEFT;
+		else if (x > xmax)      // to the right of clip window
+			code |= RIGHT;
+		if (y < ymin)           // below the clip window
+			code |= BOTTOM;
+		else if (y > ymax)      // above the clip window
+			code |= TOP;
+
+		return code;
+	}
+
+	bool CohenSutherlandLineClip(float& x0, float& y0, float& x1, float& y1, float xmin, float xmax, float ymin, float ymax, int polyIdx)
+	{
+		/*float x0_orig = x0;
+		float y0_orig = y0;
+		float x1_orig = x1;
+		float y1_orig = y1;*/
+
+		// compute outcodes for P0, P1, and whatever point lies outside the clip rectangle
+		OutCode outcode0 = ComputeOutCode(x0, y0, xmin, xmax, ymin, ymax);
+		OutCode outcode1 = ComputeOutCode(x1, y1, xmin, xmax, ymin, ymax);
+		bool accept = false;
+
+		while (true) {
+			if (!(outcode0 | outcode1)) {
+				// bitwise OR is 0: both points inside window; trivially accept and exit loop
+				accept = true;
+				break;
+			}
+			else if (outcode0 & outcode1) {
+				// bitwise AND is not 0: both points share an outside zone (LEFT, RIGHT, TOP,
+				// or BOTTOM), so both must be outside window; exit loop (accept is false)
+				break;
+			}
+			else {
+				// failed both tests, so calculate the line segment to clip
+				// from an outside point to an intersection with clip edge
+				float x, y;
+
+				// At least one endpoint is outside the clip rectangle; pick it.
+				OutCode outcodeOut = outcode1 > outcode0 ? outcode1 : outcode0;
+
+				// Now find the intersection point;
+				// use formulas:
+				//   slope = (y1 - y0) / (x1 - x0)
+				//   x = x0 + (1 / slope) * (ym - y0), where ym is ymin or ymax
+				//   y = y0 + slope * (xm - x0), where xm is xmin or xmax
+				// No need to worry about divide-by-zero because, in each case, the
+				// outcode bit being tested guarantees the denominator is non-zero
+				if (outcodeOut & TOP) {           // point is above the clip window
+					if (std::fabs(x0) < std::fabs(x1)) {
+						x = x0 + std::fabs(x1 - x0) * (ymax - y0) / std::fabs(y1 - y0);
+					}
+					else {
+						x = x1 + std::fabs(x1 - x0) * (ymax - y1) / std::fabs(y1 - y0);
+					}
+
+					//x = x0 + (x1 - x0) * (ymax - y0) / (y1 - y0);
+					y = ymax;
+				}
+				else if (outcodeOut & BOTTOM) { // point is below the clip window
+					if (std::fabs(x0) < std::fabs(x1)) {
+						x = x0 + std::fabs(x1 - x0) * (ymin - y0) / std::fabs(y1 - y0);
+					}
+					else {
+						x = x1 + std::fabs(x1 - x0) * (ymin - y1) / std::fabs(y1 - y0);
+					}
+
+					//x = x0 + (x1 - x0) * (ymin - y0) / (y1 - y0);
+					y = ymin;
+				}
+				else if (outcodeOut & RIGHT) {  // point is to the right of clip window
+					if (std::fabs(y0) < std::fabs(y1)) {
+						y = y0 + std::fabs(y1 - y0) * (xmax - x0) / std::fabs(x1 - x0);
+					}
+					else {
+						y = y1 + std::fabs(y1 - y0) * (xmax - x1) / std::fabs(x1 - x0);
+					}
+
+					//y = y0 + (y1 - y0) * (xmax - x0) / (x1 - x0);
+					x = xmax;
+				}
+				else if (outcodeOut & LEFT) {   // point is to the left of clip window
+					if (std::fabs(y0) < std::fabs(y1)) {
+						y = y0 + std::fabs(y1 - y0) * (xmin - x0) / std::fabs(x1 - x0);
+					}
+					else {
+						y = y1 + std::fabs(y1 - y0) * (xmin - x1) / std::fabs(x1 - x0);
+					}
+
+					//y = y0 + (y1 - y0) * (xmin - x0) / (x1 - x0);
+					x = xmin;
+				}
+
+				// Now we move outside point to intersection point to clip
+				// and get ready for next pass.
+				if (outcodeOut == outcode0) {
+					x0 = x;
+					y0 = y;
+					outcode0 = ComputeOutCode(x0, y0, xmin, xmax, ymin, ymax);
+				}
+				else {
+					x1 = x;
+					y1 = y;
+					outcode1 = ComputeOutCode(x1, y1, xmin, xmax, ymin, ymax);
+				}
+			}
+		}
+		return accept;
+	}
+}
+
+void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx) {
+	float minX = (std::min)((std::min)(x1, x2), x3);
+	float minY = (std::min)((std::min)(y1, y2), y3);
+	float maxX = (std::max)((std::max)(x1, x2), x3);
+	float maxY = (std::max)((std::max)(y1, y2), y3);
+
+	minX = (std::max)(minX, this->minClipX);
+	minY = (std::max)(minY, this->minClipY);
+	maxX = (std::min)(maxX, this->maxClipX);
+	maxY = (std::min)(maxY, this->maxClipX);
+
+	uint32_t startX = static_cast<uint32_t>(minX);
+	uint32_t startY = static_cast<uint32_t>(minY);
+	uint32_t endX = static_cast<uint32_t>(std::ceil(maxX));
+	uint32_t endY = static_cast<uint32_t>(std::ceil(maxY));
+
+	/*auto test = HalfPlane::BuildFromPoints(0.f, 0.f, 1.f, 0.f);
+	auto testPt = test.IsInside({0.f, 0.05f});*/
+
+	float axStart = x1;
+	float ayStart = y1;
+	float axEnd = x2;
+	float ayEnd = y2;
+
+	float bxStart = x2;
+	float byStart = y2;
+	float bxEnd = x3;
+	float byEnd = y3;
+
+	float cxStart = x3;
+	float cyStart = y3;
+	float cxEnd = x1;
+	float cyEnd = y1;
+
+	if (polyIdx == 1) {
+		int stop = 234;
+	}
+
+	{
+		const float xmin = 0.f;
+		const float ymin = 0.f;
+		const float xmax = 1424.f;
+		const float ymax = 720.f;
+
+		if (polyIdx == 1) {
+			float at = (0.f - axEnd) / std::fabs(axEnd - axStart);
+			float bt = (0.f - bxStart) / std::fabs(bxEnd - bxStart);
+
+			float axStart2 = axStart;
+			float ayStart2 = ayStart;
+
+			float bxEnd2 = bxEnd;
+			float byEnd2 = byEnd;
+
+			axStart2 = axEnd + at * std::fabs(axEnd - axStart);
+			ayStart2 = ayEnd + at * std::fabs(ayEnd - ayStart);
+
+			bxEnd2 = bxStart + bt * std::fabs(bxEnd - bxStart);
+			byEnd2 = byStart + bt * std::fabs(byEnd - byStart);
+
+			int stop = 234;
+		}
+
+		TestDetails::CohenSutherlandLineClip(axStart, ayStart, axEnd, ayEnd, xmin, xmax, ymin, ymax, polyIdx);
+		TestDetails::CohenSutherlandLineClip(bxStart, byStart, bxEnd, byEnd, xmin, xmax, ymin, ymax, polyIdx);
+		TestDetails::CohenSutherlandLineClip(cxStart, cyStart, cxEnd, cyEnd, xmin, xmax, ymin, ymax, polyIdx);
+	}
+
+	/*if (polyIdx == 0) {
+		float at = (0.f - axStart) / std::fabs(axEnd - axStart);
+		float bt = (0.f - bxEnd) / std::fabs(bxEnd - bxStart);
+
+		axEnd = axStart + at * std::fabs(axEnd - axStart);
+		ayEnd = ayStart + at * std::fabs(ayEnd - ayStart);
+
+		bxStart = bxEnd + bt * std::fabs(bxEnd - bxStart);
+		byStart = byEnd + bt * std::fabs(byEnd - byStart);
+	}
+	else if (polyIdx == 1) {
+		float at = (0.f - axEnd) / std::fabs(axEnd - axStart);
+		float bt = (0.f - bxStart) / std::fabs(bxEnd - bxStart);
+
+		axStart = axEnd + at * std::fabs(axEnd - axStart);
+		ayStart = ayEnd + at * std::fabs(ayEnd - ayStart);
+
+		bxEnd = bxStart + bt * std::fabs(bxEnd - bxStart);
+		byEnd = byStart + bt * std::fabs(byEnd - byStart);
+	}
+	else if (polyIdx == 2) {
+		float at = (0.f - axStart) / std::fabs(axEnd - axStart);
+		float bt = (0.f - bxEnd) / std::fabs(bxEnd - bxStart);
+
+		axEnd = axStart + at * std::fabs(axEnd - axStart);
+		ayEnd = ayStart + at * std::fabs(ayEnd - ayStart);
+
+		bxStart = bxEnd + bt * std::fabs(bxEnd - bxStart);
+		byStart = byEnd + bt * std::fabs(byEnd - byStart);
+	}*/
+
+	auto planeA = HalfPlane::BuildFromPoints(axStart, ayStart, axEnd, ayEnd);
+	auto planeB = HalfPlane::BuildFromPoints(bxStart, byStart, bxEnd, byEnd);
+	auto planeC = HalfPlane::BuildFromPoints(cxStart, cyStart, cxEnd, cyEnd);
+
+	for (uint32_t y = startY; y < endY; ++y) {
+		uint32_t* vbLine = (uint32_t*)((uint8_t*)vb + (ptrdiff_t)y * lpitch);
+
+		for (uint32_t x = startX; x < endX; ++x) {
+			auto pt = Point2D();
+
+			pt.x = static_cast<float>(x) + 0.5f;
+			pt.y = static_cast<float>(y) + 0.5f;
+
+			bool testA = planeA.IsInside(pt);
+			bool testB = planeB.IsInside(pt);
+			bool testC = planeC.IsInside(pt);
+
+			if (testA && testB && testC) {
+				if (DebugLayer::Instance().IsEnabled())
+				{
+					auto triInfo = DebugLayer::TriangleRasterHalfPlaneInfo();
+
+					triInfo.planeA = planeA;
+					triInfo.planeB = planeB;
+					triInfo.planeC = planeC;
+					triInfo.rasterPt = pt;
+					triInfo.vertices[0].x = x1;
+					triInfo.vertices[0].y = y1;
+					triInfo.vertices[1].x = x2;
+					triInfo.vertices[1].y = y2;
+					triInfo.vertices[2].x = x3;
+					triInfo.vertices[2].y = y3;
+
+					DebugLayer::Instance().AddTriangleRasterInfoForPixel(x, y, triInfo);
+				}
+
+				this->_alphaBlender->AlphaBlend(&vbLine[x], &color, 1);
+			}
+		}
+	}
+
+	int top = 234;
 }
 
 float Draw32BitStrategy::ClampScreenX(float x) const

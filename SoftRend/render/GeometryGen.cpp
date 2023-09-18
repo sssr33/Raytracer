@@ -1044,7 +1044,8 @@ int GeometryGen::generateShadowVolume(LIGHT_PTR l_in, int num_l_in, OBJECT4D_PTR
 
 	vecCopy(&l_in[0].dir, &vl);
 	vecNormalize(&vl);
-	vecScale(1000000, &vl);
+	  vecScale(100000000, &vl);
+	//vecScale(1000000, &vl);
 	//vecScale(100000000, &vl);
 
 	for(int i = 0; i < pnum; i+=2)

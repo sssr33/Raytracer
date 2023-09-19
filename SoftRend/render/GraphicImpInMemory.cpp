@@ -706,10 +706,23 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 			
 			//draw = rendered >= 24 && rendered <= 28;
 
+			draw = poly >= 22 && poly <= 25;
+
 			draw = true; // allow all
 
 			if (draw)
 			{
+				auto findOriginalIdx = [&](int index)
+				{
+					auto polySorted = rendList->poly_ptrs[index];
+					int idx = polySorted  - &rendList->poly_data[0];
+					return idx;
+				};
+
+				/*auto i0 = findOriginalIdx(14);
+				auto i1 = findOriginalIdx(15);
+				auto i2 = findOriginalIdx(16);*/
+
 				auto polyBeg = rendList->poly_ptrs;
 				auto polyEnd = rendList->poly_ptrs + rendList->num_polys;
 

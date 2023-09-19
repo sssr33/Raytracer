@@ -144,3 +144,12 @@ Point2D Point2D::Rotated90CWScreenSpace() const {
 
     return res;
 }
+
+Point2D Point2D::Rotated90CCWScreenSpace() const {
+    Point2D res;
+
+    res.x = this->y;
+    res.y = -this->x;
+
+    return res;
+}

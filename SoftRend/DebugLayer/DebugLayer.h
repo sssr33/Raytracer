@@ -18,6 +18,7 @@ struct Point2D {
     float Dot(const Point2D& other) const;
     Point2D Rotated90CW() const;
     Point2D Rotated90CWScreenSpace() const;
+    Point2D Rotated90CCWScreenSpace() const;
 };
 
 struct HalfPlane {
@@ -26,8 +27,9 @@ struct HalfPlane {
     bool isLeftTop = false;
 
     bool IsInside(const Point2D& other) const {
+        // no normalization for better precision because of rounding errors
         auto v2 = other - this->point;
-        float dp = this->vector.Dot(v2.Normalized());
+        float dp = this->vector.Dot(v2);
 
         /*if (v2.Length() == 0.f) {
             dp = 0.f;
@@ -44,7 +46,7 @@ struct HalfPlane {
         return inside;
     }
 
-    static HalfPlane BuildFromPoints(float startX, float startY, float endX, float endY) {
+    static HalfPlane BuildFromPoints(float startX, float startY, float endX, float endY, bool cw) {
         HalfPlane res;
 
         res.point.x = startX;
@@ -53,12 +55,26 @@ struct HalfPlane {
         res.vector.y = endY;
 
         res.vector = res.vector - res.point;
-        res.vector = res.vector.Normalized().Rotated90CWScreenSpace();
+        if (cw) {
+            // no normalization for better precision because of rounding errors
+            res.vector = res.vector.Rotated90CWScreenSpace();
+        }
+        else {
+            // no normalization for better precision because of rounding errors
+            res.vector = res.vector.Rotated90CCWScreenSpace();
+        }
 
-        bool isTop = res.vector.y > 0.f;
-        bool isLeft = res.vector.x < 0.f;
-
-        res.isLeftTop = isTop || isLeft;
+        // vector look inside triangle
+        // screen space
+        if (res.vector.x > 0.f) {
+            res.isLeftTop = true;
+        }
+        else if (res.vector.x == 0.f && res.vector.y < 0.f) {
+            res.isLeftTop = true;
+        }
+        else {
+            res.isLeftTop = false;
+        }
 
         return res;
     }

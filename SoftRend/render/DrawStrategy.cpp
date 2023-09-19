@@ -7711,6 +7711,41 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 	float cxEnd = x1;
 	float cyEnd = y1;
 
+	bool aCw = true;
+	bool bCw = true;
+	bool cCw = true;
+
+	auto sortSwap = [](float& x1, float& y1, float& x2, float& y2)
+	{
+		bool doSwap = false;
+
+		if (x1 > x2) {
+			doSwap = true;
+		}
+		else if (x1 == x2 && y1 > y2) {
+			doSwap = true;
+		}
+
+		if (doSwap) {
+			std::swap(x1, x2);
+			std::swap(y1, y2);
+		}
+
+		return doSwap;
+	};
+
+	// sort swap so adjanced triangles will do hald plane calculations on same data
+	// doing calculations on same data results in less(or no) errors when checking if pixel inside half plane
+	if (sortSwap(axStart, ayStart, axEnd, ayEnd)) {
+		aCw = false;
+	}
+	if (sortSwap(bxStart, byStart, bxEnd, byEnd)) {
+		bCw = false;
+	}
+	if (sortSwap(cxStart, cyStart, cxEnd, cyEnd)) {
+		cCw = false;
+	}
+
 	if (polyIdx == 1) {
 		int stop = 234;
 	}
@@ -7745,6 +7780,27 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 		TestDetails::CohenSutherlandLineClip(cxStart, cyStart, cxEnd, cyEnd, xmin, xmax, ymin, ymax, polyIdx);
 	}
 
+	auto ptTest = Point2D{ 525.f, 388.f };
+
+	if (polyIdx == 0) {
+		int stop = 234;
+	}
+	else if (polyIdx == 1) {
+		float at = (ptTest.y - ayStart) / std::fabs(ayEnd - ayStart);
+		float bt = (ptTest.y - byStart) / std::fabs(byEnd - byStart);
+
+		float xa = axStart + at * std::fabs(axEnd - axStart);
+		float xb = bxStart + bt * std::fabs(bxEnd - bxStart);
+
+		int stop = 234;
+	}
+	else if (polyIdx == 2) {
+		int stop = 234;
+	}
+	else if (polyIdx == 3) {
+		int stop = 234;
+	}
+
 	/*if (polyIdx == 0) {
 		float at = (0.f - axStart) / std::fabs(axEnd - axStart);
 		float bt = (0.f - bxEnd) / std::fabs(bxEnd - bxStart);
@@ -7776,9 +7832,9 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 		byStart = byEnd + bt * std::fabs(byEnd - byStart);
 	}*/
 
-	auto planeA = HalfPlane::BuildFromPoints(axStart, ayStart, axEnd, ayEnd);
-	auto planeB = HalfPlane::BuildFromPoints(bxStart, byStart, bxEnd, byEnd);
-	auto planeC = HalfPlane::BuildFromPoints(cxStart, cyStart, cxEnd, cyEnd);
+	auto planeA = HalfPlane::BuildFromPoints(axStart, ayStart, axEnd, ayEnd, aCw);
+	auto planeB = HalfPlane::BuildFromPoints(bxStart, byStart, bxEnd, byEnd, bCw);
+	auto planeC = HalfPlane::BuildFromPoints(cxStart, cyStart, cxEnd, cyEnd, cCw);
 
 	for (uint32_t y = startY; y < endY; ++y) {
 		uint32_t* vbLine = (uint32_t*)((uint8_t*)vb + (ptrdiff_t)y * lpitch);
@@ -7792,6 +7848,10 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 			bool testA = planeA.IsInside(pt);
 			bool testB = planeB.IsInside(pt);
 			bool testC = planeC.IsInside(pt);
+
+			if (x == 525 && y == 388) {
+				int stop = 23;
+			}
 
 			if (testA && testB && testC) {
 				if (DebugLayer::Instance().IsEnabled())

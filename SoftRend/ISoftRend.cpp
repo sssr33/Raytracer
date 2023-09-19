@@ -82,8 +82,10 @@ private:
         lightPos.x = 100.f;
         lightPos.y = 100.f;
 
-        // -53.9799156f; for left top overdraw test
-        static float angle = -53.9799156f;// -53.9799156f; //-53.9799156f;// 10.22f; //0.78f;
+        // -53.9799156f     for left top overdraw test
+        // -82.3793411f     for empty pixel test
+        // -63.2798958f
+        static float angle = -53.9799156f;// -53.9799156f; //-43.7800713;// -53.9799156f;// -53.9799156f; //-53.9799156f;// 10.22f; //0.78f;
 
         MATRIX4X4 mrot;
         mrot.Build_XYZ_Rotation_MATRIX4X4(0.f, 0.f, angle);
@@ -103,7 +105,7 @@ private:
             angle -= 0.3f;
         }
 
-        //angle += 0.1f;
+        angle -= 0.1f;
 
         VECTOR4D lightDir;
 
@@ -299,18 +301,32 @@ private:
             }
         }
 
+        DebugLayer::Instance().ClearPixelInfo();
+        DebugLayer::Instance().SetEnabled(false);
+
         std::unique_ptr<RENDERLIST4D> testTris = std::make_unique<RENDERLIST4D>();
 
         testTris->attr = renderList->attr;
         testTris->state = renderList->state;
         testTris->num_objects = 1;
 
-        testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[32]); // 112
-        testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[33]); // 114
-        testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[30]); // 116
+        // -53.9799156f
+        //testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[32]); // 112
+        //testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[33]); // 114
+        //testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[30]); // 116
 
-        DebugLayer::Instance().ClearPixelInfo();
-        this->graphics->DrawRENDERLIST4DSolid(testTris.get(), nullptr);
+        // -82.3793411f // if (x == 150 && y == 185)
+        /*testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[14]);
+        testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[17]);
+        testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[16]);*/
+
+        // -63.2798958f
+        /*testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[22]);
+        testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[25]);
+        testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[24]);*/
+
+        //this->graphics->DrawRENDERLIST4DSolid(testTris.get(), nullptr);
+        this->graphics->DrawRENDERLIST4DSolid(renderList.get(), nullptr);
 
         if(false)
         {

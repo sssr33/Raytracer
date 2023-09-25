@@ -1,6 +1,9 @@
 #pragma once
 #include "structures.h"
 #include "Math3DStructs.h"
+#include "DebugLayer\DebugLayer.h"
+
+#include <optional>
 
 using namespace struct3D;
 using namespace math3D;
@@ -107,5 +110,54 @@ public:
 	//Line pipiline:
 	void LocalToCameraAndClipOBJECT4DLINE(OBJECT4D_LINE_PTR obj, CAM4D_PTR cam);
 	void CameraToScreenOBJECT4DLINE(OBJECT4D_LINE_PTR obj, CAM4D_PTR cam);
-};
 
+	void ClipPolygonScreenBounds(RENDERLIST4D_PTR rendList, CAM4D_PTR cam);
+
+private:
+	typedef int OutCode;
+
+	static constexpr int INSIDE = 0; // 0000
+	static constexpr int LEFT = 1;   // 0001
+	static constexpr int RIGHT = 2;  // 0010
+	static constexpr int BOTTOM = 4; // 0100
+	static constexpr int TOP = 8;    // 1000
+
+	enum class LinePointEdge {
+		NoEdge,
+		ClipMinX,
+		ClipMinY,
+		ClipMaxX,
+		ClipMaxY
+	};
+
+	struct Point2DOnEdge {
+		Point2D pt;
+		LinePointEdge edge;
+		bool fromTriangle = false;
+
+		Point2DOnEdge ClampedByEdge(const Point2D& clipMin, const Point2D& clipMax) const;
+		// if point on edge of clip rect then this method returns order value. Order values increases from bottom edge then right, top, left
+		// if point is not on edge then order == infinity
+		float GetEdgeOrder(const Point2D& clipMax, LinePointEdge startEdge) const;
+	};
+
+	struct Line2D {
+		Point2D start;
+		Point2D end;
+		bool swapped = false; // start/outcodeStart & end/outcodeEnd swapped relative to original line
+		bool clipped = false; // start or/and end clipped by CohenSutherlandLineClip
+		bool declined = false; // whole line is out of screen. Result from CohenSutherlandLineClip
+		OutCode outcodeStart = INSIDE;
+		OutCode outcodeEnd = INSIDE;
+		LinePointEdge startEdge = LinePointEdge::NoEdge; // on which edge of clip rect point is located after CohenSutherlandLineClip
+		LinePointEdge endEdge = LinePointEdge::NoEdge; // on which edge of clip rect point is located after CohenSutherlandLineClip
+
+		std::optional<Point2DOnEdge> GetStartPointOnEdge() const;
+		std::optional<Point2DOnEdge> GetEndPointOnEdge() const;
+	};
+
+	static Line2D SortSwap(Line2D line);
+	static Line2D Unswap(Line2D line);
+	static OutCode ComputeOutCode(const Point2D& pt, const Point2D& clipMin, const Point2D& clipMax);
+	static std::optional<Line2D> CohenSutherlandLineClip(Line2D line, const Point2D& clipMin, const Point2D& clipMax, bool tryShortLen = false);
+};

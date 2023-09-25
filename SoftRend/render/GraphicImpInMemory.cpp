@@ -610,8 +610,64 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 
 		float dist = rendList->poly_ptrs[1]->tvlist[0].y - rendList->poly_ptrs[1]->tvlist[2].y;
 
+		struct SimplePoly {
+			VERTEX4DT a;
+			VERTEX4DT b;
+			VERTEX4DT c;
+		};
+
+		/*std::vector<SimplePoly> polysBeforePerspective;
+
+		for (int poly = 0; poly < rendList->num_polys; poly++)
+		{
+			POLYF4D_PTR currPoly = rendList->poly_ptrs[poly];
+
+			if ((currPoly == NULL) || !(currPoly->state & struct3D::POLY4D_STATE_ACTIVE) || (currPoly->state & struct3D::POLY4D_STATE_BACKFACE) || (currPoly->state & struct3D::POLY4D_STATE_CLIPPED)) continue;
+
+			polysBeforePerspective.push_back({ currPoly->tvlist[0], currPoly->tvlist[1], currPoly->tvlist[2] });
+		}*/
+
 		pipe.CameraToPerspectiveRENDERLIST4D(rendList, &mainCam);
+
+		/*std::vector<SimplePoly> polysAfterPerspective;
+
+		for (int poly = 0; poly < rendList->num_polys; poly++)
+		{
+			POLYF4D_PTR currPoly = rendList->poly_ptrs[poly];
+
+			if ((currPoly == NULL) || !(currPoly->state & struct3D::POLY4D_STATE_ACTIVE) || (currPoly->state & struct3D::POLY4D_STATE_BACKFACE) || (currPoly->state & struct3D::POLY4D_STATE_CLIPPED)) continue;
+
+			polysAfterPerspective.push_back({ currPoly->tvlist[0], currPoly->tvlist[1], currPoly->tvlist[2] });
+		}*/
+
 		pipe.PerspectiveToScreenRENDERLIST4D(rendList, &mainCam);
+
+		/*std::vector<SimplePoly> polysAfterScreen;
+
+		for (int poly = 0; poly < rendList->num_polys; poly++)
+		{
+			POLYF4D_PTR currPoly = rendList->poly_ptrs[poly];
+
+			if ((currPoly == NULL) || !(currPoly->state & struct3D::POLY4D_STATE_ACTIVE) || (currPoly->state & struct3D::POLY4D_STATE_BACKFACE) || (currPoly->state & struct3D::POLY4D_STATE_CLIPPED)) continue;
+
+			polysAfterScreen.push_back({ currPoly->tvlist[0], currPoly->tvlist[1], currPoly->tvlist[2] });
+		}
+
+		if (polysAfterScreen[1].c.y <= polysAfterScreen[1].a.y) {
+			int stop = 34;
+		}
+		else {
+			int stop = 234;
+		}
+
+		if (polysAfterScreen[0].b.y <= polysAfterScreen[2].b.y) {
+			int stop = 34;
+		}
+		else {
+			int stop = 234;
+		}*/
+
+		pipe.ClipPolygonScreenBounds(rendList, &mainCam);
 		//pipe.CameraToScreenRENDERLIST4D(rendList, &mainCam);
 	}
 
@@ -706,7 +762,7 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 			
 			//draw = rendered >= 24 && rendered <= 28;
 
-			draw = poly >= 22 && poly <= 25;
+			draw = poly >= 28 && poly <= 30;
 
 			draw = true; // allow all
 

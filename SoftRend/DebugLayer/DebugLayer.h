@@ -78,6 +78,10 @@ struct HalfPlane {
 
         return res;
     }
+
+    static HalfPlane BuildFromPoints(const Point2D& start, const Point2D& end, bool cw) {
+        return BuildFromPoints(start.x, start.y, end.x, end.y, cw);
+    }
 };
 
 class DebugLayer {

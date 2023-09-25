@@ -7675,6 +7675,99 @@ namespace TestDetails {
 		}
 		return accept;
 	}
+
+	//bool CohenSutherlandLineClip(float& x0, float& y0, float& x1, float& y1, float xmin, float xmax, float ymin, float ymax, int polyIdx)
+	//{
+	//	/*float x0_orig = x0;
+	//	float y0_orig = y0;
+	//	float x1_orig = x1;
+	//	float y1_orig = y1;*/
+
+	//	bool swapped = false;
+
+	//	// swap to make absolute value of x0, y0 smaller to get more precision when doing x0 + ... or y0 + ... part
+	//	// large values of x0, y0 will propagate error on results
+	//	if (std::abs(x0) > std::abs(x1)) {
+	//		std::swap(x0, x1);
+	//		std::swap(y0, y1);
+	//		swapped = true;
+	//	}
+	//	else if (std::abs(x0) == std::abs(x1) && std::abs(y0) > std::abs(y1)) {
+	//		std::swap(x0, x1);
+	//		std::swap(y0, y1);
+	//		swapped = true;
+	//	}
+
+	//	// compute outcodes for P0, P1, and whatever point lies outside the clip rectangle
+	//	OutCode outcode0 = ComputeOutCode(x0, y0, xmin, xmax, ymin, ymax);
+	//	OutCode outcode1 = ComputeOutCode(x1, y1, xmin, xmax, ymin, ymax);
+	//	bool accept = false;
+
+	//	while (true) {
+	//		if (!(outcode0 | outcode1)) {
+	//			// bitwise OR is 0: both points inside window; trivially accept and exit loop
+	//			accept = true;
+	//			break;
+	//		}
+	//		else if (outcode0 & outcode1) {
+	//			// bitwise AND is not 0: both points share an outside zone (LEFT, RIGHT, TOP,
+	//			// or BOTTOM), so both must be outside window; exit loop (accept is false)
+	//			break;
+	//		}
+	//		else {
+	//			// failed both tests, so calculate the line segment to clip
+	//			// from an outside point to an intersection with clip edge
+	//			float x, y;
+
+	//			// At least one endpoint is outside the clip rectangle; pick it.
+	//			OutCode outcodeOut = outcode1 > outcode0 ? outcode1 : outcode0;
+
+	//			// Now find the intersection point;
+	//			// use formulas:
+	//			//   slope = (y1 - y0) / (x1 - x0)
+	//			//   x = x0 + (1 / slope) * (ym - y0), where ym is ymin or ymax
+	//			//   y = y0 + slope * (xm - x0), where xm is xmin or xmax
+	//			// No need to worry about divide-by-zero because, in each case, the
+	//			// outcode bit being tested guarantees the denominator is non-zero
+	//			if (outcodeOut & TOP) {           // point is above the clip window
+	//				x = x0 + (x1 - x0) * (ymax - y0) / (y1 - y0);
+	//				y = ymax;
+	//			}
+	//			else if (outcodeOut & BOTTOM) { // point is below the clip window
+	//				x = x0 + (x1 - x0) * (ymin - y0) / (y1 - y0);
+	//				y = ymin;
+	//			}
+	//			else if (outcodeOut & RIGHT) {  // point is to the right of clip window
+	//				y = y0 + (y1 - y0) * (xmax - x0) / (x1 - x0);
+	//				x = xmax;
+	//			}
+	//			else if (outcodeOut & LEFT) {   // point is to the left of clip window
+	//				y = y0 + (y1 - y0) * (xmin - x0) / (x1 - x0);
+	//				x = xmin;
+	//			}
+
+	//			// Now we move outside point to intersection point to clip
+	//			// and get ready for next pass.
+	//			if (outcodeOut == outcode0) {
+	//				x0 = x;
+	//				y0 = y;
+	//				outcode0 = ComputeOutCode(x0, y0, xmin, xmax, ymin, ymax);
+	//			}
+	//			else {
+	//				x1 = x;
+	//				y1 = y;
+	//				outcode1 = ComputeOutCode(x1, y1, xmin, xmax, ymin, ymax);
+	//			}
+	//		}
+	//	}
+
+	//	if (swapped) {
+	//		std::swap(x0, x1);
+	//		std::swap(y0, y1);
+	//	}
+
+	//	return accept;
+	//}
 }
 
 void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx) {
@@ -7682,6 +7775,16 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 	float minY = (std::min)((std::min)(y1, y2), y3);
 	float maxX = (std::max)((std::max)(x1, x2), x3);
 	float maxY = (std::max)((std::max)(y1, y2), y3);
+
+	if (polyIdx == 1) {
+		int stop = 234;
+	}
+	if (polyIdx == 2) {
+		int stop = 234;
+	}
+	if (polyIdx == 3) {
+		int stop = 234;
+	}
 
 	minX = (std::max)(minX, this->minClipX);
 	minY = (std::max)(minY, this->minClipY);
@@ -7734,17 +7837,7 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 		return doSwap;
 	};
 
-	// sort swap so adjanced triangles will do hald plane calculations on same data
-	// doing calculations on same data results in less(or no) errors when checking if pixel inside half plane
-	if (sortSwap(axStart, ayStart, axEnd, ayEnd)) {
-		aCw = false;
-	}
-	if (sortSwap(bxStart, byStart, bxEnd, byEnd)) {
-		bCw = false;
-	}
-	if (sortSwap(cxStart, cyStart, cxEnd, cyEnd)) {
-		cCw = false;
-	}
+	
 
 	if (polyIdx == 1) {
 		int stop = 234;
@@ -7778,6 +7871,18 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 		TestDetails::CohenSutherlandLineClip(axStart, ayStart, axEnd, ayEnd, xmin, xmax, ymin, ymax, polyIdx);
 		TestDetails::CohenSutherlandLineClip(bxStart, byStart, bxEnd, byEnd, xmin, xmax, ymin, ymax, polyIdx);
 		TestDetails::CohenSutherlandLineClip(cxStart, cyStart, cxEnd, cyEnd, xmin, xmax, ymin, ymax, polyIdx);
+	}
+
+	// sort swap so adjanced triangles will do hald plane calculations on same data
+	// doing calculations on same data results in less(or no) errors when checking if pixel inside half plane
+	if (sortSwap(axStart, ayStart, axEnd, ayEnd)) {
+		aCw = false;
+	}
+	if (sortSwap(bxStart, byStart, bxEnd, byEnd)) {
+		bCw = false;
+	}
+	if (sortSwap(cxStart, cyStart, cxEnd, cyEnd)) {
+		cCw = false;
 	}
 
 	auto ptTest = Point2D{ 525.f, 388.f };
@@ -7849,7 +7954,17 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 			bool testB = planeB.IsInside(pt);
 			bool testC = planeC.IsInside(pt);
 
-			if (x == 525 && y == 388) {
+			if (x == 531 && y == 217) {
+				if (polyIdx == 1) {
+					int stop = 234;
+				}
+				if (polyIdx == 2) {
+					int stop = 234;
+				}
+				if (polyIdx == 3) {
+					int stop = 234;
+				}
+
 				int stop = 23;
 			}
 

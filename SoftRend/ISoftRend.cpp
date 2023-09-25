@@ -85,7 +85,8 @@ private:
         // -53.9799156f     for left top overdraw test
         // -82.3793411f     for empty pixel test
         // -63.2798958f
-        static float angle = -53.9799156f;// -53.9799156f; //-43.7800713;// -53.9799156f;// -53.9799156f; //-53.9799156f;// 10.22f; //0.78f;
+        // -67.1799240f
+        static float angle = -67.1799240f;// -53.9799156f; //-43.7800713;// -53.9799156f;// -53.9799156f; //-53.9799156f;// 10.22f; //0.78f;
 
         MATRIX4X4 mrot;
         mrot.Build_XYZ_Rotation_MATRIX4X4(0.f, 0.f, angle);
@@ -105,7 +106,7 @@ private:
             angle -= 0.3f;
         }
 
-        angle -= 0.1f;
+        //angle -= 0.1f;
 
         VECTOR4D lightDir;
 
@@ -325,8 +326,14 @@ private:
         testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[25]);
         testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[24]);*/
 
-        //this->graphics->DrawRENDERLIST4DSolid(testTris.get(), nullptr);
-        this->graphics->DrawRENDERLIST4DSolid(renderList.get(), nullptr);
+        // -67.1799240f
+        // poly31 - planeC FAILS because of too far from screen, need better clipping and generate new triangles
+        testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[28]);
+        testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[31]);
+        testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[30]);
+
+        this->graphics->DrawRENDERLIST4DSolid(testTris.get(), nullptr);
+        //this->graphics->DrawRENDERLIST4DSolid(renderList.get(), nullptr);
 
         if(false)
         {

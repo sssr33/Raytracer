@@ -2,6 +2,7 @@
 #include "StdAfx.h"
 #include "Pipeline.h"
 
+#include <algorithm>
 
 Pipeline::Pipeline(void)
 {
@@ -1781,7 +1782,144 @@ void Pipeline::CameraToPerspectiveOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 
 void Pipeline::CameraToPerspectiveRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 {
+	float camFov = DirectX::XMConvertToRadians(cam->fov);
+	float    SinFov;
+	float    CosFov;
+	DirectX::XMScalarSinCos(&SinFov, &CosFov, 0.5f * camFov);
+	float Height22 = CosFov / SinFov;
+
 	DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(cam->fov), cam->aspect_ratio, cam->near_clip_z, cam->far_clip_z);
+	DirectX::XMMATRIX proj2 = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(cam->fov), cam->aspect_ratio, 3.f, cam->far_clip_z);
+
+	proj2 = DirectX::XMMatrixPerspectiveLH(cam->viewplane_width, cam->viewplane_height, cam->view_dist, cam->far_clip_z);
+
+	auto test_xmproj = [proj = proj](VERTEX4DT pt)
+	{
+		auto dxv = DirectX::XMVectorSet(pt.x, pt.y, pt.z, pt.w);
+		auto dxvProj = DirectX::XMVector4Transform(dxv, proj);
+		auto W = DirectX::XMVectorSplatW(dxvProj);
+		auto dxvProj2 = DirectX::XMVectorDivide(dxvProj, W);
+
+		auto res = pt;
+
+		res.v.x = DirectX::XMVectorGetX(dxvProj2);
+		res.v.y = DirectX::XMVectorGetY(dxvProj2);
+		res.v.z = DirectX::XMVectorGetZ(dxvProj2);
+		res.v.w = DirectX::XMVectorGetW(dxvProj2);
+
+		return res;
+	};
+	auto test_xmproj2 = [proj = proj2](VERTEX4DT pt)
+	{
+		auto dxv = DirectX::XMVectorSet(pt.x, pt.y, pt.z, pt.w);
+		auto dxvProj = DirectX::XMVector4Transform(dxv, proj);
+		auto W = DirectX::XMVectorSplatW(dxvProj);
+		auto dxvProj2 = DirectX::XMVectorDivide(dxvProj, W);
+
+		auto res = pt;
+
+		res.v.x = DirectX::XMVectorGetX(dxvProj2);
+		res.v.y = DirectX::XMVectorGetY(dxvProj2);
+		res.v.z = DirectX::XMVectorGetZ(dxvProj2);
+		res.v.w = DirectX::XMVectorGetW(dxvProj2);
+
+		return res;
+	};
+	auto test_xmclip2 = [proj = proj2](VERTEX4DT pt)
+	{
+		auto dxv = DirectX::XMVectorSet(pt.x, pt.y, pt.z, pt.w);
+		auto dxvProj = DirectX::XMVector4Transform(dxv, proj);
+
+		auto res = pt;
+
+		res.v.x = DirectX::XMVectorGetX(dxvProj);
+		res.v.y = DirectX::XMVectorGetY(dxvProj);
+		res.v.z = DirectX::XMVectorGetZ(dxvProj);
+		res.v.w = DirectX::XMVectorGetW(dxvProj);
+
+		return res;
+	};
+	auto test_ndc = [proj = proj2](VERTEX4DT pt)
+	{
+		auto dxv = DirectX::XMVectorSet(pt.x, pt.y, pt.z, pt.w);
+		auto W = DirectX::XMVectorSplatW(dxv);
+		auto dxvProj2 = DirectX::XMVectorDivide(dxv, W);
+
+		auto res = pt;
+
+		res.v.x = DirectX::XMVectorGetX(dxvProj2);
+		res.v.y = DirectX::XMVectorGetY(dxvProj2);
+		res.v.z = DirectX::XMVectorGetZ(dxvProj2);
+		res.v.w = DirectX::XMVectorGetW(dxvProj2);
+
+		return res;
+	};
+
+	auto test_proj = [&cam](VERTEX4DT pt)
+	{
+		float z = 1.0f / pt.z;
+		auto res = pt;
+
+		res.x = cam->view_dist * pt.x * z;
+		res.y = cam->view_dist * pt.y * cam->aspect_ratio * z;
+
+		return res;
+	};
+	auto test_toscreen = [&cam](VERTEX4DT pt)
+	{
+		float alpha = (0.5f * cam->viewport_width - 0.5f);
+		float beta = (0.5f * cam->viewport_height - 0.5f);
+		auto res = pt;
+
+		res.x = alpha + alpha * pt.x;
+		res.y = beta - beta * pt.y;
+
+		return res;
+	};
+	auto test_xmtoscreen = [&cam](VERTEX4DT pt)
+	{
+		const float HalfViewportWidth = cam->viewport_width * 0.5f;
+		const float HalfViewportHeight = cam->viewport_height * 0.5f;
+		DirectX::XMVECTOR Scale = DirectX::XMVectorSet(HalfViewportWidth, -HalfViewportHeight, 1.f, 0.0f);
+		DirectX::XMVECTOR Offset = DirectX::XMVectorSet(HalfViewportWidth, HalfViewportHeight, 1.f, 0.0f);
+
+		auto dxv = DirectX::XMVectorSet(pt.x, pt.y, pt.z, pt.w);
+		auto Result = DirectX::XMVectorMultiplyAdd(dxv, Scale, Offset);
+
+		auto res = pt;
+
+		res.x = DirectX::XMVectorGetX(Result);
+		res.y = DirectX::XMVectorGetY(Result);
+
+		return res;
+	};
+
+	{
+		VERTEX4DT testVertex = {};
+
+		testVertex.x = cam->aspect_ratio;
+		testVertex.y = 1.f;
+		testVertex.z = 4.f;
+		testVertex.w = 1.f;
+
+		auto xmprojed = test_xmproj(testVertex);
+		auto xmprojed2 = test_xmproj2(testVertex);
+
+		auto xmprojed3 = test_xmclip2(testVertex);
+		auto xmprojed4 = test_ndc(xmprojed3);
+
+		auto projed = test_proj(testVertex);
+
+		auto xmscreened = test_xmtoscreen(xmprojed);
+		auto xmscreened_22 = test_toscreen(xmprojed);
+		auto xmscreened2 = test_xmtoscreen(xmprojed2);
+		auto xmscreened2_22 = test_toscreen(xmprojed2);
+		auto screened = test_toscreen(projed);
+
+		auto xmxmprojed4 = test_toscreen(xmprojed4);
+
+		int stop = 234;
+	}
 
 	for(int poly = 0; poly < rendList->num_polys; poly++)
 	{
@@ -2081,4 +2219,714 @@ void Pipeline::CameraToScreenOBJECT4DLINE(OBJECT4D_LINE_PTR obj, CAM4D_PTR cam)
 		swprintf(mas, L"%f %f %f", obj->vtrans[i].v0.x, obj->vtrans[i].v0.y, obj->vtrans[i].v0.z);
 		MessageBox(0,mas,0,0);*/
 	}
+}
+
+void Pipeline::ClipPolygonScreenBounds(RENDERLIST4D_PTR rendList, CAM4D_PTR cam) {
+	std::vector<POLYF4D> curPolys;
+
+	curPolys.reserve(rendList->num_polys);
+
+	for (int poly = 0; poly < rendList->num_polys; poly++)
+	{
+		POLYF4D_PTR currPoly = rendList->poly_ptrs[poly];
+
+		if ((currPoly == NULL) || !(currPoly->state & struct3D::POLY4D_STATE_ACTIVE) || (currPoly->state & struct3D::POLY4D_STATE_BACKFACE) || (currPoly->state & struct3D::POLY4D_STATE_CLIPPED)) continue;
+
+		curPolys.push_back(*currPoly);
+	}
+
+	rendList->Reset_RENDERLIST4D();
+
+	int polyIdx = 0;
+
+	struct Lines {
+		Line2D ab, bc, ca;
+	};
+
+	const bool useShortLenForTest = true;
+	const bool useShortLenForRealClip = true;
+
+	if(false)
+	{
+		std::vector<Lines> polyLines;
+		std::vector<Lines> polyLinesClipped;
+
+		for (auto& poly : curPolys) {
+			Point2D a, b, c;
+
+			a.x = poly.tvlist[0].x;
+			a.y = poly.tvlist[0].y;
+			b.x = poly.tvlist[1].x;
+			b.y = poly.tvlist[1].y;
+			c.x = poly.tvlist[2].x;
+			c.y = poly.tvlist[2].y;
+
+			Lines lines;
+
+			lines.ab.start = a;
+			lines.ab.end = b;
+
+			lines.bc.start = b;
+			lines.bc.end = c;
+
+			lines.ca.start = c;
+			lines.ca.end = a;
+
+			polyLines.push_back(lines);
+
+			Lines linesClippes = lines;
+
+			Point2D clipMin = { 0.f, 0.f };
+			Point2D clipMax = { cam->viewport_width, cam->viewport_height };
+
+			if (auto clipped = CohenSutherlandLineClip(linesClippes.ab, clipMin, clipMax, useShortLenForTest)) {
+				linesClippes.ab = *clipped;
+			}
+
+			if (auto clipped = CohenSutherlandLineClip(linesClippes.bc, clipMin, clipMax, useShortLenForTest)) {
+				linesClippes.bc = *clipped;
+			}
+
+			if (auto clipped = CohenSutherlandLineClip(linesClippes.ca, clipMin, clipMax, useShortLenForTest)) {
+				linesClippes.ca = *clipped;
+			}
+
+			polyLinesClipped.push_back(linesClippes);
+		}
+
+		{
+			/*Point2D clipMin = { 0.f, 0.f };
+			Point2D clipMax = { cam->viewport_width, cam->viewport_height };
+
+			auto orig_0bc = polyLines[0].bc;
+			auto orig_2ab = polyLines[2].ab;
+			auto clipped_0bc = orig_0bc;
+			auto clipped_2ab = orig_2ab;
+
+			auto vec_0bc = (orig_0bc.start - orig_0bc.end).Normalized();
+			auto vec_2ab = (orig_2ab.end - orig_2ab.start).Normalized();
+
+			if (auto clipped = CohenSutherlandLineClip(orig_0bc, clipMin, clipMax, true)) {
+				clipped_0bc = *clipped;
+			}
+			if (auto clipped = CohenSutherlandLineClip(orig_2ab, clipMin, clipMax, true)) {
+				clipped_2ab = *clipped;
+			}*/
+
+			bool test1 = polyLines[0].bc.start.y <= polyLines[2].ab.end.y;
+			bool test2 = polyLinesClipped[0].bc.start.y <= polyLinesClipped[2].ab.end.y;
+			int stop = 234;
+		}
+	}
+
+	for (auto& poly : curPolys) {
+		Point2D a, b, c;
+
+		a.x = poly.tvlist[0].x;
+		a.y = poly.tvlist[0].y;
+		b.x = poly.tvlist[1].x;
+		b.y = poly.tvlist[1].y;
+		c.x = poly.tvlist[2].x;
+		c.y = poly.tvlist[2].y;
+
+		Line2D ab, bc, ca;
+
+		ab.start = a;
+		ab.end = b;
+
+		bc.start = b;
+		bc.end = c;
+
+		ca.start = c;
+		ca.end = a;
+
+		/*if (polyIdx != 1) {
+			++polyIdx;
+			continue;
+			int stop = 24;
+		}*/
+
+		bool yTest1 = ab.start.y >= bc.end.y;
+
+		if (polyIdx == 1) {
+			int stop = 24;
+		}
+
+		ab = SortSwap(ab);
+		bc = SortSwap(bc);
+		ca = SortSwap(ca);
+
+		if (polyIdx == 1) {
+			int stop = 24;
+		}
+
+		Point2D clipMin = { 0.f, 0.f };
+		Point2D clipMax = { cam->viewport_width, cam->viewport_height };
+
+		if (auto clipped = CohenSutherlandLineClip(ab, clipMin, clipMax, useShortLenForRealClip)) {
+			ab = *clipped;
+			ab.clipped = ab.startEdge != LinePointEdge::NoEdge || ab.endEdge != LinePointEdge::NoEdge;
+		}
+		else {
+			ab.declined = true;
+		}
+
+		if (auto clipped = CohenSutherlandLineClip(bc, clipMin, clipMax, useShortLenForRealClip)) {
+			bc = *clipped;
+			bc.clipped = bc.startEdge != LinePointEdge::NoEdge || bc.endEdge != LinePointEdge::NoEdge;
+		}
+		else {
+			bc.declined = true;
+		}
+
+		if (auto clipped = CohenSutherlandLineClip(ca, clipMin, clipMax, useShortLenForRealClip)) {
+			ca = *clipped;
+			ca.clipped = ca.startEdge != LinePointEdge::NoEdge || ca.endEdge != LinePointEdge::NoEdge;
+		}
+		else {
+			ca.declined = true;
+		}
+
+		bool yTest2 = ab.end.y >= bc.end.y;
+
+		bool skip = false;
+		std::vector<Point2D> screenPoly;
+
+		if (!ab.declined && !ab.clipped && !bc.declined && !bc.clipped && !ca.declined && !ca.clipped) {
+			// fully inside screen
+			rendList->Insert_POLYF4D_RENDERLIST4D(&poly);
+		}
+		else if (ab.declined && bc.declined && ca.declined) {
+			// triangle not inside screen
+			if (ab.outcodeStart & ab.outcodeEnd & bc.outcodeStart & bc.outcodeEnd & ca.outcodeStart & ca.outcodeEnd) {
+				// share same zone out of screen
+				// triangle fully not visible
+				skip = true;
+			}
+			else {
+				auto abPlane = HalfPlane::BuildFromPoints(ab.start, ab.end, ab.swapped);
+				auto bcPlane = HalfPlane::BuildFromPoints(bc.start, bc.end, bc.swapped);
+				auto caPlane = HalfPlane::BuildFromPoints(ca.start, ca.end, ca.swapped);
+
+				// screen CW order
+				Point2D clipPt[] = { clipMin, { clipMax.x, clipMin.y }, clipMax, { clipMin.x, clipMax.y } };
+
+				size_t insideCount = 0;
+
+				for (auto& pt : clipPt) {
+					if (abPlane.IsInside(pt) && bcPlane.IsInside(pt) && caPlane.IsInside(pt)) {
+						++insideCount;
+					}
+				}
+
+				// screen vertices(clipPt) must be or fully inside or fully outside
+				assert(insideCount == std::size(clipPt) || insideCount == 0);
+
+				if (insideCount == std::size(clipPt)) {
+					screenPoly.insert(std::end(screenPoly), std::begin(clipPt), std::end(clipPt));
+				}
+			}
+		}
+		else {
+			assert(ab.clipped || bc.clipped || ca.clipped);
+			// some edge clipped
+			// some may be declined, not use declined
+
+			ab = Unswap(ab);
+			bc = Unswap(bc);
+			ca = Unswap(ca);
+
+			std::vector<Point2D> inside;
+			std::vector<Point2DOnEdge> edgePt;
+
+			auto addAnyIfInside = [](const Line2D& line, std::vector<Point2D>& vec)
+			{
+				if (!line.declined) {
+					if (line.outcodeStart == INSIDE) {
+						vec.push_back(line.start);
+						return true;
+					}
+					else if (line.outcodeEnd == INSIDE) {
+						vec.push_back(line.end);
+						return true;
+					}
+				}
+
+				return false;
+			};
+			auto addIfEdgeFullyInside = [](const Line2D& line, std::vector<Point2D>& vec)
+			{
+				if (!line.declined && line.outcodeStart == INSIDE && line.outcodeEnd == INSIDE) {
+					vec.push_back(line.start);
+					vec.push_back(line.end);
+					return true;
+				}
+
+				return false;
+			};
+			auto addIfEdge = [&clipMin, &clipMax](const Line2D& line1, const Line2D& line2, std::vector<Point2DOnEdge>& vec)
+			{
+				if (auto pt = line1.GetEndPointOnEdge()) {
+					auto clamped = pt->ClampedByEdge(clipMin, clipMax);
+					clamped.fromTriangle = true;
+					vec.push_back(clamped);
+				}
+				if (auto pt = line2.GetStartPointOnEdge()) {
+					auto clamped = pt->ClampedByEdge(clipMin, clipMax);
+					clamped.fromTriangle = true;
+					vec.push_back(clamped);
+				}
+			};
+
+			{
+				// some edges are clipped
+				// inside can be 0, 1 or 2 vertices
+				// 2 vertices can be when single edge fully inside
+				// else if 1 vertex inside then inside vertex from any edge will do
+				// else if there is no inside vertices
+
+				bool twoAdded = addIfEdgeFullyInside(ab, inside) || addIfEdgeFullyInside(bc, inside) || addIfEdgeFullyInside(ca, inside);
+				if (!twoAdded) {
+					(addAnyIfInside(ab, inside) || addAnyIfInside(bc, inside) || addAnyIfInside(ca, inside));
+				}
+			}
+
+			addIfEdge(ab, bc, edgePt);
+			addIfEdge(bc, ca, edgePt);
+			addIfEdge(ca, ab, edgePt);
+
+			// screen CW order
+			{
+				Point2DOnEdge clipEdgePt;
+
+				clipEdgePt.pt = clipMin;
+				clipEdgePt.edge = LinePointEdge::ClipMinY;
+				clipEdgePt.fromTriangle = false;
+
+				edgePt.push_back(clipEdgePt);
+			}
+			{
+				Point2DOnEdge clipEdgePt;
+
+				clipEdgePt.pt.x = clipMax.x;
+				clipEdgePt.pt.y = clipMin.y;
+				clipEdgePt.edge = LinePointEdge::ClipMinY;
+				clipEdgePt.fromTriangle = false;
+
+				edgePt.push_back(clipEdgePt);
+			}
+			{
+				Point2DOnEdge clipEdgePt;
+
+				clipEdgePt.pt = clipMax;
+				clipEdgePt.edge = LinePointEdge::ClipMaxX;
+				clipEdgePt.fromTriangle = false;
+
+				edgePt.push_back(clipEdgePt);
+			}
+			{
+				Point2DOnEdge clipEdgePt;
+
+				clipEdgePt.pt.x = clipMin.x;
+				clipEdgePt.pt.y = clipMax.y;
+				clipEdgePt.edge = LinePointEdge::ClipMaxX;
+				clipEdgePt.fromTriangle = false;
+
+				edgePt.push_back(clipEdgePt);
+			}
+
+			auto startEdge = edgePt[0].edge;
+
+			std::sort(std::begin(edgePt), std::end(edgePt), [&clipMax, startEdge](const Point2DOnEdge& a, const Point2DOnEdge& b)
+				{
+					return a.GetEdgeOrder(clipMax, startEdge) < b.GetEdgeOrder(clipMax, startEdge);
+				});
+
+			std::vector<float> testOrders;
+
+			for (auto& i : edgePt) {
+				testOrders.push_back(i.GetEdgeOrder(clipMax, startEdge));
+			}
+
+			{
+				auto findFromTriangle = [](const Point2DOnEdge& i) {
+					return i.fromTriangle;
+				};
+
+				size_t startIdx = 0; // to track processed segments
+				auto beg = std::begin(edgePt);
+
+				while (beg != std::end(edgePt)) {
+					// if not inside segment - find begin of next segment and delete vertices not in segment
+					// if in segment - do nothing
+					auto end = std::find_if(beg, std::end(edgePt), findFromTriangle);
+					edgePt.erase(beg, end);
+
+					if (startIdx == edgePt.size()) {
+						break;
+					}
+
+					if (!edgePt.empty()) {
+						// go to segment end
+						end = std::find_if(std::begin(edgePt) + startIdx + 1, std::end(edgePt), findFromTriangle); // end of cur segment
+						beg = end;
+						if (beg != std::end(edgePt)) {
+							// go past segment end
+							beg = beg + 1;
+							startIdx = beg - std::begin(edgePt);
+						}
+					}
+				}
+			}
+
+			assert(inside.size() == 1 || inside.size() == 2);
+			assert(edgePt.size() >= 1);
+
+			screenPoly.reserve(inside.size() + edgePt.size());
+
+			screenPoly.insert(std::end(screenPoly), std::begin(inside), std::end(inside));
+			std::transform(std::begin(edgePt), std::end(edgePt), std::back_inserter(screenPoly), [](const Point2DOnEdge& edgePt)
+				{
+					return edgePt.pt;
+				});
+
+			/*if (polyIdx == 1) {
+				std::swap(screenPoly[1], screenPoly[2]);
+			}*/
+
+			polyIdx;
+
+			assert(screenPoly.size() >= 3); // at least 3 vertices for triangle
+		}
+
+		if (!screenPoly.empty()) {
+			// screenPoly must be CW in screen(pixel) space
+			// screenPoly must be convex
+			// TODO add asserts to check for CW order
+			// TODO add asserts to check for convex screenPoly
+
+			// CW(screen space) + convex gives easy way to triangulate it
+			// just take vertices in order(already CW order) and connect first, previous and current(starting from 2-idx)
+			// it will do fan triangulation, easy implementation
+			// TODO look for other triangulations of convex polygon - https://en.wikipedia.org/wiki/Minimum-weight_triangulation
+			for (size_t i = 2; i < screenPoly.size(); ++i) {
+				auto pt0 = screenPoly[0];
+				auto pt1 = screenPoly[i - 1];
+				auto pt2 = screenPoly[i];
+
+				auto newPoly = poly;
+
+				newPoly.tvlist[0].x = pt0.x;
+				newPoly.tvlist[0].y = pt0.y;
+				newPoly.tvlist[1].x = pt1.x;
+				newPoly.tvlist[1].y = pt1.y;
+				newPoly.tvlist[2].x = pt2.x;
+				newPoly.tvlist[2].y = pt2.y;
+
+				// fully inside screen
+				rendList->Insert_POLYF4D_RENDERLIST4D(&newPoly);
+			}
+		}
+
+		// if all declined maybe screen inside triangle
+
+		//rendList->Insert_POLYF4D_RENDERLIST4D(&poly);
+
+		++polyIdx;
+	}
+}
+
+Pipeline::Line2D Pipeline::SortSwap(Line2D line) {
+	if (std::abs(line.start.x) > std::abs(line.end.x)) {
+		line.swapped = true;
+	}
+	else if (std::abs(line.start.x) == std::abs(line.end.x) && std::abs(line.start.y) > std::abs(line.end.y)) {
+		line.swapped = true;
+	}
+
+	if (line.swapped) {
+		std::swap(line.start.x, line.end.x);
+		std::swap(line.start.y, line.end.y);
+		std::swap(line.outcodeStart, line.outcodeEnd);
+		std::swap(line.startEdge, line.endEdge);
+	}
+
+	return line;
+}
+
+Pipeline::Line2D Pipeline::Unswap(Line2D line) {
+	if (line.swapped) {
+		line.swapped = false;
+		std::swap(line.start.x, line.end.x);
+		std::swap(line.start.y, line.end.y);
+		std::swap(line.outcodeStart, line.outcodeEnd);
+		std::swap(line.startEdge, line.endEdge);
+	}
+
+	return line;
+}
+
+Pipeline::OutCode Pipeline::ComputeOutCode(const Point2D& pt, const Point2D& clipMin, const Point2D& clipMax) {
+	OutCode code = INSIDE;  // initialised as being inside of clip window
+
+	if (pt.x < clipMin.x)           // to the left of clip window
+		code |= LEFT;
+	else if (pt.x > clipMax.x)      // to the right of clip window
+		code |= RIGHT;
+	if (pt.y < clipMin.y)           // below the clip window
+		code |= BOTTOM;
+	else if (pt.y > clipMax.y)      // above the clip window
+		code |= TOP;
+
+	return code;
+}
+
+std::optional<Pipeline::Line2D> Pipeline::CohenSutherlandLineClip(Line2D line, const Point2D& clipMin, const Point2D& clipMax, bool tryShortLen /*= false*/) {
+	/*float x0_orig = x0;
+		float y0_orig = y0;
+		float x1_orig = x1;
+		float y1_orig = y1;*/
+
+	// TODO need more tests with out of screen triangles
+	// experimental
+	if (tryShortLen) {
+		//constexpr float shortLenValue = 1000000.f;
+		constexpr float shortLenValue = 10000000000.f; // for 100000000000000000000000000000000000000.f
+		float xlen = std::abs(line.start.x - line.end.x);
+		float ylen = std::abs(line.start.y - line.end.y);
+
+		if (xlen < ylen) {
+			if (xlen > shortLenValue) {
+				float toShortLenK = shortLenValue / xlen;
+
+				if (std::abs(line.start.x) < std::abs(line.end.x)) {
+					auto v = line.end - line.start;
+
+					line.end.x = line.start.x + v.x * toShortLenK;
+					line.end.y = line.start.y + v.y * toShortLenK;
+				}
+				else {
+					auto v = line.start - line.end;
+
+					line.start.x = line.end.x + v.x * toShortLenK;
+					line.start.y = line.end.y + v.y * toShortLenK;
+				}
+
+				int stop = 234;
+			}
+		}
+		else {
+			if (ylen > shortLenValue) {
+				float toShortLenK = shortLenValue / ylen;
+
+				if (std::abs(line.start.y) < std::abs(line.end.y)) {
+					auto v = line.end - line.start;
+
+					line.end.x = line.start.x + v.x * toShortLenK;
+					line.end.y = line.start.y + v.y * toShortLenK;
+				}
+				else {
+					auto v = line.start - line.end;
+
+					line.start.x = line.end.x + v.x * toShortLenK;
+					line.start.y = line.end.y + v.y * toShortLenK;
+				}
+
+				int stop = 234;
+			}
+		}
+	}
+
+	// compute outcodes for P0, P1, and whatever point lies outside the clip rectangle
+	OutCode outcode0 = ComputeOutCode(line.start, clipMin, clipMax);
+	OutCode outcode1 = ComputeOutCode(line.end, clipMin, clipMax);
+	bool accept = false;
+
+	line.outcodeStart = outcode0;
+	line.outcodeEnd = outcode1;
+
+	while (true) {
+		if (!(outcode0 | outcode1)) {
+			// bitwise OR is 0: both points inside window; trivially accept and exit loop
+			accept = true;
+			break;
+		}
+		else if (outcode0 & outcode1) {
+			// bitwise AND is not 0: both points share an outside zone (LEFT, RIGHT, TOP,
+			// or BOTTOM), so both must be outside window; exit loop (accept is false)
+			break;
+		}
+		else {
+			// failed both tests, so calculate the line segment to clip
+			// from an outside point to an intersection with clip edge
+			float x, y;
+
+			// At least one endpoint is outside the clip rectangle; pick it.
+			OutCode outcodeOut = outcode1 > outcode0 ? outcode1 : outcode0;
+			LinePointEdge edge = LinePointEdge::NoEdge;
+
+			auto len = line.end - line.start;
+			len.x = std::fabs(len.x);
+			len.y = std::fabs(len.y);
+
+			// Now find the intersection point;
+			// use formulas:
+			//   slope = (y1 - y0) / (x1 - x0)
+			//   x = x0 + (1 / slope) * (ym - y0), where ym is ymin or ymax
+			//   y = y0 + slope * (xm - x0), where xm is xmin or xmax
+			// No need to worry about divide-by-zero because, in each case, the
+			// outcode bit being tested guarantees the denominator is non-zero
+			if (outcodeOut & TOP) {           // point is above the clip window
+				if (std::fabs(line.start.x) < std::fabs(line.end.x)) {
+					x = line.start.x + len.x * (clipMax.y - line.start.y) / len.y;
+				}
+				else {
+					x = line.end.x + len.x * (clipMax.y - line.end.y) / len.y;
+				}
+
+				y = clipMax.y;
+				edge = LinePointEdge::ClipMaxY;
+			}
+			else if (outcodeOut & BOTTOM) { // point is below the clip window
+				if (std::fabs(line.start.x) < std::fabs(line.end.x)) {
+					x = line.start.x + len.x * (clipMin.y - line.start.y) / len.y;
+				}
+				else {
+					x = line.end.x + len.x * (clipMin.y - line.end.y) / len.y;
+				}
+
+				y = clipMin.y;
+				edge = LinePointEdge::ClipMinY;
+			}
+			else if (outcodeOut & RIGHT) {  // point is to the right of clip window
+				if (std::fabs(line.start.y) < std::fabs(line.end.y)) {
+					y = line.start.y + len.y * (clipMax.x - line.start.x) / len.x;
+				}
+				else {
+					y = line.end.y + len.y * (clipMax.x - line.end.x) / len.x;
+				}
+
+				x = clipMax.x;
+				edge = LinePointEdge::ClipMaxX;
+			}
+			else if (outcodeOut & LEFT) {   // point is to the left of clip window
+				if (std::fabs(line.start.y) < std::fabs(line.end.y)) {
+					y = line.start.y + len.y * (clipMin.x - line.start.x) / len.x;
+				}
+				else {
+					y = line.end.y + len.y * (clipMin.x - line.end.x) / len.x;
+				}
+
+				x = clipMin.x;
+				edge = LinePointEdge::ClipMinX;
+			}
+
+			// Now we move outside point to intersection point to clip
+			// and get ready for next pass.
+			if (outcodeOut == outcode0) {
+				line.start.x = x;
+				line.start.y = y;
+				line.startEdge = edge;
+				outcode0 = ComputeOutCode(line.start, clipMin, clipMax);
+			}
+			else {
+				line.end.x = x;
+				line.end.y = y;
+				line.endEdge = edge;
+				outcode1 = ComputeOutCode(line.end, clipMin, clipMax);
+			}
+		}
+	}
+
+	if (accept) {
+		/*line.outcodeStart = outcode0;
+		line.outcodeEnd = outcode1;*/
+		return line;
+	}
+
+	return {};
+}
+
+Pipeline::Point2DOnEdge Pipeline::Point2DOnEdge::ClampedByEdge(const Point2D& clipMin, const Point2D& clipMax) const {
+	Point2DOnEdge res;
+
+	res = *this;
+
+	switch (this->edge) {
+	case Pipeline::LinePointEdge::ClipMaxX:
+	case Pipeline::LinePointEdge::ClipMinX:
+		res.pt.y = std::clamp(res.pt.y, clipMin.y, clipMax.y);
+		break;
+	case Pipeline::LinePointEdge::ClipMaxY:
+	case Pipeline::LinePointEdge::ClipMinY:
+		res.pt.x = std::clamp(res.pt.x, clipMin.x, clipMax.x);
+		break;
+	}
+
+	return res;
+}
+
+float Pipeline::Point2DOnEdge::GetEdgeOrder(const Point2D& clipMax, LinePointEdge startEdge) const {
+	float order = std::numeric_limits<float>::infinity();
+	const float edgeStep = (std::max)(clipMax.x, clipMax.y);
+	constexpr LinePointEdge edges[4] = { LinePointEdge::ClipMinY, LinePointEdge::ClipMaxX, LinePointEdge::ClipMaxY, LinePointEdge::ClipMinX };
+	size_t edgeIdx = 0;
+
+	auto startIt = std::find(std::begin(edges), std::end(edges), startEdge);
+	auto startIdIdx = startIt - std::begin(edges);
+
+	for (size_t i = 0; i < std::size(edges); ++i, ++edgeIdx) {
+		if (edges[(startIdIdx + i) % std::size(edges)] == this->edge) {
+			break;
+		}
+	}
+
+	float actualEdgeStep = edgeStep * edgeIdx;
+
+	switch (this->edge) {
+	case LinePointEdge::ClipMinY:
+		// bottom edge
+		order = actualEdgeStep + this->pt.x;
+		break;
+	case LinePointEdge::ClipMaxX:
+		// right edge
+		order = actualEdgeStep + this->pt.y;
+		break;
+	case LinePointEdge::ClipMaxY:
+		// top edge
+		order = actualEdgeStep + (clipMax.x - this->pt.x);
+		break;
+	case LinePointEdge::ClipMinX:
+		// left edge
+		order = actualEdgeStep + (clipMax.y - this->pt.y);
+		break;
+	}
+
+	return order;
+}
+
+std::optional<Pipeline::Point2DOnEdge> Pipeline::Line2D::GetStartPointOnEdge() const {
+	if (this->startEdge == LinePointEdge::NoEdge) {
+		return {};
+	}
+
+	Point2DOnEdge ptOnEdge;
+
+	ptOnEdge.pt = this->start;
+	ptOnEdge.edge = this->startEdge;
+
+	return ptOnEdge;
+}
+
+std::optional<Pipeline::Point2DOnEdge> Pipeline::Line2D::GetEndPointOnEdge() const {
+	if (this->endEdge == LinePointEdge::NoEdge) {
+		return {};
+	}
+
+	Point2DOnEdge ptOnEdge;
+
+	ptOnEdge.pt = this->end;
+	ptOnEdge.edge = this->endEdge;
+
+	return ptOnEdge;
 }

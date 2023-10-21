@@ -772,7 +772,7 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 				auto findOriginalIdx = [&](int index)
 				{
 					auto polySorted = rendList->poly_ptrs[index];
-					int idx = polySorted  - &rendList->poly_data[0];
+					int idx = static_cast<int>(polySorted  - &rendList->poly_data[0]);
 					return idx;
 				};
 

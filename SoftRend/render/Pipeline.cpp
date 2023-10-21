@@ -2079,8 +2079,8 @@ void Pipeline::PerspectiveToScreenOBJECT4D(OBJECT4D_PTR obj, CAM4D_PTR cam)
 
 void Pipeline::PerspectiveToScreenRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_PTR cam)
 {
-	float alpha = (0.5f * cam->viewport_width - 0.5f);
-	float beta = (0.5f * cam->viewport_height - 0.5f);
+	const float halfViewportWidth = 0.5f * cam->viewport_width;
+	const float halfViewportHeight = 0.5f * cam->viewport_height;
 
 	for(int poly = 0; poly < rendList->num_polys; poly++)
 	{
@@ -2091,8 +2091,8 @@ void Pipeline::PerspectiveToScreenRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_
 
 		for(int vertex = 0; vertex < 3; vertex++)
 		{
-			currPoly->tvlist[vertex].x = alpha + alpha * currPoly->tvlist[vertex].x;
-			currPoly->tvlist[vertex].y = beta - beta * currPoly->tvlist[vertex].y;
+			currPoly->tvlist[vertex].x = halfViewportWidth + halfViewportWidth * currPoly->tvlist[vertex].x;
+			currPoly->tvlist[vertex].y = halfViewportHeight - halfViewportHeight * currPoly->tvlist[vertex].y;
 		}
 	}
 }

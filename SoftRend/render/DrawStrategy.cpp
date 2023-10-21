@@ -549,8 +549,8 @@ int Draw32BitStrategy::setClipBorders(float minClipX, float minClipY, float maxC
 		minClipX = minClipY = 0;
 	}
 
-	this->maxClipX = maxClipX - 1;
-	this->maxClipY = maxClipY - 1;
+	this->maxClipX = maxClipX;
+	this->maxClipY = maxClipY;
 	this->minClipX = minClipX;
 	this->minClipY = minClipY;
 
@@ -7789,7 +7789,7 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 	minX = (std::max)(minX, this->minClipX);
 	minY = (std::max)(minY, this->minClipY);
 	maxX = (std::min)(maxX, this->maxClipX);
-	maxY = (std::min)(maxY, this->maxClipX);
+	maxY = (std::min)(maxY, this->maxClipY);
 
 	uint32_t startX = static_cast<uint32_t>(minX);
 	uint32_t startY = static_cast<uint32_t>(minY);
@@ -7991,8 +7991,6 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 			}
 		}
 	}
-
-	int top = 234;
 }
 
 float Draw32BitStrategy::ClampScreenX(float x) const

@@ -1921,50 +1921,146 @@ void Pipeline::CameraToPerspectiveRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_
 		int stop = 234;
 	}
 
-	for(int poly = 0; poly < rendList->num_polys; poly++)
 	{
-		POLYF4D_PTR currPoly = rendList->poly_ptrs[poly];
+		std::vector<POLYF4D> curPolys;
+		curPolys.reserve(rendList->num_polys);
 
-		if((currPoly == NULL) || !(currPoly->state & struct3D::POLY4D_STATE_ACTIVE) || (currPoly->state & struct3D::POLY4D_STATE_BACKFACE) || (currPoly->state & struct3D::POLY4D_STATE_CLIPPED)) continue;
-
-		for(int vertex = 0; vertex < 3; vertex++)
+		for (int poly = 0; poly < rendList->num_polys; poly++)
 		{
-			/*double z = currPoly->tvlist[vertex].z;
+			POLYF4D_PTR currPoly = rendList->poly_ptrs[poly];
 
-			currPoly->tvlist[vertex].x = ((double)cam->view_dist * (double)currPoly->tvlist[vertex].x / z);
-			currPoly->tvlist[vertex].y = ((double)cam->view_dist * (double)currPoly->tvlist[vertex].y * (double)cam->aspect_ratio / z);*/
+			if ((currPoly == NULL) || !(currPoly->state & struct3D::POLY4D_STATE_ACTIVE) || (currPoly->state & struct3D::POLY4D_STATE_BACKFACE) || (currPoly->state & struct3D::POLY4D_STATE_CLIPPED)) continue;
 
-			auto vCopy = currPoly->tvlist[vertex];
-			auto dxv = DirectX::XMVectorSet(vCopy.x, vCopy.y, vCopy.z, vCopy.w);
-			auto dxvProj = DirectX::XMVector4Transform(dxv, proj);
-			auto W = DirectX::XMVectorSplatW(dxvProj);
-			auto dxvProj2 = DirectX::XMVectorDivide(dxvProj, W);
+			curPolys.push_back(*currPoly);
+		}
 
-			float z = 1.0f / currPoly->tvlist[vertex].z;
+		rendList->Reset_RENDERLIST4D();
 
-			float part_a_1 = cam->view_dist * currPoly->tvlist[vertex].y;
-			float part_a_2 = cam->aspect_ratio * z;
-			float part_a_3 = part_a_1 * part_a_2;
+		for (auto& poly : curPolys) {
+			for (int vertex = 0; vertex < 3; vertex++) {
+				auto toClipSpace = test_xmclip2(poly.tvlist[vertex]);
+				poly.tvlist[vertex].v = toClipSpace.v;
+			}
+		}
 
-			float part_b_1 = cam->view_dist * currPoly->tvlist[vertex].y;
-			float part_b_2 = part_b_1 * cam->aspect_ratio;
-			float part_b_3 = part_b_2 * z;
+		for (auto& poly : curPolys) {
+			// TEST for skipping clip
+			/*rendList->Insert_POLYF4D_RENDERLIST4D(&poly);
+			continue;*/
+			auto clipped = this->clipper.Clip(poly.tvlist[0].v, poly.tvlist[1].v, poly.tvlist[2].v);
 
-			uint32_t z_binRep = *reinterpret_cast<uint32_t*>(&z);
-			uint32_t ar_binRep = *reinterpret_cast<uint32_t*>(&cam->aspect_ratio);
-			uint32_t y_binRep = *reinterpret_cast<uint32_t*>(&currPoly->tvlist[vertex].y);
+			{
+				auto p2 = poly;
+				auto clippedNDC = clipped;
 
-			currPoly->tvlist[vertex].x = cam->view_dist * currPoly->tvlist[vertex].x * z;
-			currPoly->tvlist[vertex].y = cam->view_dist * currPoly->tvlist[vertex].y * cam->aspect_ratio * z;
+				for (auto& i : clippedNDC) {
+					p2.tvlist[0].v = i;
+					auto res = test_ndc(p2.tvlist[0]);
+					i = res.v;
+				}
+
+				auto clippedScreen = clippedNDC;
+
+				for (auto& i : clippedScreen) {
+					float alpha = (0.5f * cam->viewport_width - 0.5f);
+					float beta = (0.5f * cam->viewport_height - 0.5f);
+
+					i.x = alpha + alpha * i.x;
+					i.y = beta - beta * i.y;
+				}
+
+				int stop = 234;
+			}
+
+			if (clipped.size() > 2) {
+				// triangulate event if 3 vertices because they may be clipped too
+				for (size_t vertex = 2; vertex < clipped.size(); ++vertex) {
+					auto newPoly = poly;
+
+					newPoly.tvlist[0].v = clipped[0];
+					newPoly.tvlist[1].v = clipped[vertex - 1];
+					newPoly.tvlist[2].v = clipped[vertex - 0];
+
+					rendList->Insert_POLYF4D_RENDERLIST4D(&newPoly);
+				}
+			}
+			// TODO add logic for clipper to detect triangles inside
+			//else if (clipped.size() == 3) {
+			//	// inside, copy as is
+			//	rendList->Insert_POLYF4D_RENDERLIST4D(&poly);
+			//}
+			else if (clipped.size() == 0) {
+				// fully outside, do nothing
+				int stop = 234;
+			}
+			else {
+				// clipper error
+				assert(false);
+			}
+		}
+
+		for (int poly = 0; poly < rendList->num_polys; poly++) {
+			POLYF4D_PTR currPoly = rendList->poly_ptrs[poly];
+
+			if ((currPoly == NULL) || !(currPoly->state & struct3D::POLY4D_STATE_ACTIVE) || (currPoly->state & struct3D::POLY4D_STATE_BACKFACE) || (currPoly->state & struct3D::POLY4D_STATE_CLIPPED))
+				continue;
+
+			for (int vertex = 0; vertex < 3; vertex++) {
+				auto v = currPoly->tvlist[vertex];
+				auto res = test_ndc(currPoly->tvlist[vertex]);
+				currPoly->tvlist[vertex] = res;
+			}
 
 			int stop = 234;
+		}
+	}
 
-			//cam->
+	if (false) {
+		for (int poly = 0; poly < rendList->num_polys; poly++)
+		{
+			POLYF4D_PTR currPoly = rendList->poly_ptrs[poly];
 
-			/*double z = 1.0 / currPoly->tvlist[vertex].z;
+			if ((currPoly == NULL) || !(currPoly->state & struct3D::POLY4D_STATE_ACTIVE) || (currPoly->state & struct3D::POLY4D_STATE_BACKFACE) || (currPoly->state & struct3D::POLY4D_STATE_CLIPPED)) continue;
 
-			currPoly->tvlist[vertex].x = ((double)cam->view_dist * (double)currPoly->tvlist[vertex].x * z);
-			currPoly->tvlist[vertex].y = ((double)cam->view_dist * (double)currPoly->tvlist[vertex].y * (double)cam->aspect_ratio * z);*/
+			for (int vertex = 0; vertex < 3; vertex++)
+			{
+				/*double z = currPoly->tvlist[vertex].z;
+
+				currPoly->tvlist[vertex].x = ((double)cam->view_dist * (double)currPoly->tvlist[vertex].x / z);
+				currPoly->tvlist[vertex].y = ((double)cam->view_dist * (double)currPoly->tvlist[vertex].y * (double)cam->aspect_ratio / z);*/
+
+				auto vCopy = currPoly->tvlist[vertex];
+				auto dxv = DirectX::XMVectorSet(vCopy.x, vCopy.y, vCopy.z, vCopy.w);
+				auto dxvProj = DirectX::XMVector4Transform(dxv, proj);
+				auto W = DirectX::XMVectorSplatW(dxvProj);
+				auto dxvProj2 = DirectX::XMVectorDivide(dxvProj, W);
+
+				float z = 1.0f / currPoly->tvlist[vertex].z;
+
+				float part_a_1 = cam->view_dist * currPoly->tvlist[vertex].y;
+				float part_a_2 = cam->aspect_ratio * z;
+				float part_a_3 = part_a_1 * part_a_2;
+
+				float part_b_1 = cam->view_dist * currPoly->tvlist[vertex].y;
+				float part_b_2 = part_b_1 * cam->aspect_ratio;
+				float part_b_3 = part_b_2 * z;
+
+				uint32_t z_binRep = *reinterpret_cast<uint32_t*>(&z);
+				uint32_t ar_binRep = *reinterpret_cast<uint32_t*>(&cam->aspect_ratio);
+				uint32_t y_binRep = *reinterpret_cast<uint32_t*>(&currPoly->tvlist[vertex].y);
+
+				currPoly->tvlist[vertex].x = cam->view_dist * currPoly->tvlist[vertex].x * z;
+				currPoly->tvlist[vertex].y = cam->view_dist * currPoly->tvlist[vertex].y * cam->aspect_ratio * z;
+
+				int stop = 234;
+
+				//cam->
+
+				/*double z = 1.0 / currPoly->tvlist[vertex].z;
+
+				currPoly->tvlist[vertex].x = ((double)cam->view_dist * (double)currPoly->tvlist[vertex].x * z);
+				currPoly->tvlist[vertex].y = ((double)cam->view_dist * (double)currPoly->tvlist[vertex].y * (double)cam->aspect_ratio * z);*/
+			}
 		}
 	}
 }

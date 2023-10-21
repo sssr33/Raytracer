@@ -32,6 +32,7 @@
     <ClInclude Include="ISoftRend.h" />
     <ClInclude Include="render\GraphicImpInMemory.h" />
     <ClInclude Include="DebugLayer\DebugLayer.h" />
+    <ClInclude Include="render\Clip\SutherlandHodgmanTriangleClipper4D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\fixp\fixed_func.cpp" />
@@ -61,5 +62,6 @@
     <ClCompile Include="ISoftRend.cpp" />
     <ClCompile Include="render\GraphicImpInMemory.cpp" />
     <ClCompile Include="DebugLayer\DebugLayer.cpp" />
+    <ClCompile Include="render\Clip\SutherlandHodgmanTriangleClipper4D.cpp" />
   </ItemGroup>
 </Project>

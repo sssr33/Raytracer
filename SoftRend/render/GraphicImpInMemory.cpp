@@ -608,7 +608,7 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 		auto idx1 = getOrigIndex(114, rendList);
 		auto idx2 = getOrigIndex(116, rendList);*/
 
-		float dist = rendList->poly_ptrs[1]->tvlist[0].y - rendList->poly_ptrs[1]->tvlist[2].y;
+		//float dist = rendList->poly_ptrs[1]->tvlist[0].y - rendList->poly_ptrs[1]->tvlist[2].y;
 
 		struct SimplePoly {
 			VERTEX4DT a;
@@ -667,7 +667,8 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 			int stop = 234;
 		}*/
 
-		pipe.ClipPolygonScreenBounds(rendList, &mainCam);
+		// old 2D clipping, but still should work good for 2d geometry but not for 2d transformed from 3d
+		//pipe.ClipPolygonScreenBounds(rendList, &mainCam);
 		//pipe.CameraToScreenRENDERLIST4D(rendList, &mainCam);
 	}
 

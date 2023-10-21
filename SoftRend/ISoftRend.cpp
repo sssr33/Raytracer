@@ -106,7 +106,7 @@ private:
             angle -= 0.3f;
         }
 
-        //angle -= 0.1f;
+        angle -= 0.1f;
 
         VECTOR4D lightDir;
 
@@ -328,12 +328,12 @@ private:
 
         // -67.1799240f
         // poly31 - planeC FAILS because of too far from screen, need better clipping and generate new triangles
-        testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[28]);
+        /*testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[28]);
         testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[31]);
         testTris->Insert_POLYF4D_RENDERLIST4D(renderList->poly_ptrs[30]);
 
-        this->graphics->DrawRENDERLIST4DSolid(testTris.get(), nullptr);
-        //this->graphics->DrawRENDERLIST4DSolid(renderList.get(), nullptr);
+        this->graphics->DrawRENDERLIST4DSolid(testTris.get(), nullptr);*/
+        this->graphics->DrawRENDERLIST4DSolid(renderList.get(), nullptr);
 
         if(false)
         {

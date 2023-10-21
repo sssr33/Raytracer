@@ -1044,7 +1044,7 @@ int GeometryGen::generateShadowVolume(LIGHT_PTR l_in, int num_l_in, OBJECT4D_PTR
 
 	vecCopy(&l_in[0].dir, &vl);
 	vecNormalize(&vl);
-	//vecScale(300000000000000000000000000000000000000.f, &vl); // bug nand(!) TODO maybe fix this corner case
+	//vecScale(340200000000000000000000000000000000000.f, &vl); // bug nand(!) TODO maybe fix this corner case
 	vecScale(100000000000000000000000000000000000000.f, &vl); // bug
 	//vecScale(1000000000000000000000000000000000.f, &vl); // bug
 	//vecScale(1000000000000000000000000000000.f, &vl); // looks like ok
@@ -1053,6 +1053,9 @@ int GeometryGen::generateShadowVolume(LIGHT_PTR l_in, int num_l_in, OBJECT4D_PTR
 	//vecScale(1000000, &vl);
 	//vecScale(100000000, &vl);
 	//vecScale(1000, &vl);
+	
+	//vecScale(219, &vl);
+	//vecScale(218, &vl);
 
 	for(int i = 0; i < pnum; i+=2)
 	{

@@ -7843,7 +7843,7 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 		int stop = 234;
 	}
 
-	{
+	/*{
 		const float xmin = 0.f;
 		const float ymin = 0.f;
 		const float xmax = 1424.f;
@@ -7871,7 +7871,7 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 		TestDetails::CohenSutherlandLineClip(axStart, ayStart, axEnd, ayEnd, xmin, xmax, ymin, ymax, polyIdx);
 		TestDetails::CohenSutherlandLineClip(bxStart, byStart, bxEnd, byEnd, xmin, xmax, ymin, ymax, polyIdx);
 		TestDetails::CohenSutherlandLineClip(cxStart, cyStart, cxEnd, cyEnd, xmin, xmax, ymin, ymax, polyIdx);
-	}
+	}*/
 
 	// sort swap so adjanced triangles will do hald plane calculations on same data
 	// doing calculations on same data results in less(or no) errors when checking if pixel inside half plane
@@ -7887,7 +7887,7 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 
 	auto ptTest = Point2D{ 525.f, 388.f };
 
-	if (polyIdx == 0) {
+	/*if (polyIdx == 0) {
 		int stop = 234;
 	}
 	else if (polyIdx == 1) {
@@ -7904,7 +7904,7 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 	}
 	else if (polyIdx == 3) {
 		int stop = 234;
-	}
+	}*/
 
 	/*if (polyIdx == 0) {
 		float at = (0.f - axStart) / std::fabs(axEnd - axStart);

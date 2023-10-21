@@ -23,6 +23,7 @@
     <ClInclude Include="ISoftRend.h" />
     <ClInclude Include="render\AlphaBlendStrategy.h" />
     <ClInclude Include="render\Clipper.h" />
+    <ClInclude Include="render\Clip\SutherlandHodgmanTriangleClipper4D.h" />
     <ClInclude Include="render\ColorOp.h" />
     <ClInclude Include="render\DrawLineStrategy.h" />
     <ClInclude Include="render\DrawStrategy.h" />
@@ -56,6 +57,7 @@
     <ClCompile Include="ISoftRend.cpp" />
     <ClCompile Include="render\AlphaBlendStrategy.cpp" />
     <ClCompile Include="render\Clipper.cpp" />
+    <ClCompile Include="render\Clip\SutherlandHodgmanTriangleClipper4D.cpp" />
     <ClCompile Include="render\ColorOp.cpp" />
     <ClCompile Include="render\DrawLineStrategy.cpp" />
     <ClCompile Include="render\DrawStrategy.cpp" />

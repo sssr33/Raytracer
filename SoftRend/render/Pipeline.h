@@ -2,6 +2,7 @@
 #include "structures.h"
 #include "Math3DStructs.h"
 #include "DebugLayer\DebugLayer.h"
+#include "Clip\SutherlandHodgmanTriangleClipper4D.h"
 
 #include <optional>
 
@@ -160,4 +161,6 @@ private:
 	static Line2D Unswap(Line2D line);
 	static OutCode ComputeOutCode(const Point2D& pt, const Point2D& clipMin, const Point2D& clipMax);
 	static std::optional<Line2D> CohenSutherlandLineClip(Line2D line, const Point2D& clipMin, const Point2D& clipMax, bool tryShortLen = false);
+
+	SutherlandHodgmanTriangleClipper4D clipper;
 };

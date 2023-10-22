@@ -2,7 +2,8 @@
 #include "StdAfx.h"
 #include "DrawStrategy.h"
 #include "Math3DStructs.h"
-#include "DebugLayer/DebugLayer.h"
+#include "RasterScan\RasterScanBox.h"
+#include "DebugLayer\DebugLayer.h"
 
 #include <math.h>
 #include <cassert>
@@ -7771,10 +7772,22 @@ namespace TestDetails {
 }
 
 void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params) {
-	float minX = (std::min)((std::min)(x1, x2), x3);
-	float minY = (std::min)((std::min)(y1, y2), y3);
-	float maxX = (std::max)((std::max)(x1, x2), x3);
-	float maxY = (std::max)((std::max)(y1, y2), y3);
+	RasterScanBox::TriangleParams rasterScanParams;
+
+	rasterScanParams.x1 = x1;
+	rasterScanParams.y1 = y1;
+	rasterScanParams.x2 = x2;
+	rasterScanParams.y2 = y2;
+	rasterScanParams.x3 = x3;
+	rasterScanParams.y3 = y3;
+	rasterScanParams.minClipX = this->minClipX;
+	rasterScanParams.minClipY = this->minClipY;
+	rasterScanParams.maxClipX = this->maxClipX;
+	rasterScanParams.maxClipY = this->maxClipY;
+	rasterScanParams.videoMemoryWidth = params.videoMemoryWidth;
+	rasterScanParams.videoMemoryHeight = params.videoMemoryHeight;
+
+	RasterScanBox rasterScan(rasterScanParams);
 
 	if (params.polyIdx == 1) {
 		int stop = 234;
@@ -7785,21 +7798,6 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 	if (params.polyIdx == 3) {
 		int stop = 234;
 	}
-
-	minX = (std::max)(minX, this->minClipX);
-	minY = (std::max)(minY, this->minClipY);
-	maxX = (std::min)(maxX, this->maxClipX);
-	maxY = (std::min)(maxY, this->maxClipY);
-
-	minX = (std::max)(minX, 0.f);
-	minY = (std::max)(minY, 0.f);
-	maxX = (std::min)(maxX, static_cast<float>(params.videoMemoryWidth));
-	maxY = (std::min)(maxY, static_cast<float>(params.videoMemoryHeight));
-
-	uint32_t startX = static_cast<uint32_t>(minX);
-	uint32_t startY = static_cast<uint32_t>(minY);
-	uint32_t endX = static_cast<uint32_t>(std::ceil(maxX));
-	uint32_t endY = static_cast<uint32_t>(std::ceil(maxY));
 
 	/*auto test = HalfPlane::BuildFromPoints(0.f, 0.f, 1.f, 0.f);
 	auto testPt = test.IsInside({0.f, 0.05f});*/
@@ -7946,56 +7944,57 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 	auto planeB = HalfPlane::BuildFromPoints(bxStart, byStart, bxEnd, byEnd, bCw);
 	auto planeC = HalfPlane::BuildFromPoints(cxStart, cyStart, cxEnd, cyEnd, cCw);
 
-	for (uint32_t y = startY; y < endY; ++y) {
-		uint32_t* vbLine = (uint32_t*)((uint8_t*)params.videoMemory + (ptrdiff_t)y * (ptrdiff_t)params.videoMemoryPitch);
+	rasterScan.Scan([&](uint32_t y, uint32_t startX, uint32_t endX)
+		{
+			uint32_t* vbLine = (uint32_t*)((uint8_t*)params.videoMemory + (ptrdiff_t)y * (ptrdiff_t)params.videoMemoryPitch);
 
-		for (uint32_t x = startX; x < endX; ++x) {
-			auto pt = Point2D();
+			for (uint32_t x = startX; x < endX; ++x) {
+				auto pt = Point2D();
 
-			pt.x = static_cast<float>(x) + 0.5f;
-			pt.y = static_cast<float>(y) + 0.5f;
+				pt.x = static_cast<float>(x) + 0.5f;
+				pt.y = static_cast<float>(y) + 0.5f;
 
-			bool testA = planeA.IsInside(pt);
-			bool testB = planeB.IsInside(pt);
-			bool testC = planeC.IsInside(pt);
+				bool testA = planeA.IsInside(pt);
+				bool testB = planeB.IsInside(pt);
+				bool testC = planeC.IsInside(pt);
 
-			if (x == 531 && y == 217) {
-				if (params.polyIdx == 1) {
-					int stop = 234;
+				if (x == 531 && y == 217) {
+					if (params.polyIdx == 1) {
+						int stop = 234;
+					}
+					if (params.polyIdx == 2) {
+						int stop = 234;
+					}
+					if (params.polyIdx == 3) {
+						int stop = 234;
+					}
+
+					int stop = 23;
 				}
-				if (params.polyIdx == 2) {
-					int stop = 234;
-				}
-				if (params.polyIdx == 3) {
-					int stop = 234;
-				}
 
-				int stop = 23;
+				if (testA && testB && testC) {
+					if (DebugLayer::Instance().IsEnabled())
+					{
+						auto triInfo = DebugLayer::TriangleRasterHalfPlaneInfo();
+
+						triInfo.planeA = planeA;
+						triInfo.planeB = planeB;
+						triInfo.planeC = planeC;
+						triInfo.rasterPt = pt;
+						triInfo.vertices[0].x = x1;
+						triInfo.vertices[0].y = y1;
+						triInfo.vertices[1].x = x2;
+						triInfo.vertices[1].y = y2;
+						triInfo.vertices[2].x = x3;
+						triInfo.vertices[2].y = y3;
+
+						DebugLayer::Instance().AddTriangleRasterInfoForPixel(x, y, triInfo);
+					}
+
+					this->_alphaBlender->AlphaBlend(&vbLine[x], &color, 1);
+				}
 			}
-
-			if (testA && testB && testC) {
-				if (DebugLayer::Instance().IsEnabled())
-				{
-					auto triInfo = DebugLayer::TriangleRasterHalfPlaneInfo();
-
-					triInfo.planeA = planeA;
-					triInfo.planeB = planeB;
-					triInfo.planeC = planeC;
-					triInfo.rasterPt = pt;
-					triInfo.vertices[0].x = x1;
-					triInfo.vertices[0].y = y1;
-					triInfo.vertices[1].x = x2;
-					triInfo.vertices[1].y = y2;
-					triInfo.vertices[2].x = x3;
-					triInfo.vertices[2].y = y3;
-
-					DebugLayer::Instance().AddTriangleRasterInfoForPixel(x, y, triInfo);
-				}
-
-				this->_alphaBlender->AlphaBlend(&vbLine[x], &color, 1);
-			}
-		}
-	}
+		});
 }
 
 float Draw32BitStrategy::ClampScreenX(float x) const

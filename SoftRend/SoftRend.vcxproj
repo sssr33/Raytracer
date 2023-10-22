@@ -42,6 +42,8 @@
     <ClInclude Include="render\math3DFunc.h" />
     <ClInclude Include="render\Math3DStructs.h" />
     <ClInclude Include="render\Pipeline.h" />
+    <ClInclude Include="render\RasterScan\RasterScanBox.h" />
+    <ClInclude Include="render\RasterScan\RasterScanBox.hpp" />
     <ClInclude Include="render\RenderState.h" />
     <ClInclude Include="render\stdafx.h" />
     <ClInclude Include="render\structures.h" />
@@ -73,6 +75,7 @@
     <ClCompile Include="render\math3DFunc.cpp" />
     <ClCompile Include="render\Math3DStructs.cpp" />
     <ClCompile Include="render\Pipeline.cpp" />
+    <ClCompile Include="render\RasterScan\RasterScanBox.cpp" />
     <ClCompile Include="render\RenderState.cpp" />
     <ClCompile Include="render\stdafx.cpp" />
     <ClCompile Include="render\structures.cpp" />

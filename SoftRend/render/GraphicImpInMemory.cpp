@@ -835,7 +835,17 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 
 				/*this->_draw->DrawGouraudTriangle3(rendList->poly_ptrs[poly], (unsigned int *)_videoBuffer, _lPitch);*/
 				//this->draw->DrawTriangle4(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
-				this->draw->DrawTriangleDefault(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch), poly);
+
+				DrawStrategy::DrawTriangleDefaultParams drawParams;
+
+				drawParams.face = rendList->poly_ptrs[poly];
+				drawParams.videoMemory = reinterpret_cast<uint32_t*>(this->videoBuffer.data());
+				drawParams.videoMemoryWidth = this->screenParams.width;
+				drawParams.videoMemoryHeight = this->screenParams.height;
+				drawParams.videoMemoryPitch = this->videoBufferPitch;
+				drawParams.polyIdx = poly;
+
+				this->draw->DrawTriangleDefault(drawParams);
 				//this->draw->DrawTriangle7_sse(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
 			}
 			rendered++;

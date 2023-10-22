@@ -6370,14 +6370,14 @@ int Draw32BitStrategy::DrawTriangle7_sse(struct3D::POLYF4D_PTR poly, unsigned in
 	return 1;
 }
 
-void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned int* videoMemory, int lpitch, int polyIdx)
+void Draw32BitStrategy::DrawTriangleDefault(const DrawTriangleDefaultParams& params)
 {
-	float x1 = face->tvlist[0].x;
-	float y1 = face->tvlist[0].y;
-	float x2 = face->tvlist[1].x;
-	float y2 = face->tvlist[1].y;
-	float x3 = face->tvlist[2].x;
-	float y3 = face->tvlist[2].y;
+	float x1 = params.face->tvlist[0].x;
+	float y1 = params.face->tvlist[0].y;
+	float x2 = params.face->tvlist[1].x;
+	float y2 = params.face->tvlist[1].y;
+	float x3 = params.face->tvlist[2].x;
+	float y3 = params.face->tvlist[2].y;
 
 	if ((x1 == x2 && x2 == x3)
 		|| (y1 == y2 && y2 == y3)
@@ -6409,7 +6409,7 @@ void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned
 	//	return;
 	//}
 
-	UINT color = face->color;// ARGB32BIT(127, 0, 0, 0);
+	UINT color = params.face->color;// ARGB32BIT(127, 0, 0, 0);
 
 	ARGB32BIT(127, 0, 0, 0);
 
@@ -6428,10 +6428,10 @@ void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned
 			//DrawTopTriDefault(x3, y3, x1, x2, y1, color, videoMemory, lpitch, polyIdx);
 			break;
 		case 2:
-			DrawTopTriDefault2(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+			DrawTopTriDefault2(x1, y1, x2, y2, x3, y3, color, params.videoMemory, params.videoMemoryPitch, params.polyIdx);
 			break;
 		case 3:
-			DrawTopTriDefault3(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+			DrawTopTriDefault3(x1, y1, x2, y2, x3, y3, color, params.videoMemory, params.videoMemoryPitch, params.polyIdx);
 			break;
 		default:
 			break;
@@ -6449,10 +6449,10 @@ void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned
 			//DrawBottomTriDefault(x1, y1, x2, x3, y2, color, videoMemory, lpitch, polyIdx);
 			break;
 		case 2:
-			DrawBottomTriDefault2(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+			DrawBottomTriDefault2(x1, y1, x2, y2, x3, y3, color, params.videoMemory, params.videoMemoryPitch, params.polyIdx);
 			break;
 		case 3:
-			DrawBottomTriDefault3(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+			DrawBottomTriDefault3(x1, y1, x2, y2, x3, y3, color, params.videoMemory, params.videoMemoryPitch, params.polyIdx);
 			break;
 		default:
 			break;
@@ -6471,15 +6471,15 @@ void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned
 		float t = (y2 - y1) / (y3 - y1);
 		float new_x = x1 + t * (x3 - x1);
 
-		if (polyIdx == 96)
+		if (params.polyIdx == 96)
 		{
 			int stop = 234;
 		}
-		if (polyIdx == 99)
+		if (params.polyIdx == 99)
 		{
 			int stop = 234;
 		}
-		if (polyIdx == 100)
+		if (params.polyIdx == 100)
 		{
 			int stop = 234;
 		}
@@ -6487,19 +6487,19 @@ void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned
 		switch (draw)
 		{
 		case 1:
-			DrawBottomTriDefault(x1, y1, x3, y3, x2, y2, color, videoMemory, lpitch, polyIdx);
-			DrawTopTriDefault(x3, y3, x1, y1, x2, y2, color, videoMemory, lpitch, polyIdx);
+			DrawBottomTriDefault(x1, y1, x3, y3, x2, y2, color, params.videoMemory, params.videoMemoryPitch, params.polyIdx);
+			DrawTopTriDefault(x3, y3, x1, y1, x2, y2, color, params.videoMemory, params.videoMemoryPitch, params.polyIdx);
 			break;
 		case 2:
-			DrawBottomTriDefault2(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
-			DrawTopTriDefault2(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+			DrawBottomTriDefault2(x1, y1, x2, y2, x3, y3, color, params.videoMemory, params.videoMemoryPitch, params.polyIdx);
+			DrawTopTriDefault2(x1, y1, x2, y2, x3, y3, color, params.videoMemory, params.videoMemoryPitch, params.polyIdx);
 			break;
 		case 3:
-			DrawBottomTriDefault3(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
-			DrawTopTriDefault3(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+			DrawBottomTriDefault3(x1, y1, x2, y2, x3, y3, color, params.videoMemory, params.videoMemoryPitch, params.polyIdx);
+			DrawTopTriDefault3(x1, y1, x2, y2, x3, y3, color, params.videoMemory, params.videoMemoryPitch, params.polyIdx);
 			break;
 		case 4:
-			DrawTriDefault4(x1, y1, x2, y2, x3, y3, color, videoMemory, lpitch, polyIdx);
+			DrawTriDefault4(x1, y1, x2, y2, x3, y3, color, params);
 			break;
 		default:
 			break;
@@ -6507,7 +6507,7 @@ void Draw32BitStrategy::DrawTriangleDefault(struct3D::POLYF4D_PTR face, unsigned
 	}
 }
 
-void Draw32BitStrategy::DrawTopTriDefault(float xTop, float yTop, float xBottom1, float yBottom1, float xBottom2, float yBottom, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
+void Draw32BitStrategy::DrawTopTriDefault(float xTop, float yTop, float xBottom1, float yBottom1, float xBottom2, float yBottom, unsigned int color, unsigned int* vb, uint32_t lpitch, int polyIdx)
 {
 	float yBottomClipped = Draw32BitStrategy::clamp(yBottom, this->minClipY, this->maxClipY);
 	float yTopClipped = Draw32BitStrategy::clamp(yTop, this->minClipY, this->maxClipY);
@@ -6522,7 +6522,7 @@ void Draw32BitStrategy::DrawTopTriDefault(float xTop, float yTop, float xBottom1
 	}
 }
 
-void Draw32BitStrategy::DrawBottomTriDefault(float xBottom, float yBottom, float xTop1, float yTop1, float xTop2, float yTop, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
+void Draw32BitStrategy::DrawBottomTriDefault(float xBottom, float yBottom, float xTop1, float yTop1, float xTop2, float yTop, unsigned int color, unsigned int* vb, uint32_t lpitch, int polyIdx)
 {
 	float yBottomClipped = Draw32BitStrategy::clamp(yBottom, this->minClipY, this->maxClipY);
 	float yTopClipped = Draw32BitStrategy::clamp(yTop, this->minClipY, this->maxClipY);
@@ -6537,7 +6537,7 @@ void Draw32BitStrategy::DrawBottomTriDefault(float xBottom, float yBottom, float
 	}
 }
 
-void Draw32BitStrategy::DrawHLineDefault(float leftX, float rightX, float topY, float bottomY, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
+void Draw32BitStrategy::DrawHLineDefault(float leftX, float rightX, float topY, float bottomY, unsigned int color, unsigned int* vb, uint32_t lpitch, int polyIdx)
 {
 	if (leftX > rightX)
 	{
@@ -6600,7 +6600,7 @@ void Draw32BitStrategy::DrawHLineDefault(float leftX, float rightX, float topY, 
 
 	RoundedRange xRange = RoundRange(leftX, rightX);
 
-	vb = (uint32_t*)((uint8_t*)vb + yRange.start * lpitch);
+	vb = (uint32_t*)((uint8_t*)vb + static_cast<int>(yRange.start * lpitch));
 
 	for (int x = xRange.start; x < xRange.end; x++)
 	{
@@ -6858,7 +6858,7 @@ void CmpStats()
 	int stop = 234;
 }
 
-void Draw32BitStrategy::DrawTopTriDefault2(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
+void Draw32BitStrategy::DrawTopTriDefault2(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, uint32_t lpitch, int polyIdx)
 {
 	triStatsAdd = false;
 
@@ -6975,7 +6975,7 @@ void Draw32BitStrategy::DrawTopTriDefault2(float x1, float y1, float x2, float y
 	}
 }
 
-void Draw32BitStrategy::DrawBottomTriDefault2(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
+void Draw32BitStrategy::DrawBottomTriDefault2(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, uint32_t lpitch, int polyIdx)
 {
 	triStatsAdd = false;
 
@@ -7106,7 +7106,7 @@ void Draw32BitStrategy::DrawBottomTriDefault2(float x1, float y1, float x2, floa
 	}
 }
 
-void Draw32BitStrategy::DrawHLineDefault2(float leftX, float rightX, float topY, float bottomY, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
+void Draw32BitStrategy::DrawHLineDefault2(float leftX, float rightX, float topY, float bottomY, unsigned int color, unsigned int* vb, uint32_t lpitch, int polyIdx)
 {
 	// maybe need if(topY >= bottomY) return;
 	// TODO check on triangles inside screen
@@ -7136,7 +7136,7 @@ void Draw32BitStrategy::DrawHLineDefault2(float leftX, float rightX, float topY,
 		endCenter++;
 	}
 
-	uint32_t* vbLine = (uint32_t*)((uint8_t*)vb + (ptrdiff_t)topY * lpitch);
+	uint32_t* vbLine = (uint32_t*)((uint8_t*)vb + (ptrdiff_t)topY * (ptrdiff_t)lpitch);
 
 	for (float x = startCenter; x < endCenter; x++)
 	{
@@ -7187,7 +7187,7 @@ void Draw32BitStrategy::DrawHLineDefault2(float leftX, float rightX, float topY,
 	}
 }
 
-void Draw32BitStrategy::DrawTopTriDefault3(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
+void Draw32BitStrategy::DrawTopTriDefault3(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, uint32_t lpitch, int polyIdx)
 {
 	triStatsAdd = false;
 
@@ -7326,7 +7326,7 @@ void Draw32BitStrategy::DrawTopTriDefault3(float x1, float y1, float x2, float y
 	}
 }
 
-void Draw32BitStrategy::DrawBottomTriDefault3(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
+void Draw32BitStrategy::DrawBottomTriDefault3(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, uint32_t lpitch, int polyIdx)
 {
 	triStatsAdd = false;
 
@@ -7465,7 +7465,7 @@ void Draw32BitStrategy::DrawBottomTriDefault3(float x1, float y1, float x2, floa
 	}
 }
 
-void Draw32BitStrategy::DrawHLineDefault3(float leftX, float rightX, float topY, float bottomY, unsigned int color, unsigned int* vb, int lpitch, int polyIdx)
+void Draw32BitStrategy::DrawHLineDefault3(float leftX, float rightX, float topY, float bottomY, unsigned int color, unsigned int* vb, uint32_t lpitch, int polyIdx)
 {
 	// maybe need if(topY >= bottomY) return;
 	// TODO check on triangles inside screen
@@ -7509,7 +7509,7 @@ void Draw32BitStrategy::DrawHLineDefault3(float leftX, float rightX, float topY,
 		DebugLayer::Instance().SetCurrentTriangleRasterInfo(triInfo);
 	}
 
-	uint32_t* vbLine = (uint32_t*)((uint8_t*)vb + (ptrdiff_t)topY * lpitch);
+	uint32_t* vbLine = (uint32_t*)((uint8_t*)vb + (ptrdiff_t)topY * (ptrdiff_t)lpitch);
 
 	for (float x = startCenter; x < endCenter; x++)
 	{
@@ -7770,19 +7770,19 @@ namespace TestDetails {
 	//}
 }
 
-void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, int lpitch, int polyIdx) {
+void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params) {
 	float minX = (std::min)((std::min)(x1, x2), x3);
 	float minY = (std::min)((std::min)(y1, y2), y3);
 	float maxX = (std::max)((std::max)(x1, x2), x3);
 	float maxY = (std::max)((std::max)(y1, y2), y3);
 
-	if (polyIdx == 1) {
+	if (params.polyIdx == 1) {
 		int stop = 234;
 	}
-	if (polyIdx == 2) {
+	if (params.polyIdx == 2) {
 		int stop = 234;
 	}
-	if (polyIdx == 3) {
+	if (params.polyIdx == 3) {
 		int stop = 234;
 	}
 
@@ -7790,6 +7790,11 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 	minY = (std::max)(minY, this->minClipY);
 	maxX = (std::min)(maxX, this->maxClipX);
 	maxY = (std::min)(maxY, this->maxClipY);
+
+	minX = (std::max)(minX, 0.f);
+	minY = (std::max)(minY, 0.f);
+	maxX = (std::min)(maxX, static_cast<float>(params.videoMemoryWidth));
+	maxY = (std::min)(maxY, static_cast<float>(params.videoMemoryHeight));
 
 	uint32_t startX = static_cast<uint32_t>(minX);
 	uint32_t startY = static_cast<uint32_t>(minY);
@@ -7839,7 +7844,7 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 
 	
 
-	if (polyIdx == 1) {
+	if (params.polyIdx == 1) {
 		int stop = 234;
 	}
 
@@ -7942,7 +7947,7 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 	auto planeC = HalfPlane::BuildFromPoints(cxStart, cyStart, cxEnd, cyEnd, cCw);
 
 	for (uint32_t y = startY; y < endY; ++y) {
-		uint32_t* vbLine = (uint32_t*)((uint8_t*)vb + (ptrdiff_t)y * lpitch);
+		uint32_t* vbLine = (uint32_t*)((uint8_t*)params.videoMemory + (ptrdiff_t)y * (ptrdiff_t)params.videoMemoryPitch);
 
 		for (uint32_t x = startX; x < endX; ++x) {
 			auto pt = Point2D();
@@ -7955,13 +7960,13 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 			bool testC = planeC.IsInside(pt);
 
 			if (x == 531 && y == 217) {
-				if (polyIdx == 1) {
+				if (params.polyIdx == 1) {
 					int stop = 234;
 				}
-				if (polyIdx == 2) {
+				if (params.polyIdx == 2) {
 					int stop = 234;
 				}
-				if (polyIdx == 3) {
+				if (params.polyIdx == 3) {
 					int stop = 234;
 				}
 

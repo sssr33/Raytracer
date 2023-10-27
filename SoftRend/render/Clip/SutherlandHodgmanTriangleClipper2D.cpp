@@ -23,31 +23,33 @@ void SutherlandHodgmanTriangleClipper2D::IntersectPlane(
     const Screen2D& screen
 ) const
 {
-    auto a = current.back();
+    if (!current.empty()) {
+        auto a = current.back();
 
-    for (const auto& b : current) {
-        const bool aInside = !plane.IsOutside(a, screen);
-        const bool bInside = !plane.IsOutside(b, screen);
+        for (const auto& b : current) {
+            const bool aInside = !plane.IsOutside(a, screen);
+            const bool bInside = !plane.IsOutside(b, screen);
 
-        if (aInside != bInside) {
-            // one inside, other outside, need to clip
-            POINT2D intersection = plane.Clip(a, b, screen);
+            if (aInside != bInside) {
+                // one inside, other outside, need to clip
+                POINT2D intersection = plane.Clip(a, b, screen);
 
-            if (!aInside) {
-                // intersection is a
-                next.push_back(intersection);
+                if (!aInside) {
+                    // intersection is a
+                    next.push_back(intersection);
+                    next.push_back(b);
+                }
+                else {
+                    // intersection is b
+                    next.push_back(intersection);
+                }
+            }
+            else if (aInside && bInside) {
                 next.push_back(b);
             }
-            else {
-                // intersection is b
-                next.push_back(intersection);
-            }
-        }
-        else if (aInside && bInside) {
-            next.push_back(b);
-        }
 
-        a = b;
+            a = b;
+        }
     }
 
     std::swap(current, next);

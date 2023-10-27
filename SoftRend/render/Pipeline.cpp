@@ -2002,6 +2002,31 @@ void Pipeline::CameraToPerspectiveRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_
 		for (int poly = 0; poly < rendList->num_polys; poly++) {
 			POLYF4D_PTR currPoly = rendList->poly_ptrs[poly];
 
+			{
+				// TODO check if backface culling already exists
+				auto a = currPoly->tvlist[0].v;
+				auto b = currPoly->tvlist[1].v;
+				auto c = currPoly->tvlist[2].v;
+
+				POINT4D ab;
+				POINT4D ac;
+
+				vecBuild(&a, &b, &ab);
+				vecBuild(&a, &c, &ac);
+
+				vecNormalize(&ab);
+				vecNormalize(&ac);
+
+				POINT4D crossRes;
+
+				vecCross(&ab, &ac, &crossRes);
+
+				if (crossRes.z > 0.f) {
+					currPoly->state |= struct3D::POLY4D_STATE_BACKFACE;
+					continue;
+				}
+			}
+
 			if ((currPoly == NULL) || !(currPoly->state & struct3D::POLY4D_STATE_ACTIVE) || (currPoly->state & struct3D::POLY4D_STATE_BACKFACE) || (currPoly->state & struct3D::POLY4D_STATE_CLIPPED))
 				continue;
 

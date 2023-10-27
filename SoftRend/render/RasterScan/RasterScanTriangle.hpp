@@ -26,8 +26,12 @@ void RasterScanTriangle::Scan(Fn fn) const {
             maxY = maxY + 1.f;
         }
 
-        uint32_t istartY = static_cast<uint32_t>(clampScreenY(std::floor(minY)));
-        uint32_t iendY = static_cast<uint32_t>(clampScreenY(std::floor(maxY)));
+        const uint32_t istartY = static_cast<uint32_t>(clampScreenY(std::floor(minY)));
+        const uint32_t iendY = static_cast<uint32_t>(clampScreenY(std::floor(maxY)));
+
+        if (istartY == iendY) {
+            continue;
+        }
 
         iy = (std::max)(iy, istartY);
         iy = (std::min)(iy, iendY);
@@ -37,6 +41,10 @@ void RasterScanTriangle::Scan(Fn fn) const {
             float y = static_cast<float>(iy) + 0.5f;
             const float leftX = i.LerpXLeft(y);
             const float rightX = i.LerpXRight(y);
+
+            if (leftX == rightX) {
+                continue;
+            }
 
             auto minX = (std::min)(leftX, rightX);
             auto maxX = (std::max)(leftX, rightX);
@@ -50,6 +58,10 @@ void RasterScanTriangle::Scan(Fn fn) const {
             // maybe HalfPlane or its points must be used
             const uint32_t ileftX = static_cast<uint32_t>(clampScreenX(std::floor(minX)));
             const uint32_t irightX = static_cast<uint32_t>(clampScreenX(std::ceil(maxX)));
+
+            if (ileftX == irightX) {
+                continue;
+            }
 
             fn(iy, ileftX, irightX);
         }

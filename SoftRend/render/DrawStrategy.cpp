@@ -7962,6 +7962,10 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 	auto planeB = HalfPlane::BuildFromPoints(bxStart, byStart, bxEnd, byEnd, bCw);
 	auto planeC = HalfPlane::BuildFromPoints(cxStart, cyStart, cxEnd, cyEnd, cCw);
 
+	int drawnPixels = 0;
+	int missingPixels = 0;
+	int totalScanned = 0;
+
 	rasterScan.Scan([&](uint32_t y, uint32_t startX, uint32_t endX)
 		{
 			uint32_t* vbLine = (uint32_t*)((uint8_t*)params.videoMemory + (ptrdiff_t)y * (ptrdiff_t)params.videoMemoryPitch);
@@ -7990,6 +7994,7 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 					int stop = 23;
 				}
 
+				++totalScanned;
 				if (testA && testB && testC) {
 					if (DebugLayer::Instance().IsEnabled())
 					{
@@ -8009,10 +8014,35 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 						DebugLayer::Instance().AddTriangleRasterInfoForPixel(x, y, triInfo);
 					}
 
+					++drawnPixels;
 					this->_alphaBlender->AlphaBlend(&vbLine[x], &color, 1);
+				}
+				else {
+					++missingPixels;
 				}
 			}
 		});
+
+	if (totalScanned == (drawnPixels + missingPixels)) {
+		if (drawnPixels) {
+			int stop = 234;
+		}
+		else if(missingPixels) {
+			int stop = 234;
+		}
+
+		if (missingPixels) {
+			int stop = 234;
+		}
+		else {
+			int stop = 234;
+		}
+
+		int stop = 234;
+	}
+	else {
+		assert(false);
+	}
 }
 
 float Draw32BitStrategy::ClampScreenX(float x) const

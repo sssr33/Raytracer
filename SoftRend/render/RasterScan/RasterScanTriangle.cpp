@@ -26,6 +26,25 @@ RasterScanTriangle::RasterScanTriangle(const TriangleParams& params)
     // scanRanges can be created by splitting triangle on Top and Bottom triangle
     auto clipped = this->clip.Clip(tri, screen);
 
+    if(this->expandStrategy == ExpandStrategy::ClippedPolyExpand) {
+        POINT2D center = { 0.f, 0.f };
+
+        for (const auto& i : clipped) {
+            center.x += i.x;
+            center.y += i.y;
+        }
+
+        center.x /= static_cast<float>(clipped.size());
+        center.y /= static_cast<float>(clipped.size());
+
+        for (auto& i : clipped) {
+            auto vec = i - center;
+            vecNormalize(&vec);
+            vecScale(2.f, &vec);
+            vecAdd(&i, &vec, &i);
+        }
+    }
+
     if (clipped.size() != 3) {
         int stop = 234;
     }

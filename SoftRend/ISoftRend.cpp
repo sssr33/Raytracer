@@ -106,7 +106,7 @@ private:
             angle -= 0.3f;
         }
 
-        angle -= 0.1f;
+        //angle -= 0.1f;
 
         VECTOR4D lightDir;
 
@@ -302,7 +302,7 @@ private:
             }
         }
 
-        DebugLayer::Instance().ClearPixelInfo();
+        //DebugLayer::Instance().ClearPixelInfo();
         DebugLayer::Instance().SetEnabled(false);
 
         std::unique_ptr<RENDERLIST4D> testTris = std::make_unique<RENDERLIST4D>();

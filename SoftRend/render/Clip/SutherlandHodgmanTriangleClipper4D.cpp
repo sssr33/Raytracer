@@ -72,10 +72,16 @@ bool SutherlandHodgmanTriangleClipper4D::PositivePlane::IsOutside(const POINT4D&
     return pt.*axis > pt.w;
 }
 
-POINT4D SutherlandHodgmanTriangleClipper4D::PositivePlane::Clip(POINT4D a, POINT4D b, float POINT4D::* axis) {
-    if (std::fabs(b.*axis) < std::fabs(a.*axis)) {
-        std::swap(a, b);
+POINT4D SutherlandHodgmanTriangleClipper4D::PositivePlane::Clip(const POINT4D& aTmp, const POINT4D& bTmp, float POINT4D::* axis) {
+    auto ptrA = &aTmp;
+    auto ptrB = &bTmp;
+
+    if (std::fabs(bTmp.*axis) < std::fabs(aTmp.*axis)) {
+        std::swap(ptrA, ptrB);
     }
+
+    const auto& a = *ptrA;
+    const auto& b = *ptrB;
 
     float t = (a.w - a.*axis) / (b.*axis - a.*axis - b.w + a.w);
     auto res = SutherlandHodgmanTriangleClipper4D::Lerp(a, b, t);
@@ -86,10 +92,16 @@ bool SutherlandHodgmanTriangleClipper4D::NegativePlane::IsOutside(const POINT4D&
     return pt.*axis < -pt.w;
 }
 
-POINT4D SutherlandHodgmanTriangleClipper4D::NegativePlane::Clip(POINT4D a, POINT4D b, float POINT4D::* axis) {
-    if (std::fabs(b.*axis) < std::fabs(a.*axis)) {
-        std::swap(a, b);
+POINT4D SutherlandHodgmanTriangleClipper4D::NegativePlane::Clip(const POINT4D& aTmp, const POINT4D& bTmp, float POINT4D::* axis) {
+    auto ptrA = &aTmp;
+    auto ptrB = &bTmp;
+
+    if (std::fabs(bTmp.*axis) < std::fabs(aTmp.*axis)) {
+        std::swap(ptrA, ptrB);
     }
+
+    const auto& a = *ptrA;
+    const auto& b = *ptrB;
 
     float t = (a.w + a.*axis) / (a.w - b.w + a.*axis - b.*axis);
     auto res = SutherlandHodgmanTriangleClipper4D::Lerp(a, b, t);
@@ -146,7 +158,7 @@ bool SutherlandHodgmanTriangleClipper4D::NearPlane::IsOutside(const POINT4D& pt)
     //return NegativePlane::IsOutside(pt, &POINT4D::z);
 }
 
-POINT4D SutherlandHodgmanTriangleClipper4D::NearPlane::Clip(POINT4D a, POINT4D b) const {
+POINT4D SutherlandHodgmanTriangleClipper4D::NearPlane::Clip(const POINT4D& aTmp, const POINT4D& bTmp) const {
     // directx convention 0 <= Z <= W
     // opengl convention -W <= Z <= W
     // these conventions used by projection matrices in those APIs
@@ -160,9 +172,15 @@ POINT4D SutherlandHodgmanTriangleClipper4D::NearPlane::Clip(POINT4D a, POINT4D b
     0 < Zp <= Wp - 0 < Zp this part is important here
     */
 
-    if (std::fabs(b.z) < std::fabs(a.z)) {
-        std::swap(a, b);
+    auto ptrA = &aTmp;
+    auto ptrB = &bTmp;
+
+    if (std::fabs(bTmp.z) < std::fabs(aTmp.z)) {
+        std::swap(ptrA, ptrB);
     }
+
+    const auto& a = *ptrA;
+    const auto& b = *ptrB;
 
     float t = (0.f - a.z) / (b.z - a.z);
     auto res = SutherlandHodgmanTriangleClipper4D::Lerp(a, b, t);

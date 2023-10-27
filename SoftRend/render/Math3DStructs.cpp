@@ -461,6 +461,17 @@ int math3D::Release()
 	return 1;
 }
 
+namespace math3D {
+	POINT2D operator-(const POINT2D& a, const POINT2D& b) {
+		POINT2D res;
+
+		res.x = a.x - b.x;
+		res.y = a.y - b.y;
+
+		return res;
+	}
+}
+
 /*int math3D::mathObjFuncNOSIMD::Init()
 {
 	return 1;

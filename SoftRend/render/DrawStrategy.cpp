@@ -3,6 +3,7 @@
 #include "DrawStrategy.h"
 #include "Math3DStructs.h"
 #include "RasterScan\RasterScanBox.h"
+#include "RasterScan\RasterScanTriangle.h"
 #include "DebugLayer\DebugLayer.h"
 
 #include <math.h>
@@ -7772,7 +7773,7 @@ namespace TestDetails {
 }
 
 void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params) {
-	RasterScanBox::TriangleParams rasterScanParams;
+	/*RasterScanBox::TriangleParams rasterScanParams;
 
 	rasterScanParams.x1 = x1;
 	rasterScanParams.y1 = y1;
@@ -7787,7 +7788,24 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 	rasterScanParams.videoMemoryWidth = params.videoMemoryWidth;
 	rasterScanParams.videoMemoryHeight = params.videoMemoryHeight;
 
-	RasterScanBox rasterScan(rasterScanParams);
+	RasterScanBox rasterScan(rasterScanParams);*/
+
+	RasterScanTriangle::TriangleParams rasterScanParams;
+
+	rasterScanParams.x1 = x1;
+	rasterScanParams.y1 = y1;
+	rasterScanParams.x2 = x2;
+	rasterScanParams.y2 = y2;
+	rasterScanParams.x3 = x3;
+	rasterScanParams.y3 = y3;
+	rasterScanParams.minClipX = this->minClipX;
+	rasterScanParams.minClipY = this->minClipY;
+	rasterScanParams.maxClipX = this->maxClipX;
+	rasterScanParams.maxClipY = this->maxClipY;
+	rasterScanParams.videoMemoryWidth = params.videoMemoryWidth;
+	rasterScanParams.videoMemoryHeight = params.videoMemoryHeight;
+
+	RasterScanTriangle rasterScan(rasterScanParams);
 
 	if (params.polyIdx == 1) {
 		int stop = 234;

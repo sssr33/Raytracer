@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 
+// TODO remove using from header
 using namespace math3D;
 
 namespace mat{

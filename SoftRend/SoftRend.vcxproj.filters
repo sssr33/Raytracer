@@ -35,6 +35,9 @@
     <ClInclude Include="render\Clip\SutherlandHodgmanTriangleClipper4D.h" />
     <ClInclude Include="render\RasterScan\RasterScanBox.h" />
     <ClInclude Include="render\RasterScan\RasterScanBox.hpp" />
+    <ClInclude Include="render\RasterScan\RasterScanTriangle.h" />
+    <ClInclude Include="render\RasterScan\RasterScanTriangle.hpp" />
+    <ClInclude Include="render\Clip\SutherlandHodgmanTriangleClipper2D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\fixp\fixed_func.cpp" />
@@ -66,5 +69,7 @@
     <ClCompile Include="DebugLayer\DebugLayer.cpp" />
     <ClCompile Include="render\Clip\SutherlandHodgmanTriangleClipper4D.cpp" />
     <ClCompile Include="render\RasterScan\RasterScanBox.cpp" />
+    <ClCompile Include="render\RasterScan\RasterScanTriangle.cpp" />
+    <ClCompile Include="render\Clip\SutherlandHodgmanTriangleClipper2D.cpp" />
   </ItemGroup>
 </Project>

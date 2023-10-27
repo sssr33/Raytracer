@@ -217,6 +217,17 @@ namespace math3D
 		};
 	} VECTOR2D, POINT2D, *VECTOR2D_PTR, *POINT2D_PTR;
 
+	struct Triangle2D {
+		POINT2D a;
+		POINT2D b;
+		POINT2D c;
+	};
+
+	struct Screen2D {
+		POINT2D min;
+		POINT2D max;
+	};
+
 	typedef struct VECTOR2DI_TYP
 	{
 		union
@@ -266,6 +277,8 @@ namespace math3D
 		POINT4D p0; // point on the plane
 		VECTOR4D n; // normal to the plane (not necessarily a unit vector)
 	} PLANE4D, *PLANE4D_PTR;
+
+	POINT2D operator-(const POINT2D& a, const POINT2D& b);
 
 	/*inline float DEG_TO_RAD(float ang) 
 	{ 

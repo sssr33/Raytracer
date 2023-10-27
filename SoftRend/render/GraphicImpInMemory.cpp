@@ -763,7 +763,7 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 			
 			//draw = rendered >= 24 && rendered <= 28;
 
-			draw = poly >= 28 && poly <= 30;
+			draw = poly >= 52 && poly <= 52;
 
 			draw = true; // allow all
 

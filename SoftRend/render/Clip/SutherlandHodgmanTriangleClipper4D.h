@@ -10,12 +10,12 @@ public:
 private:
     struct PositivePlane {
         static bool IsOutside(const POINT4D& pt, float POINT4D::*axis);
-        static POINT4D Clip(POINT4D a, POINT4D b, float POINT4D::* axis);
+        static POINT4D Clip(const POINT4D& aTmp, const POINT4D& bTmp, float POINT4D::* axis);
     };
 
     struct NegativePlane {
         static bool IsOutside(const POINT4D& pt, float POINT4D::* axis);
-        static POINT4D Clip(POINT4D a, POINT4D b, float POINT4D::* axis);
+        static POINT4D Clip(const POINT4D& aTmp, const POINT4D& bTmp, float POINT4D::* axis);
     };
 
     struct LeftPlane {
@@ -45,7 +45,7 @@ private:
 
     struct NearPlane {
         bool IsOutside(const POINT4D& pt) const;
-        POINT4D Clip(POINT4D a, POINT4D b) const;
+        POINT4D Clip(const POINT4D& aTmp, const POINT4D& bTmp) const;
     };
 
     template<class PlaneT>

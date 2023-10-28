@@ -9,6 +9,8 @@ struct DstFlipParams
 {
 	void* dstMemory = nullptr;
 	uint32_t dstMemoryByteWidth = 0;
+	uint32_t width = 0;
+	uint32_t height = 0;
 };
 
 struct ScreenParamsInMemory {
@@ -85,8 +87,9 @@ private:
 	bool isInPoly(POINT4D_PTR p, VECTOR4D_PTR v, POLY4D_PTR poly, OBJECT4D_PTR obj);
 	static float factorial(int num);
 
-	std::vector<uint8_t> videoBuffer;
+	uint8_t* videoBuffer = nullptr;
 	uint32_t videoBufferPitch = 0;
+	size_t videoBufferSize = 0;
 
 	ScreenParamsInMemory screenParams;
 	DstFlipParams dstFlipParams;

@@ -481,6 +481,8 @@ private:
 
         dstFliParams.dstMemory = dstMemory;
         dstFliParams.dstMemoryByteWidth = width * 4;
+        dstFliParams.width = width;
+        dstFliParams.height = height;
 
         if (!this->graphics)
         {

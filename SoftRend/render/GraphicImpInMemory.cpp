@@ -38,8 +38,12 @@ int GraphicImpInMemory::Resize(int newWidth, int newHeight)
 		return 0;
 	}
 
-	uint32_t width = static_cast<uint32_t>(newWidth);
-	uint32_t height = static_cast<uint32_t>(newHeight);
+	uint32_t width = (std::min)(static_cast<uint32_t>(newWidth), this->dstFlipParams.width);
+	uint32_t height = (std::min)(static_cast<uint32_t>(newHeight), this->dstFlipParams.height);
+
+	this->videoBuffer = static_cast<uint8_t*>(this->dstFlipParams.dstMemory);
+	this->videoBufferPitch = this->dstFlipParams.dstMemoryByteWidth;
+	this->videoBufferSize = this->videoBufferPitch * this->dstFlipParams.height;
 
 	if (this->draw && width == this->screenParams.width && height == this->screenParams.height)
 	{
@@ -48,10 +52,6 @@ int GraphicImpInMemory::Resize(int newWidth, int newHeight)
 
 	this->screenParams.width = width;
 	this->screenParams.height = height;
-
-	this->videoBufferPitch = width * (this->screenParams.bitsPerPixel / 8);
-
-	this->videoBuffer.resize(static_cast<size_t>(this->videoBufferPitch) * height);
 
 	if (!this->InitializeDrawStrategies())
 	{
@@ -73,11 +73,15 @@ int GraphicImpInMemory::Resize(int newWidth, int newHeight)
 
 int GraphicImpInMemory::DrawBegin(bool bClearScreen)
 {
+	if (!this->videoBuffer) {
+		return 1;
+	}
+
 	if (bClearScreen)
 	{
 		uint32_t clearColor = _ARGB32BIT(255, 255, 255, 255);
-		uint32_t* begin = reinterpret_cast<uint32_t*>(this->videoBuffer.data());
-		uint32_t* end = reinterpret_cast<uint32_t*>(this->videoBuffer.data() + this->videoBuffer.size());
+		uint32_t* begin = reinterpret_cast<uint32_t*>(this->videoBuffer);
+		uint32_t* end = reinterpret_cast<uint32_t*>(this->videoBuffer + this->videoBufferSize);
 
 		std::fill(begin, end, clearColor);
 	}
@@ -95,19 +99,31 @@ int GraphicImpInMemory::DrawEnd()
 
 int GraphicImpInMemory::DrawPixel(math3D::POINT2DI* pts, int numPts, unsigned int color)
 {
-	return this->draw->DrawPixel(pts, numPts, color, this->videoBuffer.data(), static_cast<int>(this->videoBufferPitch));
+	if (!this->videoBuffer) {
+		return 0;
+	}
+
+	return this->draw->DrawPixel(pts, numPts, color, this->videoBuffer, static_cast<int>(this->videoBufferPitch));
 }
 
 int GraphicImpInMemory::DrawPixel(math3D::POINT2D* pts, int numPts, unsigned int color)
 {
-	return this->draw->DrawPixel(pts, numPts, color, this->videoBuffer.data(), static_cast<int>(this->videoBufferPitch));
+	if (!this->videoBuffer) {
+		return 0;
+	}
+
+	return this->draw->DrawPixel(pts, numPts, color, this->videoBuffer, static_cast<int>(this->videoBufferPitch));
 }
 
 int GraphicImpInMemory::DrawLine(int x0, int y0, int x1, int y1, unsigned int color)
 {
+	if (!this->videoBuffer) {
+		return 0;
+	}
+
 	if (ClipLine(x0, y0, x1, y1))
 	{
-		return this->draw->DrawLine(x0, y0, x1, y1, color, this->videoBuffer.data(), static_cast<int>(this->videoBufferPitch));
+		return this->draw->DrawLine(x0, y0, x1, y1, color, this->videoBuffer, static_cast<int>(this->videoBufferPitch));
 	}
 
 	return 0;
@@ -115,12 +131,20 @@ int GraphicImpInMemory::DrawLine(int x0, int y0, int x1, int y1, unsigned int co
 
 int GraphicImpInMemory::DrawHLine(float x1, float x2, int y, unsigned int iColor)
 {
-	return this->draw->DrawHLine(x1, x2, y, iColor, this->videoBuffer.data(), static_cast<int>(this->videoBufferPitch));
+	if (!this->videoBuffer) {
+		return 0;
+	}
+
+	return this->draw->DrawHLine(x1, x2, y, iColor, this->videoBuffer, static_cast<int>(this->videoBufferPitch));
 }
 
 int GraphicImpInMemory::DrawRect(RECT* r, unsigned int iColor)
 {
-	return this->draw->DrawRect(r, iColor, this->videoBuffer.data(), static_cast<int>(this->videoBufferPitch));
+	if (!this->videoBuffer) {
+		return 0;
+	}
+
+	return this->draw->DrawRect(r, iColor, this->videoBuffer, static_cast<int>(this->videoBufferPitch));
 }
 
 int GraphicImpInMemory::DrawText(TCHAR* tchTextString, int iStrLen, int iX, int iY, unsigned int iColor)
@@ -130,12 +154,20 @@ int GraphicImpInMemory::DrawText(TCHAR* tchTextString, int iStrLen, int iX, int 
 
 int GraphicImpInMemory::DrawTriangle(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int iColor)
 {
-	return this->draw->DrawTriangle(x1, y1, x2, y2, x3, y3, iColor, reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
+	if (!this->videoBuffer) {
+		return 0;
+	}
+
+	return this->draw->DrawTriangle(x1, y1, x2, y2, x3, y3, iColor, reinterpret_cast<uint32_t*>(this->videoBuffer), static_cast<int>(this->videoBufferPitch));
 }
 
 int GraphicImpInMemory::DrawPOLYF4D2D(struct3D::POLYF4D_PTR face)
 {
-	return this->draw->DrawTriangle5(face, reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
+	if (!this->videoBuffer) {
+		return 0;
+	}
+
+	return this->draw->DrawTriangle5(face, reinterpret_cast<uint32_t*>(this->videoBuffer), static_cast<int>(this->videoBufferPitch));
 }
 
 LIGHT_PTR GraphicImpInMemory::getLight(int index)
@@ -152,9 +184,13 @@ LIGHT_PTR GraphicImpInMemory::getLight(int index)
 
 int GraphicImpInMemory::DrawTexture(mat::TEXTURE2D_PTR tex, RECT* rect)
 {
+	if (!this->videoBuffer) {
+		return 0;
+	}
+
 	int lp2 = static_cast<int>(this->videoBufferPitch) >> 2;
 	int texlp = tex->lpitch >> 2;
-	unsigned int* vb = reinterpret_cast<uint32_t*>(this->videoBuffer.data());
+	unsigned int* vb = reinterpret_cast<uint32_t*>(this->videoBuffer);
 	unsigned int* t = (unsigned int*)tex->buffer;
 
 	float texAR;// = tex->width / tex->height;
@@ -211,8 +247,12 @@ int GraphicImpInMemory::DrawTexture(mat::TEXTURE2D_PTR tex, RECT* rect)
 
 int GraphicImpInMemory::DrawTexTri(struct3D::POLYF4D_PTR face)
 {
+	if (!this->videoBuffer) {
+		return 0;
+	}
+
 	if (!face) return 0;
-	return this->draw->DrawTriangleTex(face, reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
+	return this->draw->DrawTriangleTex(face, reinterpret_cast<uint32_t*>(this->videoBuffer), static_cast<int>(this->videoBufferPitch));
 }
 
 int GraphicImpInMemory::DrawCircle(POINT2D* ptCenter, unsigned int iRadius, unsigned int iColor, bool bSmooth)
@@ -416,9 +456,13 @@ int GraphicImpInMemory::DrawSpline(std::vector<POINT2D>* pts)
 
 int GraphicImpInMemory::DrawPolygon(std::vector<POINT2D>* pts, unsigned int iColor)
 {
+	if (!this->videoBuffer) {
+		return 0;
+	}
+
 	int numPts = static_cast<int>(pts->size());
 	int lpitch = static_cast<int>(this->videoBufferPitch) >> 2;
-	unsigned int* vb = reinterpret_cast<uint32_t*>(this->videoBuffer.data());
+	unsigned int* vb = reinterpret_cast<uint32_t*>(this->videoBuffer);
 
 	if (numPts == 0) return 0;
 	if (numPts == 1)
@@ -476,6 +520,10 @@ void GraphicImpInMemory::DrawOBJECT4DWire(OBJECT4D_PTR obj)
 
 void GraphicImpInMemory::DrawRENDERLIST4DWire(RENDERLIST4D_PTR rendList, POINT4D_PTR worldPos)
 {
+	if (!this->videoBuffer) {
+		return;
+	}
+
 	pipe.WorldToCamera_and_BackfaceRemoveRENDERLIST4D(rendList, &mainCam);
 	pipe.ClipPolysRENDERLIST4D(rendList, &mainCam, clipPoly::CLIP_POLY_XYZ_PLANES);
 	if (pipe.bLighting)
@@ -509,7 +557,7 @@ void GraphicImpInMemory::DrawRENDERLIST4DWire(RENDERLIST4D_PTR rendList, POINT4D
 			if (rendList->poly_ptrs[poly]->tvlist[0].attr & struct3D::VERTEX4DT_ATTR_SELECTED)
 				iColor = ARGB32BIT(255, 255, 0, 0);
 
-			this->draw->DrawRect(&r, iColor, reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
+			this->draw->DrawRect(&r, iColor, reinterpret_cast<uint32_t*>(this->videoBuffer), static_cast<int>(this->videoBufferPitch));
 
 			r.left = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[1].x - rSize);
 			r.top = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[1].y - rSize);
@@ -521,7 +569,7 @@ void GraphicImpInMemory::DrawRENDERLIST4DWire(RENDERLIST4D_PTR rendList, POINT4D
 			if (rendList->poly_ptrs[poly]->tvlist[1].attr & struct3D::VERTEX4DT_ATTR_SELECTED)
 				iColor = ARGB32BIT(255, 255, 0, 0);
 
-			this->draw->DrawRect(&r, iColor, reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
+			this->draw->DrawRect(&r, iColor, reinterpret_cast<uint32_t*>(this->videoBuffer), static_cast<int>(this->videoBufferPitch));
 
 			r.left = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[2].x - rSize);
 			r.top = static_cast<LONG>(rendList->poly_ptrs[poly]->tvlist[2].y - rSize);
@@ -533,7 +581,7 @@ void GraphicImpInMemory::DrawRENDERLIST4DWire(RENDERLIST4D_PTR rendList, POINT4D
 			if (rendList->poly_ptrs[poly]->tvlist[2].attr & struct3D::VERTEX4DT_ATTR_SELECTED)
 				iColor = ARGB32BIT(255, 255, 0, 0);
 
-			this->draw->DrawRect(&r, iColor, reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
+			this->draw->DrawRect(&r, iColor, reinterpret_cast<uint32_t*>(this->videoBuffer), static_cast<int>(this->videoBufferPitch));
 		}
 		//this->DrawTriangle(rendList->poly_ptrs[poly]->tvlist[0].x, rendList->poly_ptrs[poly]->tvlist[0].y, rendList->poly_ptrs[poly]->tvlist[1].x, rendList->poly_ptrs[poly]->tvlist[1].y, rendList->poly_ptrs[poly]->tvlist[2].x, rendList->poly_ptrs[poly]->tvlist[2].y, rendList->poly_ptrs[poly]->color);
 	}
@@ -541,6 +589,10 @@ void GraphicImpInMemory::DrawRENDERLIST4DWire(RENDERLIST4D_PTR rendList, POINT4D
 
 void GraphicImpInMemory::DrawOBJECT4DSolid(OBJECT4D_PTR obj)
 {
+	if (!this->videoBuffer) {
+		return;
+	}
+
 	pipe.ModelToWorldOBJECT4D(obj);
 	pipe.RemoveBackfacesOBJECT4D(obj, &mainCam);
 	mainCam.Build_CAM4D_Matrix_Euler(struct3D::CAM_ROT_SEQ_ZYX);
@@ -562,14 +614,18 @@ void GraphicImpInMemory::DrawOBJECT4DSolid(OBJECT4D_PTR obj)
 		int vindex2 = obj->plist[poly].vert[2];
 
 		if (obj->plist[poly].attr & struct3D::POLY4D_ATTR_SHADE_MODE_FLAT)
-			this->draw->DrawTriangle(obj->vlist_trans[vindex0].x, obj->vlist_trans[vindex0].y, obj->vlist_trans[vindex1].x, obj->vlist_trans[vindex1].y, obj->vlist_trans[vindex2].x, obj->vlist_trans[vindex2].y, obj->plist[poly].lit_color[0], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
+			this->draw->DrawTriangle(obj->vlist_trans[vindex0].x, obj->vlist_trans[vindex0].y, obj->vlist_trans[vindex1].x, obj->vlist_trans[vindex1].y, obj->vlist_trans[vindex2].x, obj->vlist_trans[vindex2].y, obj->plist[poly].lit_color[0], reinterpret_cast<uint32_t*>(this->videoBuffer), static_cast<int>(this->videoBufferPitch));
 		else if (obj->plist[poly].attr & struct3D::POLY4D_ATTR_SHADE_MODE_GOURAUD)
-			this->draw->DrawGouraudTriangle(obj->vlist_trans[vindex0].x, obj->vlist_trans[vindex0].y, obj->vlist_trans[vindex1].x, obj->vlist_trans[vindex1].y, obj->vlist_trans[vindex2].x, obj->vlist_trans[vindex2].y, obj->plist[poly].lit_color[0], obj->plist[poly].lit_color[1], obj->plist[poly].lit_color[2], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
+			this->draw->DrawGouraudTriangle(obj->vlist_trans[vindex0].x, obj->vlist_trans[vindex0].y, obj->vlist_trans[vindex1].x, obj->vlist_trans[vindex1].y, obj->vlist_trans[vindex2].x, obj->vlist_trans[vindex2].y, obj->plist[poly].lit_color[0], obj->plist[poly].lit_color[1], obj->plist[poly].lit_color[2], reinterpret_cast<uint32_t*>(this->videoBuffer), static_cast<int>(this->videoBufferPitch));
 	}
 }
 
 void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4D_PTR worldPos)
 {
+	if (!this->videoBuffer) {
+		return;
+	}
+
 	//if (false)
 	{
 		/*if(worldPos != NULL)
@@ -749,7 +805,7 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 		}
 		if (rendList->poly_ptrs[poly]->attr & struct3D::POLY4D_ATTR_SHADE_MODE_FLAT)
 			//this->_draw->DrawTriangle(rendList->poly_ptrs[poly]->tvlist[0].x, rendList->poly_ptrs[poly]->tvlist[0].y, rendList->poly_ptrs[poly]->tvlist[1].x, rendList->poly_ptrs[poly]->tvlist[1].y, rendList->poly_ptrs[poly]->tvlist[2].x, rendList->poly_ptrs[poly]->tvlist[2].y, rendList->poly_ptrs[poly]->lit_color[0], (unsigned int *)_videoBuffer, _lPitch);
-			this->draw->DrawTriangle2(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
+			this->draw->DrawTriangle2(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer), static_cast<int>(this->videoBufferPitch));
 		else if (rendList->poly_ptrs[poly]->attr & struct3D::POLY4D_ATTR_SHADE_MODE_GOURAUD)
 		{
 			bool draw = false;
@@ -839,7 +895,7 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 				DrawStrategy::DrawTriangleDefaultParams drawParams;
 
 				drawParams.face = rendList->poly_ptrs[poly];
-				drawParams.videoMemory = reinterpret_cast<uint32_t*>(this->videoBuffer.data());
+				drawParams.videoMemory = reinterpret_cast<uint32_t*>(this->videoBuffer);
 				drawParams.videoMemoryWidth = this->screenParams.width;
 				drawParams.videoMemoryHeight = this->screenParams.height;
 				drawParams.videoMemoryPitch = this->videoBufferPitch;
@@ -851,12 +907,12 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 			rendered++;
 		}
 		else if (rendList->poly_ptrs[poly]->attr & struct3D::POLY4D_ATTR_SHADE_MODE_PHONG)
-			this->draw->DrawPhongTriangle2(&this->mainCam, &pipe.lights, rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
+			this->draw->DrawPhongTriangle2(&this->mainCam, &pipe.lights, rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer), static_cast<int>(this->videoBufferPitch));
 		else if (rendList->poly_ptrs[poly]->attr & struct3D::POLY4D_ATTR_SHADE_MODE_TEST)
-			this->draw->DrawTriangle3(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
+			this->draw->DrawTriangle3(rendList->poly_ptrs[poly], reinterpret_cast<uint32_t*>(this->videoBuffer), static_cast<int>(this->videoBufferPitch));
 		else
 		{
-			this->draw->DrawTriangle(rendList->poly_ptrs[poly]->tvlist[0].x, rendList->poly_ptrs[poly]->tvlist[0].y, rendList->poly_ptrs[poly]->tvlist[1].x, rendList->poly_ptrs[poly]->tvlist[1].y, rendList->poly_ptrs[poly]->tvlist[2].x, rendList->poly_ptrs[poly]->tvlist[2].y, rendList->poly_ptrs[poly]->lit_color[0], reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
+			this->draw->DrawTriangle(rendList->poly_ptrs[poly]->tvlist[0].x, rendList->poly_ptrs[poly]->tvlist[0].y, rendList->poly_ptrs[poly]->tvlist[1].x, rendList->poly_ptrs[poly]->tvlist[1].y, rendList->poly_ptrs[poly]->tvlist[2].x, rendList->poly_ptrs[poly]->tvlist[2].y, rendList->poly_ptrs[poly]->lit_color[0], reinterpret_cast<uint32_t*>(this->videoBuffer), static_cast<int>(this->videoBufferPitch));
 		}
 
 		/*}
@@ -1054,6 +1110,10 @@ void GraphicImpInMemory::DrawRENDERLIST4DSolid(RENDERLIST4D_PTR rendList, POINT4
 
 void GraphicImpInMemory::DrawOBJECT4DLINE(OBJECT4D_LINE_PTR obj)
 {
+	if (!this->videoBuffer) {
+		return;
+	}
+
 	obj->vtrans_curr = 0;
 	/*VECTOR2D v1, v2*/;
 	/*POINT2D p, p2, p3;*/
@@ -1095,7 +1155,7 @@ void GraphicImpInMemory::DrawOBJECT4DLINE(OBJECT4D_LINE_PTR obj)
 
 		if (this->draw->clipLineCS(&r, &obj->vtrans[i].v0.v, &obj->vtrans[i].v1.v))
 		{
-			this->draw->DrawLine(&obj->vtrans[i].v0, &obj->vtrans[i].v1, obj->color, reinterpret_cast<uint32_t*>(this->videoBuffer.data()), static_cast<int>(this->videoBufferPitch));
+			this->draw->DrawLine(&obj->vtrans[i].v0, &obj->vtrans[i].v1, obj->color, reinterpret_cast<uint32_t*>(this->videoBuffer), static_cast<int>(this->videoBufferPitch));
 		}
 	}
 }
@@ -1552,23 +1612,11 @@ void GraphicImpInMemory::FlipVideoBuffer()
 		return;
 	}
 
-	const uint8_t* src = this->videoBuffer.data();
-	uint8_t* dst = static_cast<uint8_t *>(this->dstFlipParams.dstMemory);
-
-	if (this->dstFlipParams.dstMemoryByteWidth == this->videoBufferPitch)
-	{
-		uint32_t memSize = this->videoBufferPitch * this->screenParams.height;
-		std::copy(src, src + memSize, dst);
-	}
-	else
-	{
-		uint32_t byteWidth = (std::min)(this->videoBufferPitch, this->dstFlipParams.dstMemoryByteWidth);
-
-		for (uint32_t y = 0; y < this->screenParams.height; ++y, src += this->videoBufferPitch, dst += this->dstFlipParams.dstMemoryByteWidth)
-		{
-			std::copy(src, src + byteWidth, dst);
-		}
-	}
+	// after flip assume that buffer can't be accessed again until new render request
+	this->videoBuffer = nullptr;
+	this->videoBufferPitch = 0;
+	this->videoBufferSize = 0;
+	this->dstFlipParams = {};
 }
 
 bool GraphicImpInMemory::isInPoly(POINT4D_PTR p, VECTOR4D_PTR v, POLY4D_PTR poly, OBJECT4D_PTR obj)

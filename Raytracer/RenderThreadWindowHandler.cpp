@@ -1,14 +1,6 @@
 #include "RenderThreadWindowHandler.h"
-#include "Render/Functor/CopyImageFunctor.h"
 
 #include <Helpers/is_ready.h>
-#include <MassiveCompute/Schedulers/StealingBlockScheduler.h>
-
-RenderThreadWindowHandler::RenderThreadWindowHandler()
-{
-    // 1 image for render task
-    this->renderQueue.emplace();
-}
 
 RenderThreadWindowHandler::~RenderThreadWindowHandler()
 {
@@ -19,9 +11,9 @@ RenderThreadWindowHandler::~RenderThreadWindowHandler()
 	}
 }
 
-void RenderThreadWindowHandler::GameLoop(ISystemBackBuffer& backBuffer)
+void RenderThreadWindowHandler::GameLoop(ISystemBufferSwapChain& swapChain)
 {
-	this->OnRepaint(backBuffer);
+	this->OnRepaint(swapChain);
 }
 
 void RenderThreadWindowHandler::OnResize(const Helpers::Size2D<uint32_t>& newSize)
@@ -29,50 +21,28 @@ void RenderThreadWindowHandler::OnResize(const Helpers::Size2D<uint32_t>& newSiz
 	this->currentSize = newSize;
 }
 
-void RenderThreadWindowHandler::OnRepaint(ISystemBackBuffer& backBuffer)
+void RenderThreadWindowHandler::OnRepaint(ISystemBufferSwapChain& swapChain)
 {
-	this->TryStartRenderTask();
+	this->TryStartRenderTask(swapChain);
 	this->TryFinishRenderTask();
 
-	SystemBackBufferLock bufLock(backBuffer);
-	ISystemBackBuffer::LockedData& data = bufLock.GetData();
-
-	if (!data.data)
-	{
-		return;
-	}
-
-	BGRA<uint8_t>* pixels = reinterpret_cast<BGRA<uint8_t>*>(data.data);
-	ImageView<BGRA<uint8_t>> imageView(data.size.width, data.size.height, pixels);
-
-	const size_t width = std::min(this->currentlyPresentingImage.GetWidth(), imageView.GetWidth());
-	const size_t height = std::min(this->currentlyPresentingImage.GetHeight(), imageView.GetHeight());
-
-	MassiveCompute::StealingBlockScheduler stealingScheduler;
-
-	stealingScheduler(imageView, MakeCopyImageFunctor(imageView, this->currentlyPresentingImage.MakeView(), width, height), imageView.GetWidth(), 1);
+	swapChain.PresentFrontBuffer();
 }
 
-void RenderThreadWindowHandler::TryStartRenderTask()
+void RenderThreadWindowHandler::TryStartRenderTask(ISystemBufferSwapChain& swapChain)
 {
-	if (this->renderTask.valid() || this->renderQueue.empty() || this->currentSize.Empty())
+	if (this->renderTask.valid() || this->currentSize.Empty())
 	{
 		return;
 	}
 
-	Image<BGRA<uint8_t>> image = std::move(this->renderQueue.front());
-	this->renderQueue.pop();
-
-	if (image.GetWidth() != this->currentSize.width || image.GetHeight() != this->currentSize.height)
-	{
-		image = Image<BGRA<uint8_t>>::Resize(std::move(image), this->currentSize.width, this->currentSize.height);
-	}
+	auto backBufferLk = swapChain.LockBackBufferSwapLock();
 
 	this->renderTask = std::async(
 		std::launch::async,
 		&RenderThreadWindowHandler::RenderMain,
-		this->MakeRenderTask(this->currentSize),
-		std::move(image),
+		this->MakeRenderTask(backBufferLk->GetData().size),
+		std::move(backBufferLk),
 		std::ref(this->renderTaskCancel)
 	);
 }
@@ -84,15 +54,15 @@ void RenderThreadWindowHandler::TryFinishRenderTask()
 		return;
 	}
 
-	this->renderQueue.push(std::move(this->currentlyPresentingImage));
-	this->currentlyPresentingImage = this->renderTask.get();
+	// finish task
+	this->renderTask.get();
 }
 
-Image<BGRA<uint8_t>> RenderThreadWindowHandler::RenderMain(
+void RenderThreadWindowHandler::RenderMain(
 	std::unique_ptr<IRenderThreadTask> renderTask,
-	Image<BGRA<uint8_t>> resultImage,
+	std::unique_ptr<IBackBufferSwapLock> backBufferLk,
 	std::atomic<bool>& cancel
 )
 {
-	return renderTask->Render(resultImage, cancel);
+	return renderTask->Render(std::move(backBufferLk), cancel);
 }

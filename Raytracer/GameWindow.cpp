@@ -14,7 +14,7 @@ std::variant<Window::Nothing, Window::Quit> GameWindow::ProcessMessages(size_t m
 
 	if (!is<Window::Quit>(res))
 	{
-		this->handler.get().GameLoop(this->backBuffer);
+		this->handler.get().GameLoop(this->swapChain);
 	}
 
 	return res;
@@ -72,7 +72,7 @@ Arg::MsgProcessed GameWindow::ProcessMessage(HWND hwnd, UINT msg, WPARAM wparam,
 		size.width = static_cast<uint32_t>(LOWORD(lparam));
 		size.height = static_cast<uint32_t>(HIWORD(lparam));
 
-		this->backBuffer.SetLastSize(hwnd, size);
+		this->swapChain.SetLastSize(hwnd, size);
 		this->handler.get().OnResize(size);
 		break;
 	}
@@ -82,7 +82,7 @@ Arg::MsgProcessed GameWindow::ProcessMessage(HWND hwnd, UINT msg, WPARAM wparam,
 		break;
 	case WM_PAINT:
 	{
-		this->handler.get().OnRepaint(this->backBuffer);
+		this->handler.get().OnRepaint(this->swapChain);
 		break;
 	}
 	default:

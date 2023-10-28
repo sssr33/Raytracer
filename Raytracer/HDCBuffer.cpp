@@ -1,12 +1,13 @@
-#include "HDCBackBuffer.h"
+#include "HDCBuffer.h"
 
-HDCBackBuffer::LockedData HDCBackBuffer::Lock()
+HDCBuffer::LockedData HDCBuffer::Lock()
 {
 	if (!this->hwnd)
 	{
 		return LockedData();
 	}
 
+	this->hdc.reset();
 	this->hdc = std::unique_ptr<std::remove_pointer<HDC>::type, Helpers::GdiDcRelease>(GetDC(this->hwnd), Helpers::GdiDcRelease(this->hwnd));
 	if (!this->hdc)
 	{
@@ -39,11 +40,23 @@ HDCBackBuffer::LockedData HDCBackBuffer::Lock()
 
 	data.data = this->dibMemory;
 	data.size = this->dibSize;
+	data.dataLineByteSize = data.size.width * 4;
 
 	return data;
 }
 
-void HDCBackBuffer::Unlock()
+void HDCBuffer::Unlock()
+{
+	// no op
+}
+
+void HDCBuffer::SetLastSize(HWND hwnd, const Helpers::Size2D<uint32_t>& lastSize)
+{
+	this->hwnd = hwnd;
+	this->lastSize = lastSize;
+}
+
+void HDCBuffer::Present()
 {
 	if (!this->hwnd)
 	{
@@ -56,10 +69,10 @@ void HDCBackBuffer::Unlock()
 	}
 
 	// save to local to release on function exit
-	std::unique_ptr<std::remove_pointer<HDC>::type, Helpers::GdiDcRelease> localHdc = std::move(this->hdc);
+	//std::unique_ptr<std::remove_pointer<HDC>::type, Helpers::GdiDcRelease> localHdc = std::move(this->hdc);
 
 	HGDIOBJ prevObjet = SelectObject(this->dibHdc.get(), this->dib.get());
-	if (!BitBlt(localHdc.get(), 0, 0, static_cast<int>(this->dibSize.width), static_cast<int>(this->dibSize.height), this->dibHdc.get(), 0, 0, SRCCOPY))
+	if (!BitBlt(this->hdc.get(), 0, 0, static_cast<int>(this->dibSize.width), static_cast<int>(this->dibSize.height), this->dibHdc.get(), 0, 0, SRCCOPY))
 	{
 		DWORD error = GetLastError();
 		this->dibHdc = nullptr;
@@ -68,13 +81,7 @@ void HDCBackBuffer::Unlock()
 	SelectObject(this->dibHdc.get(), prevObjet);
 }
 
-void HDCBackBuffer::SetLastSize(HWND hwnd, const Helpers::Size2D<uint32_t>& lastSize)
-{
-	this->hwnd = hwnd;
-	this->lastSize = lastSize;
-}
-
-void HDCBackBuffer::CheckDibSize(bool force)
+void HDCBuffer::CheckDibSize(bool force)
 {
 	if (this->lastSize == this->dibSize && !force)
 	{

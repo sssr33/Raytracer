@@ -249,9 +249,17 @@ RayTraceWindowHandler::RayTraceTask::RayTraceTask(RayTraceFunctorParams params)
 	: rayTraceParams(std::move(params))
 {}
 
-Image<BGRA<uint8_t>> RayTraceWindowHandler::RayTraceTask::Render(Image<BGRA<uint8_t>> resultImage, std::atomic<bool>& cancel)
+void RayTraceWindowHandler::RayTraceTask::Render(std::unique_ptr<IBackBufferSwapLock> backBufferLk, std::atomic<bool>& cancel)
 {
-	ImageView<BGRA<uint8_t>> imageView(resultImage.GetWidth(), resultImage.GetHeight(), resultImage.GetData());
+	auto backBufData = backBufferLk->GetData();
+
+	if (backBufData.dataLineByteSize != backBufData.size.width * 4) {
+		// if happens need to fix render to support dataLineByteSize != width * 4
+		assert(false);
+		return;
+	}
+
+	ImageView<BGRA<uint8_t>> imageView(backBufData.size.width, backBufData.size.height, static_cast<BGRA<uint8_t>*>(backBufData.data));
 	MassiveCompute::StealingBlockScheduler stealingScheduler;
 
 	//MassiveCompute::ConstantBlockScheduler cbs;
@@ -271,6 +279,4 @@ Image<BGRA<uint8_t>> RayTraceWindowHandler::RayTraceTask::Render(Image<BGRA<uint
 	block.right = block.imageWidth = imageView.GetWidth();
 	block.bottom = block.imageHeight = imageView.GetHeight();
 	(TestGradientFunctor(imageView))(block);*/
-
-	return resultImage;
 }

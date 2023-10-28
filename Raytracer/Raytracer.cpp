@@ -16,10 +16,13 @@ int main()
     //MathTest();
     //MassiveComputeTest();
 
-    //RayTraceWindowHandler rayTraceHandler;
     SoftRendWindowHandler softRendHandler;
     // https://devblogs.microsoft.com/oldnewthing/20050217-00/?p=36423
-    GameWindow wnd(/*rayTraceHandler*/softRendHandler, L"Raytracer");
+    GameWindow wnd(softRendHandler, L"Soft render");
+
+    //RayTraceWindowHandler rayTraceHandler;
+    //// https://devblogs.microsoft.com/oldnewthing/20050217-00/?p=36423
+    //GameWindow wnd(rayTraceHandler, L"Raytracer");
 
     while (!is<Window::Quit>(wnd.ProcessMessages()))
     {

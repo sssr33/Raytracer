@@ -29,12 +29,18 @@ SoftRendWindowHandler::SoftRendTask::SoftRendTask(ISoftRend& render)
     : render(render)
 {}
 
-Image<BGRA<uint8_t>> SoftRendWindowHandler::SoftRendTask::Render(Image<BGRA<uint8_t>> resultImage, std::atomic<bool>& cancel)
+void SoftRendWindowHandler::SoftRendTask::Render(std::unique_ptr<IBackBufferSwapLock> backBufferLk, std::atomic<bool>& cancel)
 {
-    this->render.Render(
-        static_cast<uint32_t>(resultImage.GetWidth()),
-        static_cast<uint32_t>(resultImage.GetHeight()),
-        resultImage.GetData());
+    auto backBufData = backBufferLk->GetData();
 
-    return resultImage;
+    if (backBufData.dataLineByteSize != backBufData.size.width * 4) {
+        // if happens need to fix render to support dataLineByteSize != width * 4
+        assert(false);
+        return;
+    }
+
+    this->render.Render(
+        backBufData.size.width,
+        backBufData.size.height,
+        backBufData.data);
 }

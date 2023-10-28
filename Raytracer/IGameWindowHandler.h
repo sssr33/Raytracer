@@ -1,6 +1,5 @@
 #pragma once
-#include "ISystemBackBuffer.h"
-#include "SystemBackBufferLock.h"
+#include "ISystemBufferSwapChain.h"
 
 #include <cstdint>
 #include <Helpers/Point2D.h>
@@ -11,10 +10,10 @@ class IGameWindowHandler
 public:
 	virtual ~IGameWindowHandler() = default;
 
-	virtual void GameLoop(ISystemBackBuffer& backBuffer) = 0;
+	virtual void GameLoop(ISystemBufferSwapChain& swapChain) = 0;
 
 	virtual void OnResize(const Helpers::Size2D<uint32_t>& newSize) = 0;
-	virtual void OnRepaint(ISystemBackBuffer& backBuffer) = 0;
+	virtual void OnRepaint(ISystemBufferSwapChain& swapChain) = 0;
 
 	virtual void OnMouseLeftPress(const Helpers::Point2D<float>& pt) = 0;
 	virtual void OnMouseLeftRelease(const Helpers::Point2D<float>& pt) = 0;

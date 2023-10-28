@@ -4,8 +4,8 @@
     <ClCompile Include="Raytracer.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="GameWindow.cpp" />
-    <ClCompile Include="HDCBackBuffer.cpp" />
-    <ClCompile Include="SystemBackBufferLock.cpp" />
+    <ClCompile Include="HDCBuffer.cpp" />
+    <ClCompile Include="SystemBufferLock.cpp" />
     <ClCompile Include="RayTraceWindowHandler.cpp" />
     <ClCompile Include="Render\Functor\TestGradientFunctor.cpp" />
     <ClCompile Include="Math\MathTest.cpp" />
@@ -32,14 +32,14 @@
     <ClCompile Include="Render\Hitable\BvhNode.cpp" />
     <ClCompile Include="RenderThreadWindowHandler.cpp" />
     <ClCompile Include="SoftRendWindowHandler.cpp" />
+    <ClCompile Include="HDCBufferSwapChain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h" />
     <ClInclude Include="GameWindow.h" />
     <ClInclude Include="IGameWindowHandler.h" />
-    <ClInclude Include="ISystemBackBuffer.h" />
-    <ClInclude Include="HDCBackBuffer.h" />
-    <ClInclude Include="SystemBackBufferLock.h" />
+    <ClInclude Include="HDCBuffer.h" />
+    <ClInclude Include="SystemBufferLock.h" />
     <ClInclude Include="RayTraceWindowHandler.h" />
     <ClInclude Include="IWindowMessageHandler.h" />
     <ClInclude Include="Image\BGRA.h" />
@@ -94,5 +94,8 @@
     <ClInclude Include="RenderThreadWindowHandler.h" />
     <ClInclude Include="IRenderThreadTask.h" />
     <ClInclude Include="SoftRendWindowHandler.h" />
+    <ClInclude Include="ISystemBuffer.h" />
+    <ClInclude Include="ISystemBufferSwapChain.h" />
+    <ClInclude Include="HDCBufferSwapChain.h" />
   </ItemGroup>
 </Project>

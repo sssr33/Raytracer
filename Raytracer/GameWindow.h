@@ -1,7 +1,7 @@
 #pragma once
 #include "Window.h"
 #include "IGameWindowHandler.h"
-#include "HDCBackBuffer.h"
+#include "HDCBufferSwapChain.h"
 
 #include <utility>
 #include <memory>
@@ -19,6 +19,6 @@ private:
 	static Helpers::Point2D<float> GetPointFromLPARAM(LPARAM lparam);
 
 	std::reference_wrapper<IGameWindowHandler> handler;
-	HDCBackBuffer backBuffer;
+	HDCBufferSwapChain swapChain;
 	Window window;
 };

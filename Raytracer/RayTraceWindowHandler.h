@@ -32,7 +32,7 @@ private:
 	public:
 		RayTraceTask(RayTraceFunctorParams params);
 
-		Image<BGRA<uint8_t>> Render(Image<BGRA<uint8_t>> resultImage, std::atomic<bool>& cancel) override;
+		void Render(std::unique_ptr<IBackBufferSwapLock> backBufferLk, std::atomic<bool>& cancel) override;
 
 	private:
 		RayTraceFunctorParams rayTraceParams;

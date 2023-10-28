@@ -12,36 +12,29 @@
 class RenderThreadWindowHandler : public IGameWindowHandler
 {
 public:
-	RenderThreadWindowHandler();
+	RenderThreadWindowHandler() = default;
 	~RenderThreadWindowHandler();
 
-	void GameLoop(ISystemBackBuffer& backBuffer) override;
+	void GameLoop(ISystemBufferSwapChain& swapChain) override;
 
 	void OnResize(const Helpers::Size2D<uint32_t>& newSize) override;
-	void OnRepaint(ISystemBackBuffer& backBuffer) override;
+	void OnRepaint(ISystemBufferSwapChain& swapChain) override;
 
 protected:
 	virtual std::unique_ptr<IRenderThreadTask> MakeRenderTask(const Helpers::Size2D<uint32_t>& currentImageSize) = 0;
 
 private:
-	void TryStartRenderTask();
+	void TryStartRenderTask(ISystemBufferSwapChain& swapChain);
 	void TryFinishRenderTask();
 
-	static Image<BGRA<uint8_t>> RenderMain(
+	static void RenderMain(
 		std::unique_ptr<IRenderThreadTask> renderTask,
-		Image<BGRA<uint8_t>> resultImage,
+		std::unique_ptr<IBackBufferSwapLock> backBufferLk,
 		std::atomic<bool>& cancel
 	);
 
 	Helpers::Size2D<uint32_t> currentSize;
 
-	// Images from <renderQueue> are submitted to render task.
-	std::queue<Image<BGRA<uint8_t>>> renderQueue;
-	// Images from <renderQueue> popped to <currentlyPresentingImage>.
-	// <currentlyPresentingImage> contains the image that is rendered on every repaint.
-	// When new image from <renderQueue> arrives, <currentlyPresentingImage> pushed to <renderQueue>
-	Image<BGRA<uint8_t>> currentlyPresentingImage;
-
 	std::atomic<bool> renderTaskCancel = false;
-	std::future<Image<BGRA<uint8_t>>> renderTask;
+	std::future<void> renderTask;
 };

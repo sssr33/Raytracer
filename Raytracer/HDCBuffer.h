@@ -1,5 +1,5 @@
 #pragma once
-#include "ISystemBackBuffer.h"
+#include "ISystemBuffer.h"
 
 #include <memory>
 #include <Windows.h>
@@ -7,13 +7,14 @@
 #include <Helpers/GdiDcDeleter.h>
 #include <Helpers/GdiDcRelease.h>
 
-class HDCBackBuffer : public ISystemBackBuffer
+class HDCBuffer : public ISystemBuffer
 {
 public:
 	LockedData Lock() override;
 	void Unlock() override;
 
 	void SetLastSize(HWND hwnd, const Helpers::Size2D<uint32_t>& lastSize);
+	void Present();
 
 private:
 	void CheckDibSize(bool force);

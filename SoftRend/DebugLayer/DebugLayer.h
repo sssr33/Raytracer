@@ -162,7 +162,7 @@ private:
     PixelInfo& ModifyPixelInfo(uint32_t x, uint32_t y);
     size_t GetPixelInfoIndex(uint32_t x, uint32_t y) const;
 
-    bool layerEnabled = true;
+    bool layerEnabled = false;
 
     uint32_t pixelInfoWidth = 0;
     uint32_t pixelInfoHeight = 0;

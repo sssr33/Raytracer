@@ -26,6 +26,11 @@ uint32_t DebugLayer::GetHeight() const {
 }
 
 void DebugLayer::ClearPixelInfo() {
+    if (!this->IsEnabled()) {
+        // clear can take long time and it makes big stutters
+        return;
+    }
+
     for (auto& pixInfo : this->pixelInfo) {
         pixInfo.triDrawn.clear();
         pixInfo.triDrawnHalfPlane.clear();
@@ -39,6 +44,11 @@ void DebugLayer::ResizePiexlInfo(uint32_t width, uint32_t height) {
 
     this->pixelInfoWidth = width;
     this->pixelInfoHeight = height;
+
+    if (!this->IsEnabled()) {
+        // resize can take long time and it makes big stutters
+        return;
+    }
 
     this->pixelInfo.resize(this->pixelInfoWidth * this->pixelInfoHeight);
 

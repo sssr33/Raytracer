@@ -15,6 +15,8 @@ class SoftRend : public ISoftRend
 public:
     void Render(uint32_t width, uint32_t height, void* dstMemory) override
     {
+        DebugLayer::Instance().SetEnabled(false);
+
         this->CheckGrapics(width, height, dstMemory);
         DebugLayer::Instance().ResizePiexlInfo(width, height);
 
@@ -302,8 +304,7 @@ private:
             }
         }
 
-        //DebugLayer::Instance().ClearPixelInfo();
-        DebugLayer::Instance().SetEnabled(false);
+        DebugLayer::Instance().ClearPixelInfo();
 
         std::unique_ptr<RENDERLIST4D> testTris = std::make_unique<RENDERLIST4D>();
 

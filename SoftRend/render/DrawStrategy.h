@@ -145,6 +145,11 @@ private:
 	void DrawBottomTriDefault3(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, unsigned int* vb, uint32_t lpitch, int polyIdx);
 	void DrawHLineDefault3(float leftX, float rightX, float topY, float bottomY, unsigned int color, unsigned int* vb, uint32_t lpitch, int polyIdx);
 	void DrawTriDefault4(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params);
+	void DrawTriDefault5(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params);
+	void DrawTriDefault5Top(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params);
+	void DrawTriDefault5Bottom(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params);
+	void DrawTriDefault5SortY(float& x1, float& y1, float& x2, float& y2, float& x3, float& y3) const;
+	bool DrawTriDefault5IsOutOfScreen(float x1, float y1, float x2, float y2, float x3, float y3, const DrawTriangleDefaultParams& params) const;
 	//void DrawGradHLine(float x0, float x1, int y, unsigned int color,int startGrad, int endGrad, void *vb, int lpitch);
 
 	float ClampScreenX(float x) const;

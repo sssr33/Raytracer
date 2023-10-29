@@ -6420,7 +6420,7 @@ void Draw32BitStrategy::DrawTriangleDefault(const DrawTriangleDefaultParams& par
 	int r = (color >> 16) & 255;
 	int a = (color >> 24) & 255;
 
-	int draw = 4;
+	int draw = 5;
 
 	if (false && y1 == y2)
 	{
@@ -6502,6 +6502,9 @@ void Draw32BitStrategy::DrawTriangleDefault(const DrawTriangleDefaultParams& par
 			break;
 		case 4:
 			DrawTriDefault4(x1, y1, x2, y2, x3, y3, color, params);
+			break;
+		case 5:
+			DrawTriDefault5(x1, y1, x2, y2, x3, y3, color, params);
 			break;
 		default:
 			break;
@@ -8043,6 +8046,231 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 	else {
 		assert(false);
 	}
+}
+
+void Draw32BitStrategy::DrawTriDefault5(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params) {
+	if ((x1 == x2 && x2 == x3) || (y1 == y2 && y2 == y3)) {
+		// use exact comparison because eve very small triangle may fill 1 pixel
+		return;
+	}
+
+	{
+		math3D::VECTOR3D a, b, c;
+
+		a.x = x2 - x1;
+		a.y = y2 - y1;
+		a.z = 0.f;
+
+		b.x = x3 - x1;
+		b.y = y3 - y1;
+		b.z = 0.f;
+
+		vecNormalize(&a);
+		vecNormalize(&b);
+		vecCross(&a, &b, &c);
+
+		if (c.z <= 0.f) {
+			return;
+		}
+	}
+
+	this->DrawTriDefault5SortY(x1, y1, x2, y2, x3, y3);
+
+	if (this->DrawTriDefault5IsOutOfScreen(x1, y1, x2, y2, x3, y3, params)) {
+		return;
+	}
+
+	if (y1 == y2) {
+		this->DrawTriDefault5Top(x1, y1, x2, y2, x3, y3, color, params);
+	}
+	else if (y2 == y3) {
+		this->DrawTriDefault5Bottom(x1, y1, x2, y2, x3, y3, color, params);
+	}
+	else {
+		// all y's are different and not equal and sorted: y1 < y2 < y3
+		assert(y1 < y2);
+		assert(y2 < y3);
+
+		float t = (y2 - y1) / (y3 - y1);
+		float newX = x1 + t * (x3 - x1);
+
+		this->DrawTriDefault5Bottom(x1, y1, x2, y2, newX, y2, color, params);
+		this->DrawTriDefault5Top(x2, y2, newX, y2, x3, y3, color, params);
+	}
+}
+
+void Draw32BitStrategy::DrawTriDefault5Top(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params) {
+	// top of triangle is flat
+	assert(y1 == y2);
+
+	if (x2 < x1) {
+		std::swap(x1, x2);
+		// do not swap y1, y2 because assert(y1 == y2);
+	}
+
+	// p1 -> p2 - top edge
+	// p1 -> p3 - left edge
+	// p2 -> p3 - right edge
+
+	const float minY = (std::max)(this->minClipY, 0.5f);
+	const float minX = (std::max)(this->minClipX, 0.5f);
+	const float maxY = (std::min)(this->maxClipY, static_cast<float>(params.videoMemoryHeight) + 0.5f);
+	const float maxX = (std::min)(this->maxClipX, static_cast<float>(params.videoMemoryWidth) + 0.5f);
+
+	float y = y1;
+
+	y = std::floor(y);
+	y += 0.5f;
+
+	// <= 0.5 is inside top plane
+	if (y1 > y) {
+		++y;
+	}
+
+	y = (std::min)((std::max)(y, minY), maxY);
+	const float yEnd = (std::min)((std::max)(y3, minY), maxY);
+
+	for (; y < yEnd; ++y) {
+		const float t = (y - y1) / (y3 - y1);
+		const float xLeft = x1 + t * (x3 - x1);
+		const float xRight = x2 + t * (x3 - x2);
+
+		float xStart = std::floor(xLeft);
+		float xEnd = std::floor(xRight);
+
+		xStart += 0.5f;
+		xEnd += 0.5f;
+
+		// <= 0.5 is inside left plane
+		if (xLeft > xStart) {
+			++xStart;
+		}
+
+		// < 0.5 is inside right plane
+		if (xRight > xEnd) {
+			++xEnd;
+		}
+
+		xStart = (std::min)((std::max)(xStart, minX), maxX);
+		xEnd = (std::min)((std::max)(xEnd, minX), maxX);
+
+		if (xStart >= xEnd) {
+			continue;
+		}
+
+		uint32_t iy = static_cast<uint32_t>(std::floor(y));
+		uint32_t ixStart = static_cast<uint32_t>(std::floor(xStart));
+		uint32_t ixEnd = static_cast<uint32_t>(std::floor(xEnd));
+		uint32_t* vbLine = (uint32_t*)((uint8_t*)params.videoMemory + (ptrdiff_t)iy * (ptrdiff_t)params.videoMemoryPitch);
+
+		for (uint32_t x = ixStart; x < ixEnd; ++x) {
+			this->_alphaBlender->AlphaBlend(&vbLine[x], &color, 1);
+		}
+	}
+}
+
+void Draw32BitStrategy::DrawTriDefault5Bottom(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params) {
+	// bottom of triangle is flat
+	assert(y2 == y3);
+
+	if (x3 < x2) {
+		std::swap(x2, x3);
+		// do not swap y2, y3 because assert(y2 == y3);
+	}
+
+	// p1 -> p2 - left edge
+	// p1 -> p3 - right edge
+	// p2 -> p3 - bottom edge
+
+	const float minY = (std::max)(this->minClipY, 0.5f);
+	const float minX = (std::max)(this->minClipX, 0.5f);
+	const float maxY = (std::min)(this->maxClipY, static_cast<float>(params.videoMemoryHeight) + 0.5f);
+	const float maxX = (std::min)(this->maxClipX, static_cast<float>(params.videoMemoryWidth) + 0.5f);
+
+	float y = y1;
+
+	y = std::floor(y);
+	y += 0.5f;
+
+	// <= 0.5 is inside top plane
+	if (y1 > y) {
+		++y;
+	}
+
+	y = (std::min)((std::max)(y, minY), maxY);
+	const float yEnd = (std::min)((std::max)(y3, minY), maxY);
+
+	for (; y < yEnd; ++y) {
+		const float t = (y - y1) / (y3 - y1);
+		const float xLeft = x1 + t * (x2 - x1);
+		const float xRight = x1 + t * (x3 - x1);
+
+		float xStart = std::floor(xLeft);
+		float xEnd = std::floor(xRight);
+
+		xStart += 0.5f;
+		xEnd += 0.5f;
+
+		// <= 0.5 is inside left plane
+		if (xLeft > xStart) {
+			++xStart;
+		}
+
+		// < 0.5 is inside right plane
+		if (xRight > xEnd) {
+			++xEnd;
+		}
+
+		xStart = (std::min)((std::max)(xStart, minX), maxX);
+		xEnd = (std::min)((std::max)(xEnd, minX), maxX);
+
+		if (xStart >= xEnd) {
+			continue;
+		}
+
+		uint32_t iy = static_cast<uint32_t>(std::floor(y));
+		uint32_t ixStart = static_cast<uint32_t>(std::floor(xStart));
+		uint32_t ixEnd = static_cast<uint32_t>(std::floor(xEnd));
+		uint32_t* vbLine = (uint32_t*)((uint8_t*)params.videoMemory + (ptrdiff_t)iy * (ptrdiff_t)params.videoMemoryPitch);
+
+		for (uint32_t x = ixStart; x < ixEnd; ++x) {
+			this->_alphaBlender->AlphaBlend(&vbLine[x], &color, 1);
+		}
+	}
+}
+
+void Draw32BitStrategy::DrawTriDefault5SortY(float& x1, float& y1, float& x2, float& y2, float& x3, float& y3) const {
+	if (y2 < y1) {
+		std::swap(x2, x1);
+		std::swap(y2, y1);
+	}
+
+	if (y3 < y1) {
+		std::swap(x3, x1);
+		std::swap(y3, y1);
+	}
+
+	if (y3 < y2) {
+		std::swap(x3, x2);
+		std::swap(y3, y2);
+	}
+}
+
+bool Draw32BitStrategy::DrawTriDefault5IsOutOfScreen(float x1, float y1, float x2, float y2, float x3, float y3, const DrawTriangleDefaultParams& params) const {
+	const float minY = (std::max)(this->minClipY, 0.f);
+	const float minX = (std::max)(this->minClipX, 0.f);
+	const float maxY = (std::min)(this->maxClipY, static_cast<float>(params.videoMemoryHeight));
+	const float maxX = (std::min)(this->maxClipX, static_cast<float>(params.videoMemoryWidth));
+
+	if (y3 < minY || y1 > maxY ||
+		(x1 < minX && x2 < minX && x3 < minX) ||
+		(x1 > maxX && x2 > maxX && x3 > maxX)
+		)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 float Draw32BitStrategy::ClampScreenX(float x) const

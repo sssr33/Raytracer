@@ -8054,8 +8054,6 @@ void Draw32BitStrategy::DrawTriDefault5(float x1, float y1, float x2, float y2, 
 		return;
 	}
 
-	// TODO fix DrawTriDefault5 artifacts when height of the app window is small
-
 	{
 		// TODO fix backface culling at early stages
 		math3D::VECTOR3D a, b, c;
@@ -8321,11 +8319,24 @@ bool Draw32BitStrategy::DrawTriDefault5IsOutOfScreen(float x1, float y1, float x
 	const float triMaxX = (std::max)((std::max)(x1, x2), x3);
 	const float triMaxY = (std::max)((std::max)(y1, y2), y3);
 
+	auto isNandOrInf = [](float v)
+	{
+		return std::isnan(v) || std::isinf(v);
+	};
+
+	// can happen on very long triangles
+	// do not draw sunch triangles because it can result in visual artifacts
+	auto anyNandOrInf = [&]
+	{
+		return isNandOrInf(x1) || isNandOrInf(y1) || isNandOrInf(x2) || isNandOrInf(y2) || isNandOrInf(x3) || isNandOrInf(y3);
+	};
+
 	if (
 		triMaxY < minY ||
 		triMinY > maxY ||
 		triMaxX < minY ||
-		triMinX > maxX
+		triMinX > maxX ||
+		anyNandOrInf()
 		)
 	{
 		return true;

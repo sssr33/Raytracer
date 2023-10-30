@@ -1837,6 +1837,31 @@ void Pipeline::CameraToPerspectiveRENDERLIST4D(RENDERLIST4D_PTR rendList, CAM4D_
 		res.v.z = DirectX::XMVectorGetZ(dxvProj);
 		res.v.w = DirectX::XMVectorGetW(dxvProj);
 
+		auto limitInf = [](float v)
+		{
+			if (std::isinf(v)) {
+
+				// TODO uncomment and try to fix
+				// can happen on very long triangles
+				// assert(false);
+
+				// not fix, distorts geometry
+				/*if (v > 0.f) {
+					return (std::numeric_limits<float>::max)();
+				}
+				else {
+					return -(std::numeric_limits<float>::max)();
+				}*/
+			}
+
+			return v;
+		};
+
+		/*res.v.x = limitInf(res.v.x);
+		res.v.y = limitInf(res.v.y);
+		res.v.z = limitInf(res.v.z);
+		res.v.w = limitInf(res.v.w);*/
+
 		return res;
 	};
 	auto test_ndc = [proj = proj2](VERTEX4DT pt)

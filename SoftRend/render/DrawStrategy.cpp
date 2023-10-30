@@ -8050,11 +8050,14 @@ void Draw32BitStrategy::DrawTriDefault4(float x1, float y1, float x2, float y2, 
 
 void Draw32BitStrategy::DrawTriDefault5(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params) {
 	if ((x1 == x2 && x2 == x3) || (y1 == y2 && y2 == y3)) {
-		// use exact comparison because eve very small triangle may fill 1 pixel
+		// use exact comparison because even very small triangle may fill 1 pixel
 		return;
 	}
 
+	// TODO fix DrawTriDefault5 artifacts when height of the app window is small
+
 	{
+		// TODO fix backface culling at early stages
 		math3D::VECTOR3D a, b, c;
 
 		a.x = x2 - x1;
@@ -8074,6 +8077,12 @@ void Draw32BitStrategy::DrawTriDefault5(float x1, float y1, float x2, float y2, 
 		}
 	}
 
+	/*bool allow = params.polyIdx >= 16 && params.polyIdx <= 19;
+
+	if (!allow) {
+		return;
+	}*/
+
 	this->DrawTriDefault5SortY(x1, y1, x2, y2, x3, y3);
 
 	if (this->DrawTriDefault5IsOutOfScreen(x1, y1, x2, y2, x3, y3, params)) {
@@ -8087,53 +8096,72 @@ void Draw32BitStrategy::DrawTriDefault5(float x1, float y1, float x2, float y2, 
 		this->DrawTriDefault5Bottom(x1, y1, x2, y2, x3, y3, color, params);
 	}
 	else {
-		// all y's are different and not equal and sorted: y1 < y2 < y3
-		assert(y1 < y2);
-		assert(y2 < y3);
-
-		float t = (y2 - y1) / (y3 - y1);
-		float newX = x1 + t * (x3 - x1);
-
-		this->DrawTriDefault5Bottom(x1, y1, x2, y2, newX, y2, color, params);
-		this->DrawTriDefault5Top(x2, y2, newX, y2, x3, y3, color, params);
+		this->DrawTriDefault5Bottom(x1, y1, x2, y2, x3, y3, color, params);
+		this->DrawTriDefault5Top(x1, y1, x2, y2, x3, y3, color, params);
 	}
 }
 
 void Draw32BitStrategy::DrawTriDefault5Top(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params) {
-	// top of triangle is flat
-	assert(y1 == y2);
+	const float midY = (std::min)(y2, y3); // triangle midpoint, and is the start for Top-flat triangle
+	float y = midY;
 
-	if (x2 < x1) {
-		std::swap(x1, x2);
-		// do not swap y1, y2 because assert(y1 == y2);
+	float leftEdgeStartX;
+	float leftEdgeStartY;
+
+	float rightEdgeStartX;
+	float rightEdgeStartY;
+
+	float endX;
+	float endY;
+
+	// considering CW order
+	if (y2 < y3) {
+		leftEdgeStartX = x1;
+		leftEdgeStartY = y1;
+
+		rightEdgeStartX = x2;
+		rightEdgeStartY = y2;
+
+		endX = x3;
+		endY = y3;
+	}
+	else {
+		leftEdgeStartX = x3;
+		leftEdgeStartY = y3;
+
+		rightEdgeStartX = x1;
+		rightEdgeStartY = y1;
+
+		endX = x2;
+		endY = y2;
 	}
 
-	// p1 -> p2 - top edge
-	// p1 -> p3 - left edge
-	// p2 -> p3 - right edge
+	// p1 -> p2 - top edge, not used by Top-flat triangle
+	// p1 -> p3 - left edge, Top-flat triangle uses this edge(from p2.y)
+	// p2 -> p3 - right edge, Top-flat triangle starts here
 
 	const float minY = (std::max)(this->minClipY, 0.5f);
 	const float minX = (std::max)(this->minClipX, 0.5f);
 	const float maxY = (std::min)(this->maxClipY, static_cast<float>(params.videoMemoryHeight) + 0.5f);
 	const float maxX = (std::min)(this->maxClipX, static_cast<float>(params.videoMemoryWidth) + 0.5f);
 
-	float y = y1;
-
 	y = std::floor(y);
 	y += 0.5f;
 
 	// <= 0.5 is inside top plane
-	if (y1 > y) {
+	if (midY > y) {
 		++y;
 	}
 
 	y = (std::min)((std::max)(y, minY), maxY);
-	const float yEnd = (std::min)((std::max)(y3, minY), maxY);
+	const float yEnd = (std::min)((std::max)(endY, minY), maxY);
 
 	for (; y < yEnd; ++y) {
-		const float t = (y - y1) / (y3 - y1);
-		const float xLeft = x1 + t * (x3 - x1);
-		const float xRight = x2 + t * (x3 - x2);
+		const float tleft = (y - leftEdgeStartY) / (endY - leftEdgeStartY);
+		const float tright = (y - rightEdgeStartY) / (endY - rightEdgeStartY);
+
+		const float xLeft = leftEdgeStartX + tleft * (endX - leftEdgeStartX);
+		const float xRight = rightEdgeStartX + tright * (endX - rightEdgeStartX);
 
 		float xStart = std::floor(xLeft);
 		float xEnd = std::floor(xRight);
@@ -8170,17 +8198,11 @@ void Draw32BitStrategy::DrawTriDefault5Top(float x1, float y1, float x2, float y
 }
 
 void Draw32BitStrategy::DrawTriDefault5Bottom(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params) {
-	// bottom of triangle is flat
-	assert(y2 == y3);
+	const float midY = (std::min)(y2, y3); // triangle midpoint, and is the end for Bottom-flat triangle
 
-	if (x3 < x2) {
-		std::swap(x2, x3);
-		// do not swap y2, y3 because assert(y2 == y3);
-	}
-
-	// p1 -> p2 - left edge
-	// p1 -> p3 - right edge
-	// p2 -> p3 - bottom edge
+	// p1 -> p2 - left edge, Bottom-flat triangle starts here(from p1)
+	// p1 -> p3 - right edge, Bottom-flat triangle starts here(from p1)
+	// p2 -> p3 - bottom edge, not used by Bottom-flat triangle
 
 	const float minY = (std::max)(this->minClipY, 0.5f);
 	const float minX = (std::max)(this->minClipX, 0.5f);
@@ -8198,12 +8220,14 @@ void Draw32BitStrategy::DrawTriDefault5Bottom(float x1, float y1, float x2, floa
 	}
 
 	y = (std::min)((std::max)(y, minY), maxY);
-	const float yEnd = (std::min)((std::max)(y3, minY), maxY);
+	const float yEnd = (std::min)((std::max)(midY, minY), maxY);
 
 	for (; y < yEnd; ++y) {
-		const float t = (y - y1) / (y3 - y1);
-		const float xLeft = x1 + t * (x2 - x1);
-		const float xRight = x1 + t * (x3 - x1);
+		const float tleft = (y - y1) / (y3 - y1);
+		const float tright = (y - y1) / (y2 - y1);
+
+		const float xLeft = x1 + tleft * (x3 - x1);
+		const float xRight = x1 + tright * (x2 - x1);
 
 		float xStart = std::floor(xLeft);
 		float xEnd = std::floor(xRight);
@@ -8240,7 +8264,36 @@ void Draw32BitStrategy::DrawTriDefault5Bottom(float x1, float y1, float x2, floa
 }
 
 void Draw32BitStrategy::DrawTriDefault5SortY(float& x1, float& y1, float& x2, float& y2, float& x3, float& y3) const {
-	if (y2 < y1) {
+	// sort max 3 times or until y1 will be less or equal both to y2 and y3
+	// this saves CW order
+	// TODO optimize sorting
+	for (size_t i = 0; i < 3 && (y1 > y2 || y1 > y3); ++i) {
+		// 1, 2, 3 -> 1, 3, 2
+		std::swap(x3, x2);
+		std::swap(y3, y2);
+
+		// 1, 3, 2 -> 3, 1, 2
+		std::swap(x2, x1);
+		std::swap(y2, y1);
+	}
+
+	if (y3 == y1) {
+		// sort back 1 time
+
+		// 3, 1, 2 -> 1, 3, 2
+		std::swap(x1, x3);
+		std::swap(y1, y3);
+
+		// 1, 3, 2 -> 1, 2, 3
+		std::swap(x2, x3);
+		std::swap(y2, y3);
+
+		assert(y1 == y2);
+		//assert(x1 <= x2); // asserts on non CW order triangles, but non CW order is not rasterized
+	}
+
+	// old sorting which breask CW order and sorts from min to max
+	/*if (y2 < y1) {
 		std::swap(x2, x1);
 		std::swap(y2, y1);
 	}
@@ -8253,7 +8306,7 @@ void Draw32BitStrategy::DrawTriDefault5SortY(float& x1, float& y1, float& x2, fl
 	if (y3 < y2) {
 		std::swap(x3, x2);
 		std::swap(y3, y2);
-	}
+	}*/
 }
 
 bool Draw32BitStrategy::DrawTriDefault5IsOutOfScreen(float x1, float y1, float x2, float y2, float x3, float y3, const DrawTriangleDefaultParams& params) const {
@@ -8262,9 +8315,17 @@ bool Draw32BitStrategy::DrawTriDefault5IsOutOfScreen(float x1, float y1, float x
 	const float maxY = (std::min)(this->maxClipY, static_cast<float>(params.videoMemoryHeight));
 	const float maxX = (std::min)(this->maxClipX, static_cast<float>(params.videoMemoryWidth));
 
-	if (y3 < minY || y1 > maxY ||
-		(x1 < minX && x2 < minX && x3 < minX) ||
-		(x1 > maxX && x2 > maxX && x3 > maxX)
+	// TODO try to optimize
+	const float triMinX = (std::min)((std::min)(x1, x2), x3);
+	const float triMinY = (std::min)((std::min)(y1, y2), y3);
+	const float triMaxX = (std::max)((std::max)(x1, x2), x3);
+	const float triMaxY = (std::max)((std::max)(y1, y2), y3);
+
+	if (
+		triMaxY < minY ||
+		triMinY > maxY ||
+		triMaxX < minY ||
+		triMinX > maxX
 		)
 	{
 		return true;

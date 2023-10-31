@@ -8154,12 +8154,18 @@ void Draw32BitStrategy::DrawTriDefault5Top(float x1, float y1, float x2, float y
 	y = (std::min)((std::max)(y, minY), maxY);
 	const float yEnd = (std::min)((std::max)(endY, minY), maxY);
 
-	for (; y < yEnd; ++y) {
-		const float tleft = (y - leftEdgeStartY) / (endY - leftEdgeStartY);
-		const float tright = (y - rightEdgeStartY) / (endY - rightEdgeStartY);
+	const float yLeftLenInv = 1.f / (endY - leftEdgeStartY);
+	const float yRightLenInv = 1.f / (endY - rightEdgeStartY);
 
-		const float xLeft = leftEdgeStartX + tleft * (endX - leftEdgeStartX);
-		const float xRight = rightEdgeStartX + tright * (endX - rightEdgeStartX);
+	const float xLeftLen = endX - leftEdgeStartX;
+	const float xRightLen = endX - rightEdgeStartX;
+
+	for (; y < yEnd; ++y) {
+		const float tleft = (y - leftEdgeStartY) * yLeftLenInv;
+		const float tright = (y - rightEdgeStartY) * yRightLenInv;
+
+		const float xLeft = leftEdgeStartX + tleft * xLeftLen;
+		const float xRight = rightEdgeStartX + tright * xRightLen;
 
 		float xStart = std::floor(xLeft);
 		float xEnd = std::floor(xRight);
@@ -8220,12 +8226,19 @@ void Draw32BitStrategy::DrawTriDefault5Bottom(float x1, float y1, float x2, floa
 	y = (std::min)((std::max)(y, minY), maxY);
 	const float yEnd = (std::min)((std::max)(midY, minY), maxY);
 
-	for (; y < yEnd; ++y) {
-		const float tleft = (y - y1) / (y3 - y1);
-		const float tright = (y - y1) / (y2 - y1);
+	const float yLeftLenInv = 1.f / (y3 - y1);
+	const float yRightLenInv = 1.f / (y2 - y1);
 
-		const float xLeft = x1 + tleft * (x3 - x1);
-		const float xRight = x1 + tright * (x2 - x1);
+	const float xLeftLen = x3 - x1;
+	const float xRightLen = x2 - x1;
+
+	for (; y < yEnd; ++y) {
+		const float yCurLen = y - y1;
+		const float tleft = yCurLen * yLeftLenInv;
+		const float tright = yCurLen * yRightLenInv;
+
+		const float xLeft = x1 + tleft * xLeftLen;
+		const float xRight = x1 + tright * xRightLen;
 
 		float xStart = std::floor(xLeft);
 		float xEnd = std::floor(xRight);

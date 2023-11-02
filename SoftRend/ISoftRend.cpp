@@ -89,6 +89,8 @@ private:
         // -63.2798958f
         // -67.1799240f
         // -58.1799049f
+        // -101.380272f
+        // -233.586304f with angle -= 0.1f; to get negative leftItersF or rightItersF in DrawTriDefault6Top or DrawTriDefault6Bottom
         static float angle = -101.380272f;// -67.1799240f;// -53.9799156f; //-43.7800713;// -53.9799156f;// -53.9799156f; //-53.9799156f;// 10.22f; //0.78f;
 
         MATRIX4X4 mrot;

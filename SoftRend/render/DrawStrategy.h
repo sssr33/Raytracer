@@ -156,6 +156,10 @@ private:
 	void DrawTriDefault6(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params);
 	void DrawTriDefault6Top(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params);
 	void DrawTriDefault6Bottom(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params);
+	// edge scan + addition instead of multiplication for X + fixed point
+	void DrawTriDefault7(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params);
+	void DrawTriDefault7Top(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params);
+	void DrawTriDefault7Bottom(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params);
 	//void DrawGradHLine(float x0, float x1, int y, unsigned int color,int startGrad, int endGrad, void *vb, int lpitch);
 
 	float ClampScreenX(float x) const;

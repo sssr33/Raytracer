@@ -6420,7 +6420,7 @@ void Draw32BitStrategy::DrawTriangleDefault(const DrawTriangleDefaultParams& par
 	int r = (color >> 16) & 255;
 	int a = (color >> 24) & 255;
 
-	int draw = 6;
+	int draw = 7;
 
 	if (false && y1 == y2)
 	{
@@ -6508,6 +6508,9 @@ void Draw32BitStrategy::DrawTriangleDefault(const DrawTriangleDefaultParams& par
 			break;
 		case 6:
 			DrawTriDefault6(x1, y1, x2, y2, x3, y3, color, params);
+			break;
+		case 7:
+			DrawTriDefault7(x1, y1, x2, y2, x3, y3, color, params);
 			break;
 		default:
 			break;
@@ -8663,9 +8666,321 @@ void Draw32BitStrategy::DrawTriDefault6Bottom(float x1, float y1, float x2, floa
 		uint32_t ixEnd = static_cast<uint32_t>(std::floor(xEnd));
 		uint32_t* vbLine = (uint32_t*)((uint8_t*)params.videoMemory + (ptrdiff_t)iy * (ptrdiff_t)params.videoMemoryPitch);
 
-		if (iy == 326) {
-			int stop = 234;
+		for (uint32_t x = ixStart; x < ixEnd; ++x) {
+			this->_alphaBlender->AlphaBlend(&vbLine[x], &color, 1);
 		}
+	}
+}
+
+void Draw32BitStrategy::DrawTriDefault7(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params) {
+	if ((x1 == x2 && x2 == x3) || (y1 == y2 && y2 == y3)) {
+		// use exact comparison because even very small triangle may fill 1 pixel
+		return;
+	}
+
+	{
+		// TODO fix backface culling at early stages
+		math3D::VECTOR3D a, b, c;
+
+		a.x = x2 - x1;
+		a.y = y2 - y1;
+		a.z = 0.f;
+
+		b.x = x3 - x1;
+		b.y = y3 - y1;
+		b.z = 0.f;
+
+		vecNormalize(&a);
+		vecNormalize(&b);
+		vecCross(&a, &b, &c);
+
+		if (c.z <= 0.f) {
+			return;
+		}
+	}
+
+	/*bool allow = params.polyIdx >= 36 && params.polyIdx <= 37;
+
+	if (!allow) {
+		return;
+	}*/
+
+	//#define _ARGB32BIT(a,r,g,b) (b + (g << 8) + (r << 16) + (a << 24))
+	//	if (params.polyIdx == 36) {
+	//		color = _ARGB32BIT(255, 0, 0, 255);
+	//	}
+
+	this->DrawTriDefault5SortY(x1, y1, x2, y2, x3, y3);
+
+	if (this->DrawTriDefault5IsOutOfScreen(x1, y1, x2, y2, x3, y3, params)) {
+		return;
+	}
+
+	if (y1 == y2) {
+		this->DrawTriDefault7Top(x1, y1, x2, y2, x3, y3, color, params);
+	}
+	else if (y2 == y3) {
+		this->DrawTriDefault7Bottom(x1, y1, x2, y2, x3, y3, color, params);
+	}
+	else {
+		this->DrawTriDefault7Bottom(x1, y1, x2, y2, x3, y3, color, params);
+		this->DrawTriDefault7Top(x1, y1, x2, y2, x3, y3, color, params);
+	}
+}
+
+#define FltToFixP(flt) static_cast<int32_t>(flt * 65536.f);
+#define FixPToFlt(fixp) static_cast<float>(fixp) / 65536.f;
+
+int32_t floor_fixp(int32_t fixp) {
+	if (fixp & 0x80000000) {
+		return (fixp - 0x00010000) & 0xFFFF0000;
+	}
+
+	return fixp & 0xFFFF0000;
+}
+
+int32_t floor_fixp_to_int32_t(int32_t fixp) {
+	int32_t fixpFloored = floor_fixp(fixp);
+	int32_t res = fixpFloored >> 16;
+
+	return res;
+}
+
+void Draw32BitStrategy::DrawTriDefault7Top(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params) {
+	const float midY = (std::min)(y2, y3); // triangle midpoint, and is the start for Top-flat triangle
+	float y = midY;
+
+	float leftEdgeStartX;
+	float leftEdgeStartY;
+
+	float rightEdgeStartX;
+	float rightEdgeStartY;
+
+	float endX;
+	float endY;
+
+	// considering CW order 1, 2, 3 and that this is top-flat part of triangle
+	if (y2 < y3) {
+		// left edge:  1 -> 3
+		// right edge: 2 -> 3
+
+		leftEdgeStartX = x1;
+		leftEdgeStartY = y1;
+
+		rightEdgeStartX = x2;
+		rightEdgeStartY = y2;
+
+		endX = x3;
+		endY = y3;
+	}
+	else {
+		// left edge:  3 -> 2
+		// right edge: 1 -> 2
+
+		leftEdgeStartX = x3;
+		leftEdgeStartY = y3;
+
+		rightEdgeStartX = x1;
+		rightEdgeStartY = y1;
+
+		endX = x2;
+		endY = y2;
+	}
+
+	// use full edge length to get same step on adjanced triangles
+	const float xLeftStep = (endX - leftEdgeStartX) / (endY - leftEdgeStartY);
+	const float xRightStep = (endX - rightEdgeStartX) / (endY - rightEdgeStartY);
+
+	const float minY = (std::max)(this->minClipY, 0.5f);
+	const float minX = (std::max)(this->minClipX, 0.5f);
+	const float maxY = (std::min)(this->maxClipY, static_cast<float>(params.videoMemoryHeight) + 0.5f);
+	const float maxX = (std::min)(this->maxClipX, static_cast<float>(params.videoMemoryWidth) + 0.5f);
+
+	y = std::floor(y);
+	y += 0.5f;
+
+	// <= 0.5 is inside top plane
+	if (midY > y) {
+		++y;
+	}
+
+	y = (std::min)((std::max)(y, minY), maxY);
+	const float yEnd = (std::min)((std::max)(endY, minY), maxY);
+
+	const int32_t xLeftStepFixp = FltToFixP(xLeftStep);
+	const int32_t xRightStepFixp = FltToFixP(xRightStep);
+	const int32_t oneFixp = FltToFixP(1.f);
+	const int32_t halfFixp = FltToFixP(0.5f);
+
+	int32_t xLeftFixp;
+	int32_t xRightFixp;
+	{
+		// all logic in this scope should be optimized by using fixed point to not get rounding errors when using multiplication and addition interchangeably
+
+		// Logic here is to go from edge start Y to nearest ceiled(fixed) Y
+		// +0.5 used becase Y also have 0.5 and difference will give integer value to that count of iterations is known
+		// Then from fixed Y iteratively go to Y
+
+		float leftYceiled = std::floor(leftEdgeStartY);
+		leftYceiled += 0.5f;
+		if (leftYceiled < leftEdgeStartY) {
+			++leftYceiled;
+		}
+
+		float rightYceiled = std::floor(rightEdgeStartY);
+		rightYceiled += 0.5f;
+		if (rightYceiled < rightEdgeStartY) {
+			++rightYceiled;
+		}
+
+		float xLeftToCeiled = leftEdgeStartX + (leftYceiled - leftEdgeStartY) * xLeftStep;
+		float xRightToCeiled = rightEdgeStartX + (rightYceiled - rightEdgeStartY) * xRightStep;
+
+		int32_t xLeftToCeiledFixp = FltToFixP(xLeftToCeiled);
+		int32_t xRightToCeiledFixp = FltToFixP(xRightToCeiled);
+
+		int32_t leftItersF = static_cast<int32_t>(y - leftYceiled);
+		int32_t rightItersF = static_cast<int32_t>(y - rightYceiled);
+
+		xLeftFixp = xLeftToCeiledFixp + leftItersF * xLeftStepFixp;
+		xRightFixp = xRightToCeiledFixp + rightItersF * xRightStepFixp;
+	}
+
+	const int32_t minXFixp = FltToFixP(minX);
+	const int32_t minYFixp = FltToFixP(minY);
+	const int32_t maxXFixp = FltToFixP(maxX);
+	const int32_t maxYFixp = FltToFixP(maxY);
+
+	for (; y < yEnd; ++y, xLeftFixp += xLeftStepFixp, xRightFixp += xRightStepFixp) {
+		int32_t xStartFixp = floor_fixp(xLeftFixp);
+		int32_t xEndFixp = floor_fixp(xRightFixp);
+
+		xStartFixp += halfFixp;
+		xEndFixp += halfFixp;
+
+		// <= 0.5 is inside left plane
+		if (xLeftFixp > xStartFixp) {
+			xStartFixp += oneFixp;
+		}
+
+		// < 0.5 is inside right plane
+		if (xRightFixp > xEndFixp) {
+			xEndFixp += oneFixp;
+		}
+
+		xStartFixp = (std::min)((std::max)(xStartFixp, minXFixp), maxXFixp);
+		xEndFixp = (std::min)((std::max)(xEndFixp, minXFixp), maxXFixp);
+
+		if (xStartFixp >= xEndFixp) {
+			continue;
+		}
+
+		uint32_t iy = static_cast<uint32_t>(std::floor(y));
+		uint32_t ixStart = static_cast<uint32_t>(floor_fixp_to_int32_t(xStartFixp));
+		uint32_t ixEnd = static_cast<uint32_t>(floor_fixp_to_int32_t(xEndFixp));
+		uint32_t* vbLine = (uint32_t*)((uint8_t*)params.videoMemory + (ptrdiff_t)iy * (ptrdiff_t)params.videoMemoryPitch);
+
+		for (uint32_t x = ixStart; x < ixEnd; ++x) {
+			this->_alphaBlender->AlphaBlend(&vbLine[x], &color, 1);
+		}
+	}
+}
+
+void Draw32BitStrategy::DrawTriDefault7Bottom(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int color, const DrawTriangleDefaultParams& params) {
+	const float midY = (std::min)(y2, y3); // triangle midpoint, and is the end for Bottom-flat triangle
+
+	// considering CW order 1, 2, 3 and that this is bottom-flat part of triangle
+	// left edge:  1 -> 3
+	// right edge: 1 -> 2
+
+	// use full edge length to get same step on adjanced triangles
+	const float xLeftStep = (x3 - x1) / (y3 - y1);
+	const float xRightStep = (x2 - x1) / (y2 - y1);
+
+	const float minY = (std::max)(this->minClipY, 0.5f);
+	const float minX = (std::max)(this->minClipX, 0.5f);
+	const float maxY = (std::min)(this->maxClipY, static_cast<float>(params.videoMemoryHeight) + 0.5f);
+	const float maxX = (std::min)(this->maxClipX, static_cast<float>(params.videoMemoryWidth) + 0.5f);
+
+	float y = y1;
+
+	y = std::floor(y);
+	y += 0.5f;
+
+	// <= 0.5 is inside top plane
+	if (y1 > y) {
+		++y;
+	}
+
+	y = (std::min)((std::max)(y, minY), maxY);
+	const float yEnd = (std::min)((std::max)(midY, minY), maxY);
+
+	const int32_t xLeftStepFixp = FltToFixP(xLeftStep);
+	const int32_t xRightStepFixp = FltToFixP(xRightStep);
+	const int32_t oneFixp = FltToFixP(1.f);
+	const int32_t halfFixp = FltToFixP(0.5f);
+
+	int32_t xLeftFixp;
+	int32_t xRightFixp;
+	{
+		// all logic in this scope should be optimized by using fixed point to not get rounding errors when using multiplication and addition interchangeably
+
+		// Logic here is to go from edge start Y to nearest ceiled(fixed) Y
+		// +0.5 used becase Y also have 0.5 and difference will give integer value to that count of iterations is known
+		// Then from fixed Y iteratively go to Y
+
+		// start Y same for left and right
+		float yStartCeiled = std::floor(y1);
+		yStartCeiled += 0.5f;
+		if (yStartCeiled < y1) {
+			++yStartCeiled;
+		}
+
+		float xLeftToCeiled = x1 + (yStartCeiled - y1) * xLeftStep;
+		float xRightToCeiled = x1 + (yStartCeiled - y1) * xRightStep;
+
+		int32_t xLeftToCeiledFixp = FltToFixP(xLeftToCeiled);
+		int32_t xRightToCeiledFixp = FltToFixP(xRightToCeiled);
+
+		int32_t xItersF = static_cast<int32_t>(y - yStartCeiled);
+
+		xLeftFixp = xLeftToCeiledFixp + xItersF * xLeftStepFixp;
+		xRightFixp = xRightToCeiledFixp + xItersF * xRightStepFixp;
+	}
+
+	const int32_t minXFixp = FltToFixP(minX);
+	const int32_t minYFixp = FltToFixP(minY);
+	const int32_t maxXFixp = FltToFixP(maxX);
+	const int32_t maxYFixp = FltToFixP(maxY);
+
+	for (; y < yEnd; ++y, xLeftFixp += xLeftStepFixp, xRightFixp += xRightStepFixp) {
+		int32_t xStartFixp = floor_fixp(xLeftFixp);
+		int32_t xEndFixp = floor_fixp(xRightFixp);
+
+		xStartFixp += halfFixp;
+		xEndFixp += halfFixp;
+
+		// <= 0.5 is inside left plane
+		if (xLeftFixp > xStartFixp) {
+			xStartFixp += oneFixp;
+		}
+
+		// < 0.5 is inside right plane
+		if (xRightFixp > xEndFixp) {
+			xEndFixp += oneFixp;
+		}
+
+		xStartFixp = (std::min)((std::max)(xStartFixp, minXFixp), maxXFixp);
+		xEndFixp = (std::min)((std::max)(xEndFixp, minXFixp), maxXFixp);
+
+		if (xStartFixp >= xEndFixp) {
+			continue;
+		}
+
+		uint32_t iy = static_cast<uint32_t>(std::floor(y));
+		uint32_t ixStart = static_cast<uint32_t>(floor_fixp_to_int32_t(xStartFixp));
+		uint32_t ixEnd = static_cast<uint32_t>(floor_fixp_to_int32_t(xEndFixp));
+		uint32_t* vbLine = (uint32_t*)((uint8_t*)params.videoMemory + (ptrdiff_t)iy * (ptrdiff_t)params.videoMemoryPitch);
 
 		for (uint32_t x = ixStart; x < ixEnd; ++x) {
 			this->_alphaBlender->AlphaBlend(&vbLine[x], &color, 1);

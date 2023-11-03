@@ -8850,8 +8850,10 @@ void Draw32BitStrategy::DrawTriDefault7Top(float x1, float y1, float x2, float y
 	const int32_t minYFixp = FltToFixP(minY);
 	const int32_t maxXFixp = FltToFixP(maxX);
 	const int32_t maxYFixp = FltToFixP(maxY);
+	const int32_t yEndFixp = FltToFixP(yEnd);
+	int32_t yFixp = FltToFixP(y);
 
-	for (; y < yEnd; ++y, xLeftFixp += xLeftStepFixp, xRightFixp += xRightStepFixp) {
+	for (; yFixp < yEndFixp; yFixp += oneFixp, xLeftFixp += xLeftStepFixp, xRightFixp += xRightStepFixp) {
 		int32_t xStartFixp = floor_fixp(xLeftFixp);
 		int32_t xEndFixp = floor_fixp(xRightFixp);
 
@@ -8875,7 +8877,7 @@ void Draw32BitStrategy::DrawTriDefault7Top(float x1, float y1, float x2, float y
 			continue;
 		}
 
-		uint32_t iy = static_cast<uint32_t>(std::floor(y));
+		uint32_t iy = static_cast<uint32_t>(floor_fixp_to_int32_t(yFixp));
 		uint32_t ixStart = static_cast<uint32_t>(floor_fixp_to_int32_t(xStartFixp));
 		uint32_t ixEnd = static_cast<uint32_t>(floor_fixp_to_int32_t(xEndFixp));
 		uint32_t* vbLine = (uint32_t*)((uint8_t*)params.videoMemory + (ptrdiff_t)iy * (ptrdiff_t)params.videoMemoryPitch);
@@ -8952,8 +8954,10 @@ void Draw32BitStrategy::DrawTriDefault7Bottom(float x1, float y1, float x2, floa
 	const int32_t minYFixp = FltToFixP(minY);
 	const int32_t maxXFixp = FltToFixP(maxX);
 	const int32_t maxYFixp = FltToFixP(maxY);
+	const int32_t yEndFixp = FltToFixP(yEnd);
+	int32_t yFixp = FltToFixP(y);
 
-	for (; y < yEnd; ++y, xLeftFixp += xLeftStepFixp, xRightFixp += xRightStepFixp) {
+	for (; yFixp < yEndFixp; yFixp += oneFixp, xLeftFixp += xLeftStepFixp, xRightFixp += xRightStepFixp) {
 		int32_t xStartFixp = floor_fixp(xLeftFixp);
 		int32_t xEndFixp = floor_fixp(xRightFixp);
 
@@ -8977,7 +8981,7 @@ void Draw32BitStrategy::DrawTriDefault7Bottom(float x1, float y1, float x2, floa
 			continue;
 		}
 
-		uint32_t iy = static_cast<uint32_t>(std::floor(y));
+		uint32_t iy = static_cast<uint32_t>(floor_fixp_to_int32_t(yFixp));
 		uint32_t ixStart = static_cast<uint32_t>(floor_fixp_to_int32_t(xStartFixp));
 		uint32_t ixEnd = static_cast<uint32_t>(floor_fixp_to_int32_t(xEndFixp));
 		uint32_t* vbLine = (uint32_t*)((uint8_t*)params.videoMemory + (ptrdiff_t)iy * (ptrdiff_t)params.videoMemoryPitch);

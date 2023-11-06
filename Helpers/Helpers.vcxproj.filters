@@ -11,6 +11,9 @@
     <ClInclude Include="GdiDcRelease.h" />
     <ClInclude Include="PropagateConst.h" />
     <ClInclude Include="is_ready.h" />
+    <ClInclude Include="Meta\ArgType.h" />
+    <ClInclude Include="Meta\num_v.h" />
+    <ClInclude Include="Meta\for_idx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math.cpp" />

@@ -31,6 +31,9 @@
     <ClInclude Include="is.h" />
     <ClInclude Include="is_ready.h" />
     <ClInclude Include="Math.h" />
+    <ClInclude Include="Meta\ArgType.h" />
+    <ClInclude Include="Meta\for_idx.h" />
+    <ClInclude Include="Meta\num_v.h" />
     <ClInclude Include="Point2D.h" />
     <ClInclude Include="PropagateConst.h" />
     <ClInclude Include="Size2D.h" />

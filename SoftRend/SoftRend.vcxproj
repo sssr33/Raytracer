@@ -47,10 +47,10 @@
     <ClInclude Include="render\Pipeline\Pipeline2.h" />
     <ClInclude Include="render\Pipeline\Pipeline2.hpp" />
     <ClInclude Include="render\Pipeline\Pipeline2Traits.h" />
-    <ClInclude Include="render\Pipeline\Registers\SemanticRegisterHelpers.h" />
-    <ClInclude Include="render\Pipeline\Registers\SemanticRegisterHelpers.hpp" />
-    <ClInclude Include="render\Pipeline\Registers\SemanticRegisters.h" />
-    <ClInclude Include="render\Pipeline\Registers\SemanticRegistersLerp.h" />
+    <ClInclude Include="render\Pipeline\Semantic\SemanticValueHelpers.h" />
+    <ClInclude Include="render\Pipeline\Semantic\SemanticValueHelpers.hpp" />
+    <ClInclude Include="render\Pipeline\Semantic\SemanticValues.h" />
+    <ClInclude Include="render\Pipeline\Semantic\SemanticValuesLerp.h" />
     <ClInclude Include="render\Pipeline\Stages\BlendDefault.h" />
     <ClInclude Include="render\Pipeline\Stages\PixelShaderDefault.h" />
     <ClInclude Include="render\Pipeline\Stages\VertexShaderDefault.h" />
@@ -90,7 +90,7 @@
     <ClCompile Include="render\math3DFunc.cpp" />
     <ClCompile Include="render\Math3DStructs.cpp" />
     <ClCompile Include="render\Pipeline.cpp" />
-    <ClCompile Include="render\Pipeline\Registers\SemanticRegistersLerp.cpp" />
+    <ClCompile Include="render\Pipeline\Semantic\SemanticValuesLerp.cpp" />
     <ClCompile Include="render\Pipeline\Stages\BlendDefault.cpp" />
     <ClCompile Include="render\Pipeline\Stages\PixelShaderDefault.cpp" />
     <ClCompile Include="render\Pipeline\Stages\VertexShaderDefault.cpp" />

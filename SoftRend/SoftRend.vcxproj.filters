@@ -41,10 +41,10 @@
     <ClInclude Include="render\Pipeline\Pipeline2.h" />
     <ClInclude Include="render\Pipeline\Pipeline2.hpp" />
     <ClInclude Include="render\Math\Float.h" />
-    <ClInclude Include="render\Pipeline\Registers\SemanticRegisters.h" />
-    <ClInclude Include="render\Pipeline\Registers\SemanticRegisterHelpers.h" />
-    <ClInclude Include="render\Pipeline\Registers\SemanticRegisterHelpers.hpp" />
-    <ClInclude Include="render\Pipeline\Registers\SemanticRegistersLerp.h" />
+    <ClInclude Include="render\Pipeline\Semantic\SemanticValues.h" />
+    <ClInclude Include="render\Pipeline\Semantic\SemanticValueHelpers.h" />
+    <ClInclude Include="render\Pipeline\Semantic\SemanticValueHelpers.hpp" />
+    <ClInclude Include="render\Pipeline\Semantic\SemanticValuesLerp.h" />
     <ClInclude Include="render\Pipeline\Stages\VertexShaderDefault.h" />
     <ClInclude Include="render\Pipeline\Stages\PixelShaderDefault.h" />
     <ClInclude Include="render\Pipeline\Stages\BlendDefault.h" />
@@ -82,7 +82,7 @@
     <ClCompile Include="render\RasterScan\RasterScanBox.cpp" />
     <ClCompile Include="render\RasterScan\RasterScanTriangle.cpp" />
     <ClCompile Include="render\Clip\SutherlandHodgmanTriangleClipper2D.cpp" />
-    <ClCompile Include="render\Pipeline\Registers\SemanticRegistersLerp.cpp" />
+    <ClCompile Include="render\Pipeline\Semantic\SemanticValuesLerp.cpp" />
     <ClCompile Include="render\Pipeline\Stages\VertexShaderDefault.cpp" />
     <ClCompile Include="render\Pipeline\Stages\PixelShaderDefault.cpp" />
     <ClCompile Include="render\Pipeline\Stages\BlendDefault.cpp" />

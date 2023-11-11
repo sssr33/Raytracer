@@ -1,7 +1,7 @@
 #pragma once
 #include "Pipeline2Traits.h"
-#include "Registers\SemanticRegisters.h"
-#include "Registers\SemanticRegisterHelpers.h"
+#include "Semantic\SemanticValues.h"
+#include "Semantic\SemanticValueHelpers.h"
 
 #include <type_traits>
 #include <Helpers\Meta\ArgType.h>

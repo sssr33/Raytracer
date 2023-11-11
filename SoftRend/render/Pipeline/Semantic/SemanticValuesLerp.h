@@ -1,10 +1,10 @@
 #pragma once
 #include "..\..\Math\Float.h"
 
-class SemanticRegistersLerp {
+class SemanticValuesLerp {
 public:
-    SemanticRegistersLerp() = default;
-    SemanticRegistersLerp(float t);
+    SemanticValuesLerp() = default;
+    SemanticValuesLerp(float t);
 
     float operator()(float a, float b) const;
     Float2 operator()(const Float2& a, const Float2& b) const;

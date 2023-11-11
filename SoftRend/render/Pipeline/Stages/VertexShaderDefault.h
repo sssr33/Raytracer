@@ -1,5 +1,5 @@
 #pragma once
-#include "..\Registers\SemanticRegisters.h"
+#include "..\Semantic\SemanticValues.h"
 
 using VSInputDefault = std::tuple<Float4>;
 using VSOutputDefault = std::tuple<SVPosition>;

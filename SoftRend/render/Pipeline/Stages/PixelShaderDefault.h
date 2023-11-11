@@ -1,5 +1,5 @@
 #pragma once
-#include "..\Registers\SemanticRegisters.h"
+#include "..\Semantic\SemanticValues.h"
 
 using PSInputDefault = std::tuple<SVPosition>;
 using PSOutputDefault = std::tuple<SVColor<0>>;

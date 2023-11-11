@@ -1,3 +1,3 @@
 #pragma once
 #include "Pipeline2.h"
-#include "Registers\SemanticRegistersLerp.h"
+#include "Semantic\SemanticValuesLerp.h"

@@ -49,6 +49,8 @@
     <ClInclude Include="render\Pipeline\Stages\PixelShaderDefault.h" />
     <ClInclude Include="render\Pipeline\Stages\BlendDefault.h" />
     <ClInclude Include="render\Pipeline\Pipeline2Traits.h" />
+    <ClInclude Include="render\Pipeline\Clipping\SH4DPipeline2Clipper.h" />
+    <ClInclude Include="render\Pipeline\Clipping\SH4DPipeline2Clipper.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="render\fixp\fixed_func.cpp" />
@@ -86,5 +88,6 @@
     <ClCompile Include="render\Pipeline\Stages\VertexShaderDefault.cpp" />
     <ClCompile Include="render\Pipeline\Stages\PixelShaderDefault.cpp" />
     <ClCompile Include="render\Pipeline\Stages\BlendDefault.cpp" />
+    <ClCompile Include="render\Pipeline\Clipping\SH4DPipeline2Clipper.cpp" />
   </ItemGroup>
 </Project>

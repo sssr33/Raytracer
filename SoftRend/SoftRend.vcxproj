@@ -44,6 +44,8 @@
     <ClInclude Include="render\Math3DStructs.h" />
     <ClInclude Include="render\Math\Float.h" />
     <ClInclude Include="render\Pipeline.h" />
+    <ClInclude Include="render\Pipeline\Clipping\SH4DPipeline2Clipper.h" />
+    <ClInclude Include="render\Pipeline\Clipping\SH4DPipeline2Clipper.hpp" />
     <ClInclude Include="render\Pipeline\Pipeline2.h" />
     <ClInclude Include="render\Pipeline\Pipeline2.hpp" />
     <ClInclude Include="render\Pipeline\Pipeline2Traits.h" />
@@ -90,6 +92,7 @@
     <ClCompile Include="render\math3DFunc.cpp" />
     <ClCompile Include="render\Math3DStructs.cpp" />
     <ClCompile Include="render\Pipeline.cpp" />
+    <ClCompile Include="render\Pipeline\Clipping\SH4DPipeline2Clipper.cpp" />
     <ClCompile Include="render\Pipeline\Semantic\SemanticValuesLerp.cpp" />
     <ClCompile Include="render\Pipeline\Stages\BlendDefault.cpp" />
     <ClCompile Include="render\Pipeline\Stages\PixelShaderDefault.cpp" />

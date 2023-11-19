@@ -12,10 +12,13 @@ public:
     static constexpr size_t CountValues();
 
     template<typename ValueT, typename T>
-    static constexpr size_t GetFieldIdxFromValueIdx(size_t regIdx);
+    static constexpr size_t GetFieldIdxFromValueIdx(size_t valIdx);
 
     template<typename ValueT, typename T>
     static constexpr size_t GetValueIdxFromFieldIdx(size_t fieldIdx);
+
+    template<typename ValueT, size_t Idx = 0, typename T>
+    static constexpr const ValueT& GetValue(const T& v);
 
     template<typename DstT, typename SrcT>
     static constexpr void CopyValues(DstT& dst, const SrcT& src);

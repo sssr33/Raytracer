@@ -17,13 +17,13 @@ constexpr size_t SemanticValueHelpers::CountValues() {
 }
 
 template<typename ValueT, typename T>
-constexpr size_t SemanticValueHelpers::GetFieldIdxFromValueIdx(size_t regIdx) {
+constexpr size_t SemanticValueHelpers::GetFieldIdxFromValueIdx(size_t valIdx) {
     size_t count = 0;
     size_t fieldIdx = InvalidIdx;
 
     for_idx<std::tuple_size_v<T>>([&](auto i) {
         if constexpr (std::is_base_of_v<ValueT, std::tuple_element_t<i.value, T>> || std::is_same_v<ValueT, std::tuple_element_t<i.value, T>>) {
-            if (count == regIdx) {
+            if (count == valIdx) {
                 fieldIdx = i.value;
             }
             ++count;
@@ -36,18 +36,24 @@ constexpr size_t SemanticValueHelpers::GetFieldIdxFromValueIdx(size_t regIdx) {
 template<typename ValueT, typename T>
 constexpr size_t SemanticValueHelpers::GetValueIdxFromFieldIdx(size_t fieldIdx) {
     size_t count = 0;
-    size_t regIdx = InvalidIdx;
+    size_t valIdx = InvalidIdx;
 
     for_idx<std::tuple_size_v<T>>([&](auto i) {
         if constexpr (std::is_base_of_v<ValueT, std::tuple_element_t<i.value, T>> || std::is_same_v<ValueT, std::tuple_element_t<i.value, T>>) {
             if (fieldIdx == i.value) {
-                regIdx = count;
+                valIdx = count;
             }
             ++count;
         }
         });
 
-    return regIdx;
+    return valIdx;
+}
+
+template<typename ValueT, size_t Idx /*= 0*/, typename T>
+constexpr const ValueT& SemanticValueHelpers::GetValue(const T& v) {
+    constexpr size_t fieldIdx = SemanticValueHelpers::GetFieldIdxFromValueIdx<ValueT, T>(Idx);
+    return std::get<fieldIdx>(v);
 }
 
 template<typename DstT, typename SrcT>
@@ -57,9 +63,9 @@ constexpr void SemanticValueHelpers::CopyValues(DstT& dst, const SrcT& src) {
     for_idx<std::tuple_size_v<LessFeildsT>>([&](auto i)
         {
             using ValueT = std::tuple_element_t<i.value, LessFeildsT>;
-            constexpr auto RegIdx = GetValueIdxFromFieldIdx<ValueT, LessFeildsT>(i.value);
-            constexpr auto DstFieldIdx = GetFieldIdxFromValueIdx<ValueT, DstT>(RegIdx);
-            constexpr auto SrcFieldIdx = GetFieldIdxFromValueIdx<ValueT, SrcT>(RegIdx);
+            constexpr auto ValIdx = GetValueIdxFromFieldIdx<ValueT, LessFeildsT>(i.value);
+            constexpr auto DstFieldIdx = GetFieldIdxFromValueIdx<ValueT, DstT>(ValIdx);
+            constexpr auto SrcFieldIdx = GetFieldIdxFromValueIdx<ValueT, SrcT>(ValIdx);
 
             if constexpr (DstFieldIdx != InvalidIdx && SrcFieldIdx != InvalidIdx) {
                 const auto& srcRef = std::get<SrcFieldIdx>(src);

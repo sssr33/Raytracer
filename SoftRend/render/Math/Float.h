@@ -9,6 +9,15 @@ struct Float4 {
     {}
 };
 
+struct Float3 {
+    float x, y, z;
+
+    Float3() = default;
+    Float3(float x, float y, float z)
+        : x(x), y(y), z(z)
+    {}
+};
+
 struct Float2 {
     float x, y;
 

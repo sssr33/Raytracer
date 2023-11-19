@@ -2,6 +2,7 @@
 #include "SH4DPipeline2Clipper.h"
 
 #include <cmath>
+#include <algorithm>
 
 template<class VertexT>
 std::vector<VertexT> SH4DPipeline2Clipper::Clip(const VertexT& a, const VertexT& b, const VertexT& c) {
@@ -18,6 +19,16 @@ std::vector<VertexT> SH4DPipeline2Clipper::Clip(const VertexT& a, const VertexT&
     this->IntersectPlane(current, next, BottomPlane{});
     this->IntersectPlane(current, next, FarPlane{});
     this->IntersectPlane(current, next, NearPlane{});
+
+    if (current.size() > 3) {
+        // intersection can produce duplicate vertices
+        current.erase(std::unique(std::begin(current), std::end(current)), std::end(current));
+
+        // std::unique doesn't check first and last but for polygon it is connected vertices
+        if (current.front() == current.back()) {
+            current.pop_back();
+        }
+    }
 
     return {};
 }

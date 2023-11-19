@@ -104,6 +104,52 @@ SH4DPipeline2Clipper::ClipVertex SH4DPipeline2Clipper::NearPlane::Clip(const Cli
     //return NegativePlane::Clip(a, b, &POINT4D::z);
 }
 
+SH4DPipeline2Clipper::SemanticValuesWeightedSum::SemanticValuesWeightedSum(const VertexInterpolationWeigths& weights)
+    : weights(weights)
+{}
+
+float SH4DPipeline2Clipper::SemanticValuesWeightedSum::operator()(float a, float b, float c) const {
+    float res;
+
+    res = a * this->weights.x + b * this->weights.y + c * this->weights.z;
+
+    return res;
+}
+
+Float2 SH4DPipeline2Clipper::SemanticValuesWeightedSum::operator()(const Float2& a, const Float2& b, const Float2& c) const {
+    Float2 res;
+
+    res.x = a.x * this->weights.x + b.x * this->weights.y + c.x * this->weights.z;
+    res.y = a.y * this->weights.x + b.y * this->weights.y + c.y * this->weights.z;
+
+    return res;
+}
+
+Float3 SH4DPipeline2Clipper::SemanticValuesWeightedSum::operator()(const Float3& a, const Float3& b, const Float3& c) const {
+    Float3 res;
+
+    res.x = a.x * this->weights.x + b.x * this->weights.y + c.x * this->weights.z;
+    res.y = a.y * this->weights.x + b.y * this->weights.y + c.y * this->weights.z;
+    res.z = a.z * this->weights.x + b.z * this->weights.y + c.z * this->weights.z;
+
+    return res;
+}
+
+Float4 SH4DPipeline2Clipper::SemanticValuesWeightedSum::operator()(const Float4& a, const Float4& b, const Float4& c) const {
+    Float4 res;
+
+    res.x = a.x * this->weights.x + b.x * this->weights.y + c.x * this->weights.z;
+    res.y = a.y * this->weights.x + b.y * this->weights.y + c.y * this->weights.z;
+    res.z = a.z * this->weights.x + b.z * this->weights.y + c.z * this->weights.z;
+    res.w = a.w * this->weights.x + b.w * this->weights.y + c.w * this->weights.z;
+
+    return res;
+}
+
+SVPosition SH4DPipeline2Clipper::SemanticValuesWeightedSum::operator()(const SVPosition& a, const SVPosition& b, const SVPosition& c) const {
+    return {}; // ignore SVPosition because SH4DPipeline2Clipper already knows it
+}
+
 SH4DPipeline2Clipper::SortedVertices SH4DPipeline2Clipper::SortVertices(const ClipVertex& aTmp, const ClipVertex& bTmp, float SVPosition::* axis) {
     auto ptrA = &aTmp;
     auto ptrB = &bTmp;

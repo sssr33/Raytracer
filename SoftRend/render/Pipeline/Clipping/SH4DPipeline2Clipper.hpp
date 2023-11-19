@@ -1,6 +1,7 @@
 #pragma once
 #include "SH4DPipeline2Clipper.h"
 
+#include <cassert>
 #include <cmath>
 #include <algorithm>
 
@@ -28,8 +29,47 @@ std::vector<VertexT> SH4DPipeline2Clipper::Clip(const VertexT& a, const VertexT&
         if (current.front() == current.back()) {
             current.pop_back();
         }
+
+        std::vector<VertexT> result;
+
+        result.reserve(current.size());
+
+        for (const auto& v : current) {
+            const auto& weights = SemanticValueHelpers::GetValue<VertexInterpolationWeigths>(v);
+
+            // if some weight == 1 then original vertex can be used without interpolation
+            if (weights.x == 1.f) {
+                assert(weights.y == 0.f, weights.z == 0.f);
+                result.push_back(a);
+            }
+            else if (weights.y == 1.f) {
+                assert(weights.x == 0.f, weights.z == 0.f);
+                result.push_back(b);
+            }
+            else if (weights.z == 1.f) {
+                assert(weights.x == 0.f, weights.y == 0.f);
+                result.push_back(c);
+            }
+            else {
+                // do weighting of parameters
+                // TODO try to optimize more when some weight == 0, then only 2 or even 1 vertex can be weighted
+                auto resVert = SemanticValueHelpers::ApplyValues(a, b, c, SemanticValuesWeightedSum(weights));
+                SemanticValueHelpers::SetValue<SVPosition>(resVert, SemanticValueHelpers::GetValue<SVPosition>(v));
+                result.push_back(resVert);
+            }
+        }
+
+        return result;
+    }
+    else if (current.size() == 3) {
+        // Count not changes, nothing is clipped, return same triangles
+        // TODO optimize this case so the caller can handle it in an optimal way(just copy triangle it already has)
+        return { a, b, c };
     }
 
+    // Less than 3 vertices, algorithm error
+    // If happens need to check how it clips
+    assert(false);
     return {};
 }
 
@@ -40,6 +80,7 @@ static void SH4DPipeline2Clipper::IntersectPlane(
     const PlaneT& plane
 )
 {
+    // TODO try to start from .front() to save original a,b,c order if no clipping is made
     if (!current.empty()) {
         auto a = current.back();
 

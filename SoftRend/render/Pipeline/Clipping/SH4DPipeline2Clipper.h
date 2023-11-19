@@ -62,6 +62,21 @@ private:
         ClipVertex Clip(const ClipVertex& aTmp, const ClipVertex& bTmp) const;
     };
 
+    struct SemanticValuesWeightedSum {
+    public:
+        SemanticValuesWeightedSum() = default;
+        SemanticValuesWeightedSum(const VertexInterpolationWeigths& weights);
+
+        float operator()(float a, float b, float c) const;
+        Float2 operator()(const Float2& a, const Float2& b, const Float2& c) const;
+        Float3 operator()(const Float3& a, const Float3& b, const Float3& c) const;
+        Float4 operator()(const Float4& a, const Float4& b, const Float4& c) const;
+        SVPosition operator()(const SVPosition& a, const SVPosition& b, const SVPosition& c) const;
+
+    private:
+        const VertexInterpolationWeigths weights;
+    };
+
     static SortedVertices SortVertices(const ClipVertex& aTmp, const ClipVertex& bTmp, float SVPosition::* axis);
 
     template<class PlaneT>

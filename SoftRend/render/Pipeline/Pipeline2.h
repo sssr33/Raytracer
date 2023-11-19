@@ -2,6 +2,7 @@
 #include "Pipeline2Traits.h"
 #include "Semantic\SemanticValues.h"
 #include "Semantic\SemanticValueHelpers.h"
+#include "Clipping\SH4DPipeline2Clipper.h"
 
 #include <vector>
 #include <type_traits>
@@ -48,6 +49,8 @@ private:
     VSType vertexShader;
     PSType pixelShader;
     BlendType blendState;
+
+    SH4DPipeline2Clipper clipper;
 
     std::vector<VSOutputTriangle> vsOutTriangles;
     std::vector<VSOutputTriangle> vsOutClippedTriangles;

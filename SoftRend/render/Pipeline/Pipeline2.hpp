@@ -47,7 +47,14 @@ void Pipeline2<TraitsT>::VertexShaderStage(const InputAssemblerT& inputAssembler
 
 template<typename TraitsT>
 void Pipeline2<TraitsT>::ClipSpaceClipStage() {
+    this->vsOutClippedTriangles.clear();
+    this->vsOutClippedTriangles.reserve(this->vsOutTriangles.size());
 
+    for (const auto& triangle : this->vsOutTriangles) {
+        auto clippedPoly = this->clipper.Clip(triangle.v[0], triangle.v[1], triangle.v[2]);
+
+        // TODO triangulate clippedPoly and push results to this->vsOutClippedTriangles
+    }
 }
 
 template<typename TraitsT>

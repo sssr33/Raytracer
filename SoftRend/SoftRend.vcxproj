@@ -56,6 +56,7 @@
     <ClInclude Include="render\Pipeline\Stages\BlendDefault.h" />
     <ClInclude Include="render\Pipeline\Stages\PixelShaderDefault.h" />
     <ClInclude Include="render\Pipeline\Stages\VertexShaderDefault.h" />
+    <ClInclude Include="render\Pipeline\Test\Pipeline2Test.h" />
     <ClInclude Include="render\RasterScan\RasterScanBox.h" />
     <ClInclude Include="render\RasterScan\RasterScanBox.hpp" />
     <ClInclude Include="render\RasterScan\RasterScanTriangle.h" />
@@ -97,6 +98,7 @@
     <ClCompile Include="render\Pipeline\Stages\BlendDefault.cpp" />
     <ClCompile Include="render\Pipeline\Stages\PixelShaderDefault.cpp" />
     <ClCompile Include="render\Pipeline\Stages\VertexShaderDefault.cpp" />
+    <ClCompile Include="render\Pipeline\Test\Pipeline2Test.cpp" />
     <ClCompile Include="render\RasterScan\RasterScanBox.cpp" />
     <ClCompile Include="render\RasterScan\RasterScanTriangle.cpp" />
     <ClCompile Include="render\RenderState.cpp" />

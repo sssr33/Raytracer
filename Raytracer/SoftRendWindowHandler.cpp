@@ -1,6 +1,6 @@
 #include "SoftRendWindowHandler.h"
 
-#include <SoftRend\render\Pipeline\Pipeline2.h>
+#include <SoftRend\render\Pipeline\Test\Pipeline2Test.h>
 
 SoftRendWindowHandler::SoftRendWindowHandler()
     : softRend(CreateISoftRend())
@@ -33,11 +33,7 @@ SoftRendWindowHandler::SoftRendTask::SoftRendTask(ISoftRend& render)
 
 void SoftRendWindowHandler::SoftRendTask::Render(std::unique_ptr<IBackBufferSwapLock> backBufferLk, std::atomic<bool>& cancel)
 {
-    {
-        using TestPipeline = Pipeline2<>;
-        TestPipeline::PSInputType x;
-        TestPipeline::PSOutputType w;
-    }
+    Pipeline2Test();
 
     auto backBufData = backBufferLk->GetData();
 

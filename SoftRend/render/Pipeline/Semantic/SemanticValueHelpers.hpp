@@ -50,10 +50,16 @@ constexpr size_t SemanticValueHelpers::GetValueIdxFromFieldIdx(size_t fieldIdx) 
     return valIdx;
 }
 
-template<typename ValueT, size_t Idx /*= 0*/, typename T>
-constexpr const ValueT& SemanticValueHelpers::GetValue(const T& v) {
-    constexpr size_t fieldIdx = SemanticValueHelpers::GetFieldIdxFromValueIdx<ValueT, T>(Idx);
-    return std::get<fieldIdx>(v);
+template<typename ValueT, size_t Idx /*= 0*/, typename SemanticValueT>
+constexpr const ValueT& SemanticValueHelpers::GetValue(const SemanticValueT& sv) {
+    constexpr size_t fieldIdx = SemanticValueHelpers::GetFieldIdxFromValueIdx<ValueT, SemanticValueT>(Idx);
+    return std::get<fieldIdx>(sv);
+}
+
+template<typename ValueT, size_t Idx /*= 0*/, typename SemanticValueT>
+static constexpr void SemanticValueHelpers::SetValue(SemanticValueT& sv, const ValueT& val) {
+    constexpr size_t fieldIdx = SemanticValueHelpers::GetFieldIdxFromValueIdx<ValueT, SemanticValueT>(Idx);
+    std::get<fieldIdx>(sv) = val;
 }
 
 template<typename DstT, typename SrcT>
@@ -78,6 +84,29 @@ constexpr void SemanticValueHelpers::CopyValues(DstT& dst, const SrcT& src) {
 }
 
 template<typename Fn, typename... TupleArgs>
+static constexpr std::tuple<TupleArgs...> SemanticValueHelpers::ApplyValues(const std::tuple<TupleArgs...>& a, Fn fn) {
+    using T = std::tuple<TupleArgs...>;
+    T result;
+
+    for_idx<std::tuple_size_v<T>>([&](auto i)
+        {
+            using ValueT = std::tuple_element_t<i.value, T>;
+
+            // using refs works a bit better on MSVC than std::get<DstFieldIdx>(dst) = std::get<SrcFieldIdx>(src)
+            // tested with https://godbolt.org/
+            auto& resultRef = std::get<i.value>(result);
+            const auto& aRef = std::get<i.value>(a);
+
+            // use static_cast because fn can return basic types which are (down)castable to semantic types
+            // this may result in slicing, but if more specialized overload will be found then no slicing happens
+            using FnResT = decltype(fn(aRef));
+            static_cast<FnResT&>(resultRef) = fn(aRef);
+        });
+
+    return result;
+}
+
+template<typename Fn, typename... TupleArgs>
 constexpr std::tuple<TupleArgs...> SemanticValueHelpers::ApplyValues(const std::tuple<TupleArgs...>& a, const std::tuple<TupleArgs...>& b, Fn fn) {
     using T = std::tuple<TupleArgs...>;
     T result;
@@ -96,6 +125,31 @@ constexpr std::tuple<TupleArgs...> SemanticValueHelpers::ApplyValues(const std::
             // this may result in slicing, but if more specialized overload will be found then no slicing happens
             using FnResT = decltype(fn(aRef, bRef));
             static_cast<FnResT&>(resultRef) = fn(aRef, bRef);
+        });
+
+    return result;
+}
+
+template<typename Fn, typename... TupleArgs>
+static constexpr std::tuple<TupleArgs...> SemanticValueHelpers::ApplyValues(const std::tuple<TupleArgs...>& a, const std::tuple<TupleArgs...>& b, const std::tuple<TupleArgs...>& c, Fn fn) {
+    using T = std::tuple<TupleArgs...>;
+    T result;
+
+    for_idx<std::tuple_size_v<T>>([&](auto i)
+        {
+            using ValueT = std::tuple_element_t<i.value, T>;
+
+            // using refs works a bit better on MSVC than std::get<DstFieldIdx>(dst) = std::get<SrcFieldIdx>(src)
+            // tested with https://godbolt.org/
+            auto& resultRef = std::get<i.value>(result);
+            const auto& aRef = std::get<i.value>(a);
+            const auto& bRef = std::get<i.value>(b);
+            const auto& cRef = std::get<i.value>(c);
+
+            // use static_cast because fn can return basic types which are (down)castable to semantic types
+            // this may result in slicing, but if more specialized overload will be found then no slicing happens
+            using FnResT = decltype(fn(aRef, bRef, cRef));
+            static_cast<FnResT&>(resultRef) = fn(aRef, bRef, cRef);
         });
 
     return result;

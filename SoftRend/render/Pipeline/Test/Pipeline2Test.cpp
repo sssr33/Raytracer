@@ -41,7 +41,7 @@ struct InputAssemblerTest {
 
         if (vertexIdx == 0) {
             return {
-                DirectX::XMVectorSet(-1.f, 1.f, 1.f, 1.f),
+                DirectX::XMVectorSet(-1.1f, 1.f, 1.f, 1.f),
                 Float2(0.f, 0.f),
                 Float3(0.f, 0.f, 0.f),
                 0.f

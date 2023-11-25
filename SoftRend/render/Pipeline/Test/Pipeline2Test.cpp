@@ -39,6 +39,7 @@ struct InputAssemblerTest {
             return {};
         }
 
+        // cw
         if (vertexIdx == 0) {
             return {
                 DirectX::XMVectorSet(-1.1f, 1.f, 1.f, 1.f),
@@ -64,6 +65,32 @@ struct InputAssemblerTest {
             };
         }
 
+        // ccw
+        /*if (vertexIdx == 0) {
+            return {
+                DirectX::XMVectorSet(-1.f, -1.f, 1.f, 1.f),
+                Float2(0.f, 1.f),
+                Float3(0.f, 0.f, 1.f),
+                1.f
+            };
+        }
+        else if (vertexIdx == 1) {
+            return {
+                DirectX::XMVectorSet(1.f, 1.f, 1.f, 1.f),
+                Float2(1.f, 0.f),
+                Float3(0.f, 1.f, 0.f),
+                1.f
+            };
+        }
+        else if (vertexIdx == 2) {
+            return {
+                DirectX::XMVectorSet(-1.1f, 1.f, 1.f, 1.f),
+                Float2(0.f, 0.f),
+                Float3(0.f, 0.f, 0.f),
+                0.f
+            };
+        }*/
+
         return {};
     }
 };
@@ -81,7 +108,14 @@ void Pipeline2Test() {
 
     vsTest.mvp = DirectX::XMMatrixOrthographicLH(2.f, 2.f, 0.1f, 10.f);
 
+    Pipeline2Viewport viewport;
+
+    viewport.width = 640.f;
+    viewport.height = 480.f;
+
     TestPipeline pipeline;
+
+    pipeline.SetViewport(viewport);
 
     pipeline.SetVertexShader(std::move(vsTest));
 

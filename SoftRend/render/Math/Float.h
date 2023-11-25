@@ -1,5 +1,8 @@
 #pragma once
 
+struct Float3;
+struct Float2;
+
 struct Float4 {
     float x, y, z, w;
 
@@ -9,6 +12,11 @@ struct Float4 {
     {}
 
     bool operator==(const Float4&) const = default;
+
+    explicit operator Float2() const;
+
+    Float4 operator*(const Float4& other) const;
+    Float4 operator+(const Float4& other) const;
 };
 
 struct Float3 {
@@ -31,4 +39,8 @@ struct Float2 {
     {}
 
     bool operator==(const Float2&) const = default;
+
+    Float2 operator-(const Float2& other) const;
+
+    float Cross(const Float2& other) const;
 };

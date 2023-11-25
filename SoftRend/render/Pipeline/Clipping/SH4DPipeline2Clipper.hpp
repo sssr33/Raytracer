@@ -39,15 +39,15 @@ std::vector<VertexT> SH4DPipeline2Clipper::Clip(const VertexT& a, const VertexT&
 
             // if some weight == 1 then original vertex can be used without interpolation
             if (weights.x == 1.f) {
-                assert(weights.y == 0.f, weights.z == 0.f);
+                assert(weights.y == 0.f && weights.z == 0.f);
                 result.push_back(a);
             }
             else if (weights.y == 1.f) {
-                assert(weights.x == 0.f, weights.z == 0.f);
+                assert(weights.x == 0.f && weights.z == 0.f);
                 result.push_back(b);
             }
             else if (weights.z == 1.f) {
-                assert(weights.x == 0.f, weights.y == 0.f);
+                assert(weights.x == 0.f && weights.y == 0.f);
                 result.push_back(c);
             }
             else {

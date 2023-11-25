@@ -49,6 +49,7 @@
     <ClInclude Include="render\Pipeline\Pipeline2.h" />
     <ClInclude Include="render\Pipeline\Pipeline2.hpp" />
     <ClInclude Include="render\Pipeline\Pipeline2Traits.h" />
+    <ClInclude Include="render\Pipeline\Pipeline2Viewport.h" />
     <ClInclude Include="render\Pipeline\Semantic\SemanticValueHelpers.h" />
     <ClInclude Include="render\Pipeline\Semantic\SemanticValueHelpers.hpp" />
     <ClInclude Include="render\Pipeline\Semantic\SemanticValues.h" />
@@ -92,6 +93,7 @@
     <ClCompile Include="render\lineInterp.cpp" />
     <ClCompile Include="render\math3DFunc.cpp" />
     <ClCompile Include="render\Math3DStructs.cpp" />
+    <ClCompile Include="render\Math\Float.cpp" />
     <ClCompile Include="render\Pipeline.cpp" />
     <ClCompile Include="render\Pipeline\Clipping\SH4DPipeline2Clipper.cpp" />
     <ClCompile Include="render\Pipeline\Semantic\SemanticValuesLerp.cpp" />

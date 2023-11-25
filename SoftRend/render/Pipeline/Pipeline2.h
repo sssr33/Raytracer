@@ -1,9 +1,11 @@
 #pragma once
 #include "Pipeline2Traits.h"
+#include "Pipeline2Viewport.h"
 #include "Semantic\SemanticValues.h"
 #include "Semantic\SemanticValueHelpers.h"
 #include "Clipping\SH4DPipeline2Clipper.h"
 
+#include <array>
 #include <vector>
 #include <type_traits>
 #include <Helpers\Meta\ArgType.h>
@@ -29,6 +31,9 @@ public:
     void SetPixelShader(PSType pixelShader);
     void SetBlendState(BlendType blendState);
 
+    const Pipeline2Viewport& GetViewport() const;
+    void SetViewport(const Pipeline2Viewport& viewport);
+
     /*
     * InputAssemblerT must get triangle count and read triangle vertices as VSInputType
     */
@@ -43,18 +48,22 @@ private:
     template<typename InputAssemblerT>
     void VertexShaderStage(const InputAssemblerT& inputAssembler);
     void ClipSpaceClipStage();
-    void ClipSpaceToNdcStage();
+    void ClipSpaceToScreenStage();
     void RasterizeStage();
+
+    bool IsBackface(const std::array<SVPosition, 3>& svPosNdc) const;
 
     VSType vertexShader;
     PSType pixelShader;
     BlendType blendState;
 
+    Pipeline2Viewport viewport;
+
     SH4DPipeline2Clipper clipper;
 
     std::vector<VSOutputTriangle> vsOutTriangles;
     std::vector<VSOutputTriangle> vsOutClippedTriangles;
-    std::vector<VSOutputTriangle> vsOutClippedNdcTriangles;
+    std::vector<VSOutputTriangle> vsOutScreenTriangles;
 };
 
 #include "Pipeline2.hpp"
